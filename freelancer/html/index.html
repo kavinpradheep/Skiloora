@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Skiloora — Freelancers</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">Skiloora</div>
+      <nav class="top-actions">
+        <button class="btn btn-outline signup-btn" id="open-signup">Sign Up</button>
+        <button class="btn btn-primary" id="open-login">Login</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="container hero-inner">
+      <section class="hero-left">
+        <h1 class="hero-title">Find the right<br>freelancers for<br>your project.</h1>
+        <p class="hero-sub">
+          Turn your ideas into results with top-tier freelancers.
+          Discover the perfect match today.
+        </p>
+
+        <form class="search-form" onsubmit="return false;">
+          <label for="search" class="sr-only">Search</label>
+          <input id="search" class="search-input" placeholder="UI UX Designer" />
+          <button class="btn btn-search">Search</button>
+        </form>
+
+        <div class="chips">
+          <button class="chip">UI UX</button>
+          <button class="chip">DevOps</button>
+          <button class="chip">Data Analyst</button>
+        </div>
+      </section>
+
+      <section class="hero-right" aria-hidden="true">
+        <img 
+          src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&w=1200&q=80"
+          alt="Freelancer working"
+          class="hero-image" />
+      </section>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById("open-signup").addEventListener("click", function () {
+      window.location.href = "signup.html";
+    });
+    document.getElementById("open-login").addEventListener("click", function () {
+      window.location.href = "login.html";
+    });
+  </script>
+
+</body>
+</html>

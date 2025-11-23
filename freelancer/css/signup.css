@@ -1,0 +1,104 @@
+:root{
+  --bg:#ffffff; --text:#111827; --muted:#6b7280; --container:1100px;
+  --accent:#f3f4f6; --card-radius:12px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.container{max-width:var(--container);margin:0 auto;padding:0 22px}
+
+/* topbar */
+.topbar{padding:18px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;font-size:20px}
+
+/* layout */
+.signup-page{padding:36px 0}
+.signup-inner{display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:start}
+
+/* left column */
+.left-col{padding-right:8px}
+.page-title{font-size:32px;margin-bottom:6px}
+.lead{color:var(--muted);margin-bottom:18px}
+
+/* role selector */
+.role-selector{display:flex;gap:12px;margin-bottom:20px}
+.role-card{
+  flex:1; display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:12px;
+  background:transparent;border:1px solid rgba(0,0,0,0.06);cursor:pointer;text-align:left;
+}
+.role-card .role-title{font-weight:700}
+.role-card .role-sub{color:var(--muted);font-size:13px}
+.role-card.active{background:var(--accent);border-color:rgba(0,0,0,0.08)}
+
+/* form */
+.signup-form{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.field-label{font-size:13px;color:var(--muted)}
+.field{padding:12px 14px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);font-size:15px;background:#fff}
+.file-row{display:flex;gap:10px;align-items:center}
+.btn-file-view{padding:8px 12px;border-radius:8px;border:1px solid #ddd;background:#f3f4f6;cursor:pointer}
+.note{font-size:13px;color:var(--muted);padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);margin-top:6px}
+
+/* actions */
+.form-actions{display:flex;justify-content:flex-start;margin-top:8px}
+.btn{font-weight:600;border:0;padding:10px 18px;border-radius:999px;cursor:pointer}
+.btn-outline{background:transparent;border:1px solid rgba(17,24,39,0.12)}
+.btn-primary{background:#111827;color:#fff}
+
+/* hidden */
+.hidden{display:none}
+
+/* right column */
+.right-col{display:flex;align-items:flex-start;justify-content:center}
+.hero-image{width:100%;height:420px;object-fit:cover;border-radius:12px;background:#eee;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+
+/* --- existing signup.css above --- */
+/* Modal overlay + modal styles (in-place on same page) */
+.overlay{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.45);
+  z-index:1000;
+}
+.modal{
+  width:760px;
+  max-width:94%;
+  background:#fff;
+  border-radius:12px;
+  padding:20px;
+  box-shadow:0 30px 80px rgba(2,6,23,0.35);
+}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.modal-header h2{margin:0;font-size:18px}
+.modal-body{padding:6px 0}
+.plans{display:flex;gap:18px;justify-content:center;align-items:flex-start;padding:10px}
+.plan-card{
+  display:flex;flex-direction:column;gap:10px;width:260px;padding:14px;border-radius:10px;
+  border:1px solid rgba(0,0,0,0.09);background:#fff;position:relative;
+}
+.plan-card input[type="radio"]{position:absolute;right:12px;top:12px}
+.plan-price{font-weight:800;font-size:20px}
+.plan-title{color:var(--muted)}
+.plan-features{list-style:none;padding-left:0;margin:0;font-size:14px;color:#333}
+.plan-features li{padding:4px 0}
+.plan-action{margin-top:auto}
+.plan-card .btn{width:100%}
+.modal-footer{display:flex;justify-content:flex-end;margin-top:12px}
+.modal-footer .btn{min-width:120px}
+
+/* slight selected styling when radio checked (optional) */
+.plan-card input[type="radio"]:checked + .plan-price,
+.plan-card input[type="radio"]:checked ~ .plan-title { /* no-op placeholder */ }
+
+/* hide by default helper */
+.hidden{display:none}
+
+/* responsive */
+@media (max-width:980px){
+  .signup-inner{grid-template-columns:1fr;gap:20px}
+  .hero-image{height:220px}
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Skiloora — Login</title>
+  <link rel="stylesheet" href="../css/login.css" />
+  <script type="module" src="../js/login.js" defer></script>
+
+  <!-- Firebase (modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCapHhekRDGOxzSgfu6CCvDVBnj9D-5TtU",
+      authDomain: "skiloora.firebaseapp.com",
+      projectId: "skiloora",
+      storageBucket: "skiloora.firebasestorage.app",
+      messagingSenderId: "955346781606",
+      appId: "1:955346781606:web:6538ba1ebd56574bd43b67",
+      measurementId: "G-Z0CKCX3HPT"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    window.firebaseAuth = getAuth(app); // used by login.js
+  </script>
+</head>
+<body>
+  <main class="login-wrap">
+    <div class="card">
+      <h1>Sign in — Skiloora</h1>
+      <form id="loginForm">
+        <label>Email</label>
+        <input id="email" type="email" required placeholder="you@example.com"/>
+        <label>Password</label>
+        <input id="password" type="password" required placeholder="Password"/>
+        <button id="loginBtn" type="submit">Login</button>
+      </form>
+
+      <p class="hint">Don't have account? Go back to <a href="signup.html">Signup</a></p>
+      <div id="msg" class="msg" aria-live="polite"></div>
+    </div>
+  </main>
+</body>
+</html>
