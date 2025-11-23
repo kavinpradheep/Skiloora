@@ -1,4 +1,4 @@
-// freelancer/js/signup.js — corrected version
+// freelancer/js/signup.js — corrected version (email check before temp-save)
 (function () {
   // helper selectors
   const $ = (s) => document.querySelector(s);
@@ -97,7 +97,7 @@
   overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) closeModal(); });
 
-  // --- Next button (from freelancer form) => create temp signup, then open modal ---
+  // --- Next button (from freelancer form) => check email, create temp signup, then open modal ---
   const nextBtn = $('#nextBtn');
   const formName = $('#freeName');
   const formEmail = $('#freeEmail');
@@ -146,8 +146,26 @@
       return;
     }
 
-    // Save temp signup to backend
     try {
+      // 1) Check if email already exists
+      const checkResp = await apiCall('/api/auth/check-email', { email });
+      if (!checkResp || !checkResp.ok) {
+        console.warn('check-email response', checkResp);
+        alert('Could not verify email. Please try again.');
+        return;
+      }
+      if (checkResp.exists) {
+        if (checkResp.source === 'auth' || checkResp.source === 'firestore') {
+          alert('An account with this email already exists. Please log in instead.');
+        } else if (checkResp.source === 'temp') {
+          alert('A signup for this email is pending payment. Please use the login flow or try again later.');
+        } else {
+          alert('An account with this email exists. Please log in.');
+        }
+        return;
+      }
+
+      // 2) Email is free — create temp signup
       const tempResp = await apiCall('/api/auth/temp-save', {
         name,
         email,
@@ -155,7 +173,7 @@
         location: formLoc?.value || ''
       });
       if (tempResp && tempResp.tempId) {
-        // store globally so create-order can send it (use single global var)
+        // store globally so create-order can send it
         window.__skiloora_tempId = tempResp.tempId;
         console.log('tempId saved:', tempResp.tempId);
         // show the payment modal
@@ -164,8 +182,8 @@
         throw new Error('Failed to save temp signup');
       }
     } catch (err) {
-      console.error('Temp save failed', err);
-      alert('Failed to save signup data. Try again.');
+      console.error('Temp save / check failed', err);
+      alert(err && err.message ? err.message : 'Failed to save signup data. Try again.');
     }
   });
 
