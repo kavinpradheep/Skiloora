@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Skiloora — Public Profile</title>
+  <link rel="stylesheet" href="../css/public-profile.css" />
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
+  <script>
+    (function(){
+      const cfg = {
+        apiKey: "AIzaSyCapHhekRDGOxzSgfu6CCvDVBnj9D-5TtU",
+        authDomain: "skiloora.firebaseapp.com",
+        projectId: "skiloora",
+        storageBucket: "skiloora.appspot.com",
+        messagingSenderId: "955346781606",
+        appId: "1:955346781606:web:6538ba1ebd56574bd43b67",
+        measurementId: "G-Z0CKCX3HPT"
+      };
+      try{ if(!window.firebaseApp){ window.firebaseApp = firebase.initializeApp(cfg);} }catch(e){}
+      window.firebaseAuth = firebase.auth();
+      window.firebaseDB = firebase.firestore();
+    })();
+  </script>
+  <script defer src="../js/public-profile.js"></script>
+</head>
+<body>
+  <header class="cover">
+    <div class="brand">Skiloora</div>
+    <h1 class="cover-title">COVER PICTURE</h1>
+  </header>
+  <main class="layout">
+    <aside class="left">
+      <div class="avatar"><img id="ppAvatar" alt="avatar" /></div>
+      <h2 id="ppName">Name</h2>
+      <div class="meta">
+        <div id="ppStars" class="stars"></div>
+        <div id="ppAvailability" class="muted">Available for Freelance & Fulltime</div>
+        <div id="ppRole" class="muted">UI/UX Designer</div>
+        <div id="ppLocation" class="muted">Chennai, India</div>
+      </div>
+      <div class="pricing">
+        <div class="tiers">
+          <button class="tier">Low</button>
+          <button class="tier">Standard</button>
+          <button class="tier">High</button>
+        </div>
+        <ul class="features">
+          <li>Basic features</li>
+          <li>Simple task</li>
+          <li>Whatsapp support</li>
+        </ul>
+        <div class="rate" id="ppRate">₹ 999 / Hour</div>
+      </div>
+      <div class="actions">
+        <button class="btn">Message</button>
+        <button class="btn-ghost">Request Call</button>
+      </div>
+    </aside>
+    <section class="right">
+      <nav class="tabs">
+        <button class="tab active" data-target="about">About</button>
+        <button class="tab" data-target="works">Works</button>
+        <button class="tab" data-target="links">Links</button>
+        <button class="tab" data-target="reviews">Reviews</button>
+      </nav>
+      <section class="about" id="about">
+        <h3>Sudharsan V</h3>
+        <p id="ppBio" class="muted">—</p>
+      </section>
+      <section class="works" id="works">
+        <h3>My Works</h3>
+        <div class="cards" id="ppWorks"></div>
+      </section>
+      <section class="links" id="links">
+        <h3>Links</h3>
+        <div class="social" id="ppLinks"></div>
+      </section>
+      <section class="reviews" id="reviews">
+        <h3>Reviews</h3>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="avatar small"></div>
+            <div class="who">
+              <strong>NoorAli</strong>
+              <span class="muted">• Pro Client • 5 days ago</span>
+            </div>
+          </div>
+          <div class="review-stars">★★★★☆</div>
+          <p class="muted">Lorem ipsum review placeholder text matching the mock format.</p>
+          <div class="review-bottom">
+            <span>50 days</span>
+            <span>₹ 18,000 - 36,000</span>
+            <span>Logo Design</span>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

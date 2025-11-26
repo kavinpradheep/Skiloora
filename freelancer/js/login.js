@@ -6,6 +6,11 @@ const emailEl = document.getElementById('email');
 const pwEl = document.getElementById('password');
 const msg = document.getElementById('msg');
 
+window.redirectToDashboard = function(){
+  try {
+    window.location.href = './dashboard.html';
+  } catch(e){}
+};
 function showMsg(text, isError = true){
   msg.textContent = text;
   msg.style.color = isError ? '#e11d48' : '#059669';
@@ -29,6 +34,7 @@ async function backendLogin(idToken){
     throw err;
   }
 }
+    // Note: Do not auto-call redirect on page load; only after successful login.
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -50,8 +56,9 @@ form.addEventListener('submit', async (e) => {
     if (backendResp.ok) {
       // store idToken in localStorage for later API calls (optional)
       localStorage.setItem('skiloora_id_token', idToken);
-      // redirect to protected index page
-      window.location.href = 'index.html';
+      // redirect to dashboard page after successful login
+      window.location.href = './dashboard.html';
+      // or use helper if needed: window.redirectToDashboard();
     } else {
       showMsg('Login failed: ' + (backendResp.error || 'unknown'));
     }

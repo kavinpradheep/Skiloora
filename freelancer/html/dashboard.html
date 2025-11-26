@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Skiloora — Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <!-- Firebase SDKs (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-storage-compat.js"></script>
+  <script>
+    (function(){
+      const cfg = {
+        apiKey: "AIzaSyCapHhekRDGOxzSgfu6CCvDVBnj9D-5TtU",
+        authDomain: "skiloora.firebaseapp.com",
+        projectId: "skiloora",
+        storageBucket: "skiloora.appspot.com",
+        messagingSenderId: "955346781606",
+        appId: "1:955346781606:web:6538ba1ebd56574bd43b67",
+        measurementId: "G-Z0CKCX3HPT"
+      };
+      try{ if(!window.firebaseApp){ window.firebaseApp = firebase.initializeApp(cfg);} }catch(e){}
+      window.firebaseAuth = firebase.auth();
+      window.firebaseDB = firebase.firestore();
+      window.firebaseStorage = firebase.storage();
+    })();
+  </script>
+  <script type="module" src="../js/dashboard.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Skiloora</div>
+      <nav class="nav">
+        <button data-target="top" class="nav-item active">Dashboard</button>
+        <button data-target="earnings" class="nav-item">Earnings</button>
+        <button data-target="orders" class="nav-item">Orders</button>
+        <button data-target="projects" class="nav-item">Projects</button>
+        <button data-target="profile" class="nav-item">Profile</button>
+        <button data-target="support" class="nav-item">Support</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button id="logoutBtn" class="btn-ghost">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="search">
+          <input id="globalSearch" placeholder="Search projects..." autocomplete="off" />
+          <div id="searchSuggest" class="search-suggest hidden"></div>
+        </div>
+        <div class="user" id="userMenuRoot">
+          <img id="userAvatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=64&q=60" alt="avatar"/>
+          <div class="user-info">
+            <div id="userName">User</div>
+            <small id="userRole">Developer</small>
+          </div>
+          <button id="userMenuToggle" class="user-caret" aria-haspopup="menu" aria-expanded="false">▾</button>
+          <div id="userMenu" class="user-menu hidden" role="menu">
+            <button id="menuLogout" role="menuitem">Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="content" id="content">
+        <section class="hero" id="top">
+          <h1 id="welcomeTitle">Welcome back, User!</h1>
+          <p class="muted">Here's what's happening with your work today.</p>
+        </section>
+
+        <section class="section" id="revenue">
+          <h2>Revenue Analytics</h2>
+          <div class="cards row">
+            <div class="card metric"><div class="card-title">Total Revenue</div><div class="card-value" id="metricRevenue">₹0</div><div class="muted small">All time</div></div>
+            <div class="card metric"><div class="card-title">Today's Earning</div><div class="card-value" id="metricToday">₹0</div><div class="muted small">Last updated just now</div></div>
+            <div class="card metric"><div class="card-title">Monthly Earning</div><div class="card-value" id="metricMonthly">₹0</div><div class="muted small">This month</div></div>
+            <div class="card metric"><div class="card-title">Weekly Growth</div><div class="card-value" id="metricGrowth">0%</div><div class="muted small">vs last week</div></div>
+          </div>
+          <div class="card chart-card"><canvas id="lineChart" height="240"></canvas></div>
+        </section>
+
+        <section class="section" id="earnings">
+          <h2>Earnings Overview</h2>
+          <div class="cards row">
+            <div class="card summary"><div class="card-icon">💰</div><div><div class="card-title">Total Earnings</div><div class="card-value" id="earnTotal">₹0</div><div class="muted small">All time earnings</div></div></div>
+            <div class="card summary"><div class="card-icon">🏦</div><div><div class="card-title">Available Balance</div><div class="card-value" id="earnAvailable">₹0</div><div class="muted small">Ready to withdraw</div></div></div>
+            <div class="card summary"><div class="card-icon">🕓</div><div><div class="card-title">Payout History</div><div class="card-value">—</div><div class="muted small">View all payouts</div></div></div>
+            <div class="card summary"><div class="card-icon">📄</div><div><div class="card-title">Earning Report</div><div class="card-value">PDF</div><div class="muted small">Generate report</div></div></div>
+          </div>
+        </section>
+
+        <section class="section" id="orders">
+          <h2>Orders Overview</h2>
+          <div class="cards grid-3">
+            <div class="card stat"><div class="stat-icon">📥</div><div class="stat-body"><div class="stat-count" id="ordersNew">0</div><div class="muted">New Orders</div></div></div>
+            <div class="card stat"><div class="stat-icon">🔁</div><div class="stat-body"><div class="stat-count" id="ordersActive">0</div><div class="muted">Active Orders</div></div></div>
+            <div class="card stat"><div class="stat-icon">💬</div><div class="stat-body"><div class="stat-count" id="ordersPending">0</div><div class="muted">Pending Feedback</div></div></div>
+            <div class="card stat"><div class="stat-icon">✅</div><div class="stat-body"><div class="stat-count" id="ordersDelivered">0</div><div class="muted">Delivered Orders</div></div></div>
+            <div class="card stat"><div class="stat-icon">❌</div><div class="stat-body"><div class="stat-count" id="ordersCancelled">0</div><div class="muted">Cancelled Orders</div></div></div>
+          </div>
+        </section>
+
+        <section class="section" id="projects">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2>Projects</h2>
+            <div><button id="btnAddProject" class="btn">+ Add Project</button></div>
+          </div>
+          <div id="projectsGrid" class="projects-grid"></div>
+          <h3 style="margin-top:20px">Project Links</h3>
+          <div id="projectLinks" class="links-row"></div>
+        </section>
+
+        <section class="section profile-panel" id="profile">
+          <h2>Profile</h2>
+          <div class="profile-grid">
+            <div class="profile-card">
+              <div class="avatar-large"><img id="profileAvatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=240&q=60" alt="avatar"></div>
+              <h3 id="profileName">Name</h3>
+              <div id="profileRole" class="muted">Role subtitle</div>
+              <div id="profileTagline" class="muted small">—</div>
+              
+              <div class="profile-actions"><button id="editProfile" class="btn">Edit Profile</button><button id="viewPublic" class="btn-ghost">View Public Profile</button></div>
+              <hr class="divider" />
+              <div id="cardSocial" class="social-row"></div>
+              <div class="certs-block">
+                <h4>Certifications</h4>
+                <div id="infoCerts" class="cert-list"></div>
+                <button id="addCertsBtn" class="add-cert-btn">Add Certificates <span class="dot-plus">●</span></button>
+              </div>
+            </div>
+            <div class="profile-info">
+              <div class="info-row"><div class="info-card"><strong>Email</strong><div id="infoEmail" class="muted">—</div></div><div class="info-card"><strong>Phone</strong><div id="infoPhone" class="muted">—</div></div></div>
+              <div class="info-row"><div class="info-card"><strong>Location</strong><div id="infoLocation" class="muted">—</div></div><div class="info-card"><strong>Hourly Rate</strong><div id="infoRate" class="muted">—</div></div></div>
+              <div class="info-row"><div class="info-card"><strong>Total Projects</strong><div id="infoProjects" class="muted">0</div></div><div class="info-card"><strong>Response Time</strong><div id="infoResponse" class="muted">—</div></div></div>
+              <div class="info-row"><div class="info-card" style="flex:1 1 100%"><strong>Bio</strong><div id="infoBio" class="muted">—</div></div></div>
+              <h4>Language</h4><div id="infoLang" class="chips-row"></div>
+              <h4>Skills</h4><div id="infoSkills" class="chips-row"></div>
+              <h4>Education</h4><div id="infoEducation" class="muted">—</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="support">
+          <h2>Support</h2>
+          <div class="support-list">
+            <div class="support-card">Support — Need help? Our support team is here for you 24/7.</div>
+            <div class="support-card">Help Center — Browse articles & FAQs</div>
+            <div class="support-card">Raise a Ticket — Get personalized help</div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalAdd" class="modal hidden">
+    <div class="modal-inner">
+      <h3>Add Project</h3>
+      <label>Title<input id="projTitle" /></label>
+      <label>Link<input id="projLink" /></label>
+      <label>Image URL<input id="projImageUrl" type="url" placeholder="https://example.com/image.jpg" /></label>
+      <label>Image Upload (optional)<input id="projImageFile" type="file" accept="image/*" /></label>
+      <!-- Description removed per request -->
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+        <button id="cancelAdd" class="btn-ghost">Cancel</button>
+        <button id="saveAdd" class="btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .modal { position: fixed; inset:0; background: rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:50; }
+    .modal.hidden { display:none; }
+    .modal-inner { background:white; padding:18px; border-radius:12px; width:420px; max-width:95%; }
+    .modal-inner label { display:block; margin-top:8px; font-size:13px; }
+    .modal-inner input, .modal-inner textarea { width:100%; padding:8px; margin-top:6px; border-radius:8px; border:1px solid #e5e7eb; }
+    .muted { color:#6b7280; }
+    .btn { background:#111827;color:white;padding:8px 12px;border-radius:10px;border:none; cursor:pointer; }
+    .btn-ghost { background:transparent;border:1px solid #e5e7eb;padding:8px 12px;border-radius:10px; cursor:pointer; }
+  </style>
+</body>
+</html>

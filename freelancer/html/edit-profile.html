@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Skiloora — Edit Profile</title>
+  <link rel="stylesheet" href="../css/edit-profile.css" />
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-storage-compat.js"></script>
+  <script>
+    const cfg = {
+      apiKey: "AIzaSyCapHhekRDGOxzSgfu6CCvDVBnj9D-5TtU",
+      authDomain: "skiloora.firebaseapp.com",
+      projectId: "skiloora",
+      storageBucket: "skiloora.appspot.com",
+      messagingSenderId: "955346781606",
+      appId: "1:955346781606:web:6538ba1ebd56574bd43b67",
+      measurementId: "G-Z0CKCX3HPT"
+    };
+    try{ if(!window.firebaseApp){ window.firebaseApp = firebase.initializeApp(cfg);} }catch(e){}
+    window.firebaseAuth = firebase.auth();
+    window.firebaseDB = firebase.firestore();
+    window.firebaseStorage = firebase.storage();
+  </script>
+  <script defer src="../js/edit-profile.js"></script>
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>Edit Profile</h1>
+      <button class="btn-ghost" id="cancelEdit">Cancel</button>
+    </header>
+    
+
+    <section class="card">
+      <div class="grid">
+        <label>Name<input id="editName" /></label>
+        <label>Email<input id="editEmail" disabled /></label>
+        <label>Phone<input id="editPhone" /></label>
+        <label>Location<input id="editLocation" /></label>
+        <label>Hourly Rate<input id="editRate" type="number" /></label>
+        <label>Role<input id="editRole" placeholder="Developer" /></label>
+        <label>Bio<textarea id="editBio" rows="3" placeholder="Short professional bio"></textarea></label>
+        <label>GitHub<input id="editGithub" placeholder="github.com/username" /></label>
+        <label>Dribbble<input id="editDribbble" placeholder="dribbble.com/username" /></label>
+        <label>LinkedIn<input id="editLinkedin" placeholder="linkedin.com/in/username" /></label>
+        <label>X (Twitter)<input id="editX" placeholder="x.com/handle" /></label>
+        <label>Avatar Image<input id="editAvatarFile" type="file" accept="image/*" /></label>
+      </div>
+      <div class="row">
+        <div class="fieldset">
+          <div class="legend">Language</div>
+          <div id="editLangList" class="chips-row"></div>
+          <div class="chip-editor"><input id="editLangInput" placeholder="Add language" /><button id="addLangBtn" class="btn-ghost small">+</button></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="fieldset">
+          <div class="legend">Certifications</div>
+          <div id="editCertsList" class="stack-list"></div>
+          <div class="chip-editor"><input id="editCertsInput" placeholder="Add certification" /><button id="addCertBtn" class="btn-ghost small">+</button></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="fieldset">
+          <div class="legend">Skills</div>
+          <div id="editSkillsList" class="chips-row"></div>
+          <div class="chip-editor"><input id="editSkillsInput" placeholder="Add skill" /><button id="addSkillBtn" class="btn-ghost small">+</button></div>
+        </div>
+      </div>
+      <label>Education<textarea id="editEducation"></textarea></label>
+      <div class="actions"><button class="btn" id="saveProfile">Save</button></div>
+    </section>
+  </main>
+</body>
+</html>
