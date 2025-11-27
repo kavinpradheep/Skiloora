@@ -11,6 +11,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCapHhekRDGOxzSgfu6CCvDVBnj9D-5TtU",
@@ -24,6 +25,7 @@
 
     const app = initializeApp(firebaseConfig);
     window.firebaseAuth = getAuth(app); // used by login.js
+    window.firebaseDB = getFirestore(app);
   </script>
 </head>
 <body>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Skiloora — Freelancers</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCapHhekRDGOxzSgfu6CCvDVBnj9D-5TtU",
+      authDomain: "skiloora.firebaseapp.com",
+      projectId: "skiloora",
+      storageBucket: "skiloora.appspot.com",
+      messagingSenderId: "955346781606",
+      appId: "1:955346781606:web:6538ba1ebd56574bd43b67",
+      measurementId: "G-Z0CKCX3HPT"
+    };
+    const app = initializeApp(firebaseConfig);
+    window.firebaseAuth = getAuth(app);
+    window.firebaseDB = getFirestore(app);
+  </script>
+  <script type="module" src="../js/index.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">Skiloora</div>
+      <nav class="top-actions" id="buyerUserNav"></nav>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="container hero-inner">
+      <section class="hero-left">
+        <h1 class="hero-title">Find the right<br>freelancers for<br>your project.</h1>
+        <p class="hero-sub">
+          Turn your ideas into results with top-tier freelancers.
+          Discover the perfect match today.
+        </p>
+
+        <form class="search-form" onsubmit="return false;">
+          <label for="search" class="sr-only">Search</label>
+          <input id="search" class="search-input" placeholder="UI UX Designer" />
+          <button class="btn btn-search">Search</button>
+        </form>
+
+        <div class="chips">
+          <button class="chip">UI UX</button>
+          <button class="chip">DevOps</button>
+          <button class="chip">Data Analyst</button>
+        </div>
+      </section>
+
+      <section class="hero-right" aria-hidden="true">
+        <img 
+          src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&w=1200&q=80"
+          alt="Freelancer working"
+          class="hero-image" />
+      </section>
+    </div>
+  </main>
+
+</body>
+</html>

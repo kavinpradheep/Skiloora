@@ -11,7 +11,8 @@
 <script type="module">
   // Example modular v9+ usage - replace config with your firebaseConfig
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCapHhekRDGOxzSgfu6CCvDVBnj9D-5TtU",
@@ -24,7 +25,15 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  window.firebaseAuth = getAuth(app); // use window.firebaseAuth in other scripts
+  window.firebaseAuth = getAuth(app);
+  window.firebaseDB = getFirestore(app);
+  window.__createBuyerAccount = async function({name,email,password}){
+    // Create Firebase auth user then Firestore document with role 'buyer'
+    const cred = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+    const uid = cred.user.uid;
+    await setDoc(doc(window.firebaseDB, 'users', uid), { name, email, role: 'buyer', createdAt: serverTimestamp() }, { merge: true });
+    await signOut(window.firebaseAuth); // force login via unified login page
+  };
 </script>
 
 </head>

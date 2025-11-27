@@ -98,6 +98,34 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) closeModal(); });
 
   // --- Next button (from freelancer form) => check email, create temp signup, then open modal ---
+    // Hirer form handler
+    window.handleHirer = async function(e){
+      e.preventDefault();
+      const nameEl = document.getElementById('hirerName');
+      const emailEl = document.getElementById('hirerEmail');
+      const pwEl = document.getElementById('hirerPassword');
+      const cpwEl = document.getElementById('hirerConfirm');
+      const tos = document.getElementById('hirerTos');
+      const name = nameEl?.value.trim();
+      const email = emailEl?.value.trim();
+      const pw = pwEl?.value || '';
+      const cpw = cpwEl?.value || '';
+      if (!name || !email || !pw) { alert('Fill all required fields'); return false; }
+      if (pw !== cpw){ alert('Passwords do not match'); return false; }
+      if (!tos?.checked){ alert('Please accept Terms'); return false; }
+      try {
+        const checkResp = await apiCall('/api/auth/check-email', { email });
+        if (!checkResp.ok) throw new Error('Email check failed');
+        if (checkResp.exists){ alert('Email already registered. Please login.'); return false; }
+        await window.__createBuyerAccount({ name, email, password: pw });
+        alert('Account created successfully. Please login.');
+        window.location.href = './login.html';
+      } catch(err){ console.error('Hirer signup failed', err); alert(err.message || 'Signup failed'); }
+      return false;
+    };
+
+    // Freelancer form submit fallback (Enter key) just triggers Next button logic
+    window.handleFreelancer = function(e){ e.preventDefault(); nextBtn?.click(); return false; };
   const nextBtn = $('#nextBtn');
   const formName = $('#freeName');
   const formEmail = $('#freeEmail');

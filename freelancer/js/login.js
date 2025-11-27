@@ -1,5 +1,6 @@
 // login.js
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const form = document.getElementById('loginForm');
 const emailEl = document.getElementById('email');
@@ -54,11 +55,21 @@ form.addEventListener('submit', async (e) => {
     // send token to backend for verification / session creation
     const backendResp = await backendLogin(idToken);
     if (backendResp.ok) {
-      // store idToken in localStorage for later API calls (optional)
       localStorage.setItem('skiloora_id_token', idToken);
-      // redirect to dashboard page after successful login
-      window.location.href = './dashboard.html';
-      // or use helper if needed: window.redirectToDashboard();
+      // Determine role from Firestore users/{uid}
+      let target = './dashboard.html';
+      if (window.firebaseDB && window.firebaseAuth?.currentUser) {
+        try {
+          const ref = doc(window.firebaseDB, 'users', window.firebaseAuth.currentUser.uid);
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            const data = snap.data();
+            const role = (data.role || '').toLowerCase();
+            if (role === 'buyer' || role === 'hirer') target = '../../buyer/html/index.html';
+          }
+        } catch (e) { console.warn('Role lookup failed', e); }
+      }
+      window.location.href = target;
     } else {
       showMsg('Login failed: ' + (backendResp.error || 'unknown'));
     }
