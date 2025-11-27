@@ -19,7 +19,8 @@ auth.onAuthStateChanged(async (user)=>{
     const avatarEl = document.getElementById('ppAvatar');
     if (p.avatarUrl) { avatarEl.src = p.avatarUrl; avatarEl.alt = name; } else { avatarEl.src = letterAvatar(name); avatarEl.alt = name.charAt(0).toUpperCase(); }
     setText('ppName', name);
-    setText('ppRole', p.role || 'UI/UX Designer');
+    setText('ppNameAbout', name);
+    setText('ppRole', p.title || p.roleLong || 'UI/UX Designer');
     setText('ppLocation', p.location || 'Chennai, India');
     setText('ppRate', p.hourlyRate ? `₹ ${p.hourlyRate} / Hour` : '₹ 999 / Hour');
     setText('ppBio', p.bio || 'Lorem ipsum is simply dummy text of the printing and typesetting industry.');

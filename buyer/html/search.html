@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Search Results - Skiloora</title>
+  <link rel="stylesheet" href="../css/search.css" />
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCapHhekRDGOxzSgfu6CCvDVBnj9D-5TtU",
+      authDomain: "skiloora.firebaseapp.com",
+      projectId: "skiloora",
+      storageBucket: "skiloora.appspot.com",
+      messagingSenderId: "955346781606",
+      appId: "1:955346781606:web:6538ba1ebd56574bd43b67",
+      measurementId: "G-Z0CKCX3HPT"
+    };
+    const app = initializeApp(firebaseConfig);
+    window.firebaseAuth = getAuth(app);
+    window.firebaseDB = getFirestore(app);
+  </script>
+  <script type="module" src="../js/search.js" defer></script>
+</head>
+<body>
+  <header class="search-topbar">
+    <div class="container st-inner">
+      <div class="brand">Skiloora</div>
+      <div class="search-bar-wrap">
+        <div class="search-bar">
+          <span class="icon">🔍</span>
+          <input id="globalSearch" placeholder="Search   'UI/UX Designer'" />
+          <button class="mic" type="button">🎤</button>
+        </div>
+      </div>
+      <div class="top-actions" id="buyerUserNav"></div>
+    </div>
+  </header>
+
+  <nav class="roles-top">
+    <div class="container">
+      <div class="chips-select" id="roleChips"></div>
+    </div>
+  </nav>
+
+  <section class="chips-row">
+    <div class="container chip-inner">
+      <div style="flex:1"></div>
+      <div class="sort-wrap">
+        <button class="sort-btn" id="sortBtn">Short by: Newest ▾</button>
+      </div>
+    </div>
+  </section>
+
+  <main class="results">
+    <div class="container results-inner">
+      <div class="cards" id="resultCards"></div>
+      <aside class="filters">
+        <div class="filter-box">
+          <h4>Price Range</h4>
+          <ul class="price-list" id="priceList">
+            <li><label><input type="checkbox" value="fixed" /> Fixed-Price <span class="count">3,790</span></label></li>
+            <li><label><input type="checkbox" value="lt100" /> Less than 100 <span class="count">2,107</span></label></li>
+            <li><label><input type="checkbox" value="100-500" /> ₹ 100 to 500 <span class="count">1,082</span></label></li>
+            <li><label><input type="checkbox" value="500-1k" /> ₹ 500 to 1K <span class="count">330</span></label></li>
+            <li><label><input type="checkbox" value="1k-5k" /> ₹ 1K to 5K <span class="count">275</span></label></li>
+            <li><label><input type="checkbox" value="5k+" /> ₹ 5K+ <span class="count">52</span></label></li>
+          </ul>
+          <div class="custom-range">
+            <h5>Custom Range</h5>
+            <div class="range-row">
+              <input id="minPrice" placeholder="₹ Min" />
+              <input id="maxPrice" placeholder="₹ Max" />
+            </div>
+            <button class="apply-btn" id="applyRange">Apply</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

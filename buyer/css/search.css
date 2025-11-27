@@ -1,0 +1,83 @@
+:root{--text:#111827;--muted:#6b7280;--border:rgba(17,24,39,0.14);--bg:#ffffff;--accent:#f3f4f6;--brand:#111827;--container:1180px;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--text);}
+.container{max-width:var(--container);margin:0 auto;padding:0 28px}
+
+/* topbar */
+.search-topbar{border-bottom:1px solid var(--border);background:#fff;}
+.st-inner{display:flex;align-items:center;gap:28px;padding:16px 0;}
+.brand{font-size:34px;font-weight:700;color:var(--brand);}
+.search-bar-wrap{flex:1;}
+.search-bar{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:999px;padding:8px 14px;background:#fff;}
+.search-bar input{flex:1;border:0;outline:none;font-size:15px;padding:4px 0;}
+.search-bar .icon{font-size:18px;}
+.search-bar .mic{background:transparent;border:0;font-size:16px;cursor:pointer;}
+
+/* categories */
+.categories{border-bottom:2px solid var(--border);background:#fff;}
+.cat-inner{display:flex;}
+.cat-list{display:flex;gap:32px;padding:10px 0;font-size:14px;}
+.cat-btn{background:transparent;border:0;font-weight:600;color:var(--text);cursor:pointer;position:relative;padding:6px 0;}
+.cat-btn.active{color:var(--text);}
+.cat-btn.active:after{content:"";position:absolute;left:0;bottom:-10px;height:2px;width:100%;background:#111827;}
+
+/* chips row */
+.chips-row{padding:18px 0 4px;background:#fff;}
+.chip-inner, .chip-inner{display:flex;justify-content:space-between;align-items:center;}
+.chips-select{display:flex;gap:12px;flex-wrap:wrap;}
+.role-chip{background:#111827;color:#fff;border:0;border-radius:999px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;}
+.role-chip.alt{background:#6b7280;}
+.role-chip.active{background:#111827;color:#fff;}
+.sort-wrap{display:flex;align-items:center;}
+.sort-btn{background:#111827;color:#fff;border:0;border-radius:999px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:600;}
+
+/* layout */
+.results{padding:24px 0 60px;background:#fff;}
+.results-inner{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start;}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+
+/* card */
+.result-card{border:1px solid var(--border);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;background:#fff;}
+.rc-head{display:flex;align-items:center;gap:12px;}
+.rc-avatar{width:48px;height:48px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:#374151;}
+.rc-info{flex:1;}
+.rc-name{font-weight:700;font-size:14px;margin:0 0 2px;}
+.rc-badge{font-size:12px;color:#111827;display:flex;align-items:center;gap:6px;font-weight:600;}
+.rc-fav{background:#fff;border:1px solid var(--border);border-radius:10px;padding:6px 8px;cursor:pointer;font-size:14px;}
+.rc-desc{font-size:13px;color:#000;line-height:1.35;margin:0;}
+.rc-stars{font-size:12px;display:flex;align-items:center;gap:4px;font-weight:600;}
+.rc-actions{display:flex;gap:10px;}
+.rc-btn{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;}
+.rc-btn.primary{background:#111827;color:#fff;}
+
+/* sidebar */
+.filters{position:sticky;top:12px;}
+.filter-box{border:1px solid var(--border);border-radius:18px;padding:18px;background:#fff;}
+.filter-box h4{margin:0 0 12px;font-size:15px;font-weight:700;}
+.price-list{list-style:none;margin:0 0 12px;padding:0;}
+.price-list li{margin:6px 0;font-size:13px;}
+.price-list input{margin-right:6px;}
+.count{color:#6b7280;font-size:12px;margin-left:6px;}
+.custom-range h5{margin:10px 0 8px;font-size:13px;font-weight:700;}
+.range-row{display:flex;gap:10px;}
+.range-row input{flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px;}
+.apply-btn{margin-top:10px;background:#6b7280;color:#fff;border:0;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;}
+
+/* user nav reuse */
+.user-nav{ display:flex; align-items:center; gap:10px; position:relative; }
+.user-nav img{ width:32px; height:32px; border-radius:50%; object-fit:cover; display:block; }
+.user-nav .name{ font-size:14px; font-weight:600; color:var(--text); }
+.user-nav .caret{ background:transparent; border:1px solid rgba(17,24,39,0.12); border-radius:8px; padding:4px 8px; cursor:pointer; }
+.user-menu{ position:absolute; top:44px; right:0; background:#fff; border:1px solid rgba(17,24,39,0.12); border-radius:10px; box-shadow:0 8px 20px rgba(2,6,23,0.08); min-width:160px; display:flex; flex-direction:column; overflow:hidden; }
+.user-menu.hidden{ display:none; }
+.user-menu button{ background:#fff; border:0; text-align:left; padding:10px 12px; cursor:pointer; font-size:14px; }
+.user-menu button:hover{ background:#f3f4f6; }
+
+@media(max-width:1200px){
+  .cards{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:880px){
+  .results-inner{grid-template-columns:1fr;}
+  .filters{position:static;}
+  .cards{grid-template-columns:1fr;}
+}

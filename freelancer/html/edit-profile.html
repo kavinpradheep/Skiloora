@@ -41,7 +41,18 @@
         <label>Phone<input id="editPhone" /></label>
         <label>Location<input id="editLocation" /></label>
         <label>Hourly Rate<input id="editRate" type="number" /></label>
-        <label>Role<input id="editRole" placeholder="Developer" /></label>
+        <label>Primary Role
+          <select id="editPrimaryRole">
+            <option value="">Select role</option>
+            <option value="Full Stack Developer">Full Stack Developer</option>
+            <option value="UI/UX Designer">UI/UX Designer</option>
+            <option value="UI/UX Developer">UI/UX Developer</option>
+            <option value="Frontend Developer">Frontend Developer</option>
+            <option value="Backend Developer">Backend Developer</option>
+            <option value="Data Analyst">Data Analyst</option>
+            <option value="AI Engineer">AI Engineer</option>
+          </select>
+        </label>
         <label>Bio<textarea id="editBio" rows="3" placeholder="Short professional bio"></textarea></label>
         <label>GitHub<input id="editGithub" placeholder="github.com/username" /></label>
         <label>Dribbble<input id="editDribbble" placeholder="dribbble.com/username" /></label>

@@ -10,7 +10,7 @@ const editEmail = document.getElementById('editEmail');
 const editPhone = document.getElementById('editPhone');
 const editLocation = document.getElementById('editLocation');
 const editRate = document.getElementById('editRate');
-const editRole = document.getElementById('editRole');
+const editPrimaryRole = document.getElementById('editPrimaryRole');
 const editAvatarFile = document.getElementById('editAvatarFile');
 const editBio = document.getElementById('editBio');
 const editGithub = document.getElementById('editGithub');
@@ -77,7 +77,8 @@ auth.onAuthStateChanged(async (user) => {
     editPhone.value = p.phone || '';
     editLocation.value = p.location || '';
     editRate.value = p.hourlyRate || '';
-    editRole.value = p.role || '';
+    // keep account role (buyer/freelancer) untouched; use title as the selected professional role
+    if (editPrimaryRole) editPrimaryRole.value = (p.title || p.roleLong || '').trim();
     editBio.value = p.bio || '';
     editEducation.value = p.education || '';
     const s = p.socials || {};
@@ -112,7 +113,8 @@ function gatherAndSave() { return (async () => {
       email: user.email,
       phone: editPhone.value.trim(),
       location: editLocation.value.trim(),
-      role: editRole.value.trim() || 'Developer',
+      // do not overwrite account role; store selected role as title
+      title: (editPrimaryRole?.value || '').trim(),
       bio: editBio.value.trim(),
       languages: langs,
       certifications: certs,

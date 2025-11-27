@@ -6,7 +6,7 @@ body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto}
 .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 6px 20px rgba(16,24,40,0.04)}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 label{display:block;font-size:13px}
-input,textarea{width:100%;padding:8px;margin-top:6px;border:1px solid #e5e7eb;border-radius:8px}
+input,textarea,select{width:100%;padding:8px;margin-top:6px;border:1px solid #e5e7eb;border-radius:8px}
 .row{margin-top:12px}
 .fieldset{background:#fff;border:1px dashed #e5e7eb;border-radius:12px;padding:10px}
 .legend{font-weight:600;margin-bottom:8px}

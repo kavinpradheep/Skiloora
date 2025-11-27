@@ -219,7 +219,7 @@ function renderProfile(user, profile) {
   const displayName = profile?.name || user.displayName || 'User';
   setText(welcomeTitle, `Welcome back, ${displayName}!`);
   setText(profileName, displayName);
-  setText(profileRole, profile?.role || 'Developer');
+  setText(profileRole, profile?.title || profile?.roleLong || 'Developer');
   if (profileTagline) {
     const tagline = (profile?.roleLong || '').trim();
     if (tagline) {
@@ -275,7 +275,7 @@ function renderProfile(user, profile) {
   }
   // Topbar user info
   if (topUserName) topUserName.textContent = displayName;
-  if (topUserRole) topUserRole.textContent = profile?.role || 'Developer';
+  if (topUserRole) topUserRole.textContent = profile?.title || profile?.roleLong || 'Developer';
   if (topUserAvatar) {
     if (profile?.avatarUrl) {
       topUserAvatar.src = profile.avatarUrl;

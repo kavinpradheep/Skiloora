@@ -36,3 +36,18 @@ onAuthStateChanged(window.firebaseAuth, async (user)=>{
     renderUserNav(profile);
   }catch(e){ renderUserNav({ name: user.email }); }
 });
+
+// Role dropdown navigation
+const form = document.getElementById('roleSearchForm');
+const roleSelect = document.getElementById('roleSelect');
+if (form && roleSelect){
+  const navigate = (role)=>{
+    if (!role) return;
+    window.location.href = `./search.html?q=${encodeURIComponent(role)}`;
+  };
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const val = (roleSelect.value || '').trim();
+    navigate(val);
+  });
+}
