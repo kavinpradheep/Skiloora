@@ -19,7 +19,7 @@
       <a class="nav-sublink" href="./users.html#freelancers"><span class="icon">👥</span>Freelancers</a>
       <a class="nav-sublink" href="./users.html#clients"><span class="icon">🧳</span>Clients / Hirers</a>
       <div class="section-label">Payments</div>
-      <a class="nav-sublink" href="#withdrawals" id="navWithdrawals">Withdrawal Requests</a>
+      <a class="nav-sublink" href="#withdrawals" id="navWithdrawals">Payments</a>
       <a class="nav-sublink" href="#revenue" id="navRevenue">Revenue Dashboard</a>
       <div class="section-label">Settings</div>
       <a class="nav-sublink" href="./settings.html#roles"><span class="icon">🔒</span>Roles &amp; Permissions</a>
@@ -37,8 +37,8 @@
     </header>
 
     <section class="section" id="sectionWithdrawals">
-      <h2>Withdrawal Requests</h2>
-      <p class="muted">Approve and process requests</p>
+      <h2>Membership Payments</h2>
+      <p class="muted">Recent membership payments</p>
       <div class="table cols-6">
         <div class="row head"><div>Subscription</div><div>User</div><div>Amount</div><div>Payment Method</div><div>Account info</div><div>Date</div></div>
         <div id="txRows" class="rows"></div>
@@ -49,8 +49,8 @@
       <h2>Revenue Dashboard</h2>
       <p class="muted">Track platform revenue</p>
       <div class="metrics">
-        <div class="metric-card"><div class="metric-title">Total Revenue</div><div class="metric-value">175.5K</div><div class="metric-sub">↑ 21.8% vs last period</div></div>
-        <div class="metric-card"><div class="metric-title">Revenue Growth</div><div class="metric-value">+22%</div><div class="metric-sub">↑ 3.2% MoM</div></div>
+        <div class="metric-card"><div class="metric-title">Total Revenue</div><div class="metric-value" id="revTotalValue">—</div><div class="metric-sub" id="revTotalSub">—</div></div>
+        <div class="metric-card"><div class="metric-title">Revenue Growth</div><div class="metric-value" id="revGrowthValue">—</div><div class="metric-sub" id="revGrowthSub">—</div></div>
       </div>
       <div class="chart-card"><div class="chart-title">Monthly Revenue Breakdown</div><canvas id="revBreakdownChart" height="260"></canvas></div>
     </section>

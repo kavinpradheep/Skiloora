@@ -13,24 +13,70 @@
   window.addEventListener('hashchange', ()=> setPaymentsSection(location.hash));
   setPaymentsSection(location.hash);
 
-  const txs = [
-    { sub:'Standard', user:'Sarah Johnson', amt:'2,999', method:'Bank Transfer', acc:'****4533', date:'2024-08-19' },
-    { sub:'Premium', user:'Michael Chen', amt:'3,999', method:'PayPal', acc:'mchen@email.com', date:'2024-08-19' },
-    { sub:'Premium', user:'David Kim', amt:'3,999', method:'Bank Transfer', acc:'****7892', date:'2024-08-19' },
-    { sub:'Standard', user:'Lisa Anderson', amt:'2,999', method:'PayPal', acc:'lisa@email.com', date:'2024-08-18' },
-  ];
   const txRows = document.getElementById('txRows');
-  txs.forEach(t=>{
-    const row = document.createElement('div'); row.className='row';
-    row.innerHTML = `<div>${t.sub}</div><div>${t.user}</div><div>₹${t.amt}</div><div>${t.method}</div><div>${t.acc}</div><div>${t.date}</div>`;
-    txRows.appendChild(row);
-  });
-
-  const ctx = document.getElementById('revBreakdownChart');
-  if (ctx && window.Chart){
-    new Chart(ctx, { type:'line',
-      data:{ labels:['Jan','Feb','Mar','Apr','May','Jun'], datasets:[{ label:'Revenue', data:[12000,18000,25000,32000,41000,60000], borderColor:'#111827', backgroundColor:'transparent', tension:.3 }]},
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } }
-    });
+  function fmtINR(n){ try{ return new Intl.NumberFormat('en-IN',{ maximumFractionDigits:0 }).format(n); }catch(_){ return String(n); } }
+  async function loadPayments(){
+    txRows.innerHTML = '';
+    try{
+      const base = location.origin.replace(/\/$/, '');
+      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
+      const res = await fetch(`${backend}/api/admin/payments-list`, { cache: 'no-store' });
+      const json = await res.json();
+      if (!json || !json.ok) throw new Error('payments_list_failed');
+      const items = json.items || [];
+      if (items.length === 0){
+        const row = document.createElement('div'); row.className='row';
+        row.innerHTML = `<div colspan="6" style="grid-column:1/-1;color:#6b7280">No payments yet.</div>`;
+        txRows.appendChild(row); return;
+      }
+      items.forEach(p => {
+        const row = document.createElement('div'); row.className='row';
+        const date = p.createdAt ? new Date(p.createdAt) : null;
+        const dateStr = date ? date.toISOString().slice(0,10) : '—';
+        const name = p.userName || p.userEmail || '—';
+        row.innerHTML = `<div>${p.plan || '—'}</div><div>${name}</div><div>₹${fmtINR(p.amount || 0)}</div><div>${p.method || '—'}</div><div>${p.accountInfo || '—'}</div><div>${dateStr}</div>`;
+        txRows.appendChild(row);
+      });
+    }catch(e){
+      const row = document.createElement('div'); row.className='row';
+      row.innerHTML = `<div colspan="6" style="grid-column:1/-1;color:#ef4444">Failed to load payments</div>`;
+      txRows.appendChild(row);
+    }
   }
+  loadPayments();
+
+  async function loadRevenue(){
+    const base = location.origin.replace(/\/$/, '');
+    const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
+    const totalEl = document.getElementById('revTotalValue');
+    const totalSub = document.getElementById('revTotalSub');
+    const growthEl = document.getElementById('revGrowthValue');
+    const growthSub = document.getElementById('revGrowthSub');
+    const ctx = document.getElementById('revBreakdownChart');
+    try{
+      const res = await fetch(`${backend}/api/admin/revenue-stats`, { cache:'no-store' });
+      const json = await res.json();
+      if (!json || !json.ok) throw new Error('revenue_stats_failed');
+      const nf = (n)=>{ try{ return new Intl.NumberFormat('en-IN',{ maximumFractionDigits:0 }).format(n); }catch(_){ return String(n); } };
+      const total = json.totalRevenue || 0;
+      const growth = json.growthPercent || 0;
+      if (totalEl) totalEl.textContent = `₹${nf(total)}`;
+      if (totalSub) totalSub.textContent = 'Total paid by freelancers';
+      if (growthEl) growthEl.textContent = `${growth>=0?'+':''}${growth.toFixed(1)}%`;
+      if (growthSub) growthSub.textContent = 'vs previous month';
+
+      if (ctx && window.Chart){
+        const labels = (json.series && json.series.labels) || [];
+        const values = (json.series && json.series.values) || [];
+        new Chart(ctx, { type:'line',
+          data:{ labels, datasets:[{ label:'Revenue', data: values, borderColor:'#111827', backgroundColor:'transparent', tension:.3 }]},
+          options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } }
+        });
+      }
+    }catch(e){
+      if (totalEl) totalEl.textContent = '—';
+      if (growthEl) growthEl.textContent = '—';
+    }
+  }
+  loadRevenue();
 })();

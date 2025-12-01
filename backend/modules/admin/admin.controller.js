@@ -262,3 +262,133 @@ exports.getUsersList = async (req, res) => {
     res.status(500).json({ error: 'server_error' });
   }
 };
+
+// List recent membership payments for Admin Payments page
+exports.getPaymentsList = async (req, res) => {
+  try {
+    const dbi = admin.firestore();
+    const snap = await dbi.collection('payments').orderBy('createdAt', 'desc').limit(200).get();
+    const items = [];
+    for (const doc of snap.docs) {
+      const d = doc.data();
+      const uid = d.uid || null;
+      let userName = '';
+      let userEmail = '';
+      let isFreelancer = false;
+      try {
+        if (uid) {
+          const us = await dbi.collection('users').doc(uid).get();
+          if (us.exists) {
+            const u = us.data();
+            userName = u.name || u.username || '';
+            userEmail = (u.email || '').toLowerCase();
+            const roleStr = String(u.role || u.roleKey || '').toLowerCase();
+            isFreelancer = Boolean(u.isFreelancer) || roleStr === 'freelancer';
+          }
+        } else if (d.userData) {
+          userName = d.userData.name || '';
+          userEmail = (d.userData.email || '').toLowerCase();
+          const roleStr = String(d.userData.role || d.userData.roleKey || '').toLowerCase();
+          isFreelancer = Boolean(d.userData.isFreelancer) || roleStr === 'freelancer';
+        }
+      } catch (_) {}
+
+      // Only include freelancer-related payments
+      if (!isFreelancer) continue;
+
+      const amountPaise = Number(d.amount) || 0;
+      const amount = amountPaise >= 100 ? Math.round(amountPaise) / 100 : amountPaise; // INR: convert paise→rupees
+      const createdAt = d.createdAt && typeof d.createdAt.toDate === 'function' ? d.createdAt.toDate() : (d.createdAt ? new Date(d.createdAt) : null);
+      items.push({
+        id: doc.id,
+        plan: (d.label || d.plan || '').toString(),
+        userName,
+        userEmail,
+        amount,
+        currency: d.currency || 'INR',
+        status: d.status || 'pending',
+        method: 'Razorpay',
+        accountInfo: '-',
+        createdAt: createdAt ? createdAt.toISOString() : null
+      });
+    }
+    res.json({ ok: true, items });
+  } catch (err) {
+    console.error('getPaymentsList error', err);
+    res.status(500).json({ error: 'server_error' });
+  }
+};
+
+// Revenue stats for Admin Payments revenue dashboard
+exports.getRevenueStats = async (req, res) => {
+  try {
+    const dbi = admin.firestore();
+    // Use orderBy only and filter status in code to avoid composite index requirements
+    const paidSnap = await dbi.collection('payments')
+      .orderBy('createdAt', 'desc')
+      .limit(2000)
+      .get();
+
+    const byMonth = new Map(); // key: YYYY-MM, value: total rupees number
+    let grandTotal = 0;
+
+    // Prepare a simple cache for user docs to minimize reads
+    const userCache = new Map();
+    async function isFreelancer(uid, fallbackData){
+      try{
+        if (uid){
+          if (userCache.has(uid)) return userCache.get(uid);
+          const us = await dbi.collection('users').doc(uid).get();
+          let v = false;
+          if (us.exists){
+            const u = us.data();
+            const roleStr = String(u.role || u.roleKey || '').toLowerCase();
+            v = Boolean(u.isFreelancer) || roleStr === 'freelancer';
+          }
+          userCache.set(uid, v);
+          return v;
+        }
+        if (fallbackData){
+          const roleStr = String(fallbackData.role || fallbackData.roleKey || '').toLowerCase();
+          return Boolean(fallbackData.isFreelancer) || roleStr === 'freelancer';
+        }
+      }catch(_){ }
+      return false;
+    }
+
+    for (const doc of paidSnap.docs){
+      const d = doc.data();
+      if ((d.status || '').toLowerCase() !== 'paid') continue;
+      const uid = d.uid || null;
+      const ok = await isFreelancer(uid, d.userData || null);
+      if (!ok) continue;
+      const createdAt = d.createdAt && typeof d.createdAt.toDate === 'function' ? d.createdAt.toDate() : (d.createdAt ? new Date(d.createdAt) : null);
+      if (!createdAt || isNaN(createdAt.getTime())) continue;
+      const key = `${createdAt.getFullYear()}-${String(createdAt.getMonth()+1).padStart(2,'0')}`;
+      const amountPaise = Number(d.amount) || 0;
+      const amount = amountPaise >= 100 ? Math.round(amountPaise) / 100 : amountPaise;
+      grandTotal += amount;
+      byMonth.set(key, (byMonth.get(key) || 0) + amount);
+    }
+
+    // Build last 6 months series ending this month
+    const now = new Date();
+    const labels = [];
+    const values = [];
+    for (let i = 5; i >= 0; i--){
+      const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      labels.push(d.toLocaleString('en-US', { month:'short', year:'2-digit' }));
+      values.push(byMonth.get(key) || 0);
+    }
+
+    const last = values[5] || 0;
+    const prev = values[4] || 0;
+    const growth = prev > 0 ? ((last - prev) / prev) * 100 : (last > 0 ? 100 : 0);
+
+    res.json({ ok: true, totalRevenue: grandTotal, growthPercent: growth, series: { labels, values } });
+  } catch (err) {
+    console.error('getRevenueStats error', err);
+    res.status(500).json({ error: 'server_error' });
+  }
+};
