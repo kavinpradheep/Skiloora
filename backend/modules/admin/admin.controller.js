@@ -303,7 +303,7 @@ exports.getPaymentsList = async (req, res) => {
         id: doc.id,
         plan: (d.label || d.plan || '').toString(),
         userName,
-        userEmail,
+      // module.exports = router;
         amount,
         currency: d.currency || 'INR',
         status: d.status || 'pending',
@@ -390,5 +390,58 @@ exports.getRevenueStats = async (req, res) => {
   } catch (err) {
     console.error('getRevenueStats error', err);
     res.status(500).json({ error: 'server_error' });
+  }
+};
+
+// List admins (from Firestore 'admins' collection)
+exports.listAdmins = async (req, res) => {
+  try {
+    const snap = await db.collection('admins').orderBy('createdAt', 'desc').get();
+    const items = snap.docs.map(d => ({ id: d.id, uid: d.id, ...d.data() }));
+    res.json({ ok: true, items });
+  } catch (err) {
+    console.error('listAdmins error', err);
+    res.status(500).json({ error: 'server_error' });
+  }
+};
+
+// Create a new admin: creates Firebase Auth user (if needed) and adds to 'admins' collection
+exports.createAdmin = async (req, res) => {
+  try {
+    const { name, email, password } = req.body || {};
+    const normEmail = String(email || '').trim().toLowerCase();
+    if (!name || !normEmail || !password) {
+      return res.status(400).json({ ok: false, error: 'missing_fields' });
+    }
+
+    let uid = null;
+    try {
+      const u = await admin.auth().getUserByEmail(normEmail);
+      uid = u.uid;
+      // Optionally update displayName
+      if (name && u.displayName !== name) {
+        await admin.auth().updateUser(uid, { displayName: name });
+      }
+    } catch (err) {
+      // If user-not-found, create
+      const created = await admin.auth().createUser({ email: normEmail, password, displayName: name });
+      uid = created.uid;
+    }
+
+    // Ensure admin entry exists
+    await db.collection('admins').doc(uid).set({
+      name,
+      email: normEmail,
+      isDefault: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    // Optionally set a custom claim (not strictly required since login checks Firestore)
+    try { await admin.auth().setCustomUserClaims(uid, { admin: true }); } catch (_) {}
+
+    return res.json({ ok: true, uid });
+  } catch (err) {
+    console.error('createAdmin error', err);
+    return res.status(500).json({ ok: false, error: 'server_error', message: err.message || String(err) });
   }
 };

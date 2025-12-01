@@ -61,7 +61,17 @@ exports.login = async (req, res) => {
 
     const idToken = match[1];
     const decoded = await admin.auth().verifyIdToken(idToken);
-    return res.json({ ok: true, uid: decoded.uid, email: decoded.email });
+    const uid = decoded.uid;
+    // Determine admin via custom claims first
+    let isAdmin = !!decoded.admin || (decoded.role === 'admin');
+    // Fallback to Firestore `admins` collection if claim not present
+    if (!isAdmin) {
+      try {
+        const doc = await db.collection('admins').doc(uid).get();
+        isAdmin = doc.exists;
+      } catch (_) {}
+    }
+    return res.json({ ok: true, uid, email: decoded.email, isAdmin });
   } catch (err) {
     console.error('Auth login error', err);
     return res.status(401).json({ error: 'invalid_token', message: err.message });

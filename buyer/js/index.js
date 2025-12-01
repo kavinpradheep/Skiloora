@@ -34,6 +34,22 @@ function renderUserNav(profile){
 onAuthStateChanged(window.firebaseAuth, async (user)=>{
   if (!user){ window.location.href='../../freelancer/html/login.html'; return; }
   try{
+    // Check admin via backend; redirect admins out of buyer area
+    try{
+      const idToken = await user.getIdToken(true);
+      const resp = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+        body: JSON.stringify({})
+      });
+      const json = await resp.json().catch(()=>({}));
+      if (resp.ok && json.isAdmin){
+        try { localStorage.setItem('skiloora_admin_session', '1'); } catch(_){ }
+        window.location.href = '../../admin/html/dashboard.html';
+        return;
+      }
+    }catch(_){ /* ignore and continue */ }
+
     const snap = await getDoc(doc(window.firebaseDB, 'users', user.uid));
     const profile = snap.exists() ? snap.data() : { name: user.email };
     renderUserNav(profile);

@@ -1,2 +1,36 @@
 /* Settings page specific overrides */
 /* Customize spacing and inputs as needed */
+
+.cards-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:12px; align-items:stretch; }
+.card{ border:1px solid #e5e7eb; border-radius:8px; padding:12px; background:#fff; }
+.card .badge{ background:#111827; color:#fff; padding:2px 8px; border-radius:999px; font-size:12px; }
+.panel{ border:1px solid #e5e7eb; border-radius:8px; padding:12px; background:#f9fafb; }
+.field{ display:flex; flex-direction:column; gap:4px; margin-bottom:10px; }
+.field input{ border:1px solid #d1d5db; border-radius:6px; padding:8px; }
+
+/* Roles section: constrain form width and improve layout */
+#sectionRoles > .panel{ max-width: 720px; margin: 8px 0 16px; }
+#sectionRoles .panel .card{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+#sectionRoles .panel .card .field{ margin:0; }
+#sectionRoles .panel .card .field:last-child{ grid-column: 1 / -1; }
+
+/* Header row ("All Admins" + button) tidy spacing */
+#sectionRoles > .row{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin:16px 0 8px; }
+#adminCards{ margin-top: 8px; }
+
+/* Responsive: stack fields on small screens */
+@media (max-width: 640px){
+	#sectionRoles .panel .card{ grid-template-columns: 1fr; }
+}
+
+/* Modals */
+.modal.hidden{ display:none; }
+.modal{ position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; }
+.modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+.modal-content{ position:relative; width:100%; max-width:420px; background:#fff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.2); padding:12px; }
+.modal-header{ display:flex; align-items:center; justify-content:space-between; padding:8px 4px 12px; }
+.modal-body{ padding:4px 2px 12px; }
+.modal-footer{ display:flex; justify-content:flex-end; gap:8px; padding-top:8px; }
+.btn{ background:#111827; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer; }
+.btn-ghost{ background:transparent; border:none; color:#111827; cursor:pointer; padding:6px 8px; }
+.muted{ color:#6b7280; }

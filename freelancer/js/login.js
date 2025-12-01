@@ -60,6 +60,12 @@ form.addEventListener('submit', async (e) => {
     const backendResp = await backendLogin(idToken);
     if (backendResp.ok) {
       localStorage.setItem('skiloora_id_token', idToken);
+      // If admin, go straight to Admin dashboard
+      if (backendResp.isAdmin) {
+        try { localStorage.setItem('skiloora_admin_session', '1'); } catch(_){ }
+        window.location.href = '../../admin/html/dashboard.html';
+        return;
+      }
       // Determine role from Firestore users/{uid}
       let target = './dashboard.html';
       if (window.firebaseDB && window.firebaseAuth?.currentUser) {

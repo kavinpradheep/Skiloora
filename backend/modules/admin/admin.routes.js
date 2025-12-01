@@ -17,4 +17,8 @@ router.get('/users-list', controller.getUsersList);
 router.get('/payments-list', controller.getPaymentsList);
 router.get('/revenue-stats', controller.getRevenueStats);
 
+// Admin management
+router.get('/admins', controller.listAdmins);
+router.post('/create-admin', controller.createAdmin);
+
 module.exports = router;
