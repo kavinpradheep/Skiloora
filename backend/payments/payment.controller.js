@@ -88,7 +88,6 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-// paste into backend/payments/payment.controller.js replacing existing verifyPayment
 exports.verifyPayment = async (req, res) => {
   try {
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature, paymentDocId } = req.body;

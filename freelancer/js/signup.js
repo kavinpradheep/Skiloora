@@ -1,6 +1,7 @@
 // freelancer/js/signup.js — corrected version (email check before temp-save)
 (function () {
   // helper selectors
+  // $(selector): Shortcut for querySelector; $$(selector): array of all matches.
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -10,6 +11,7 @@
   const hirerForm = $('#hirerForm');
   const freelancerForm = $('#freelancerForm');
 
+  // showRole(role): Toggle visible form based on selected account type (hirer/freelancer).
   function showRole(role) {
     if (role === 'hirer') {
       roleHirer?.classList.add('active');
@@ -60,6 +62,7 @@
   // stable holder for temp signup doc id (use single global name)
   window.__skiloora_tempId = window.__skiloora_tempId || null;
 
+  // showModal(): Display payment/plan selection modal and focus Back button.
   function showModal() {
     if (!overlay) return console.warn('[signup.js] overlay not found');
     overlay.classList.remove('hidden');
@@ -67,12 +70,14 @@
     updateContinueState();
     setTimeout(() => { modalBack?.focus(); }, 50);
   }
+  // closeModal(): Hide payment modal overlay.
   function closeModal() {
     if (!overlay) return;
     overlay.classList.add('hidden');
     overlay.setAttribute('aria-hidden', 'true');
   }
 
+  // updateContinueState(): Enable/disable Continue button based on plan radio selection.
   function updateContinueState() {
     if (!modalContinue) return;
     const selected = document.querySelector('input[name="plan"]:checked');
@@ -99,6 +104,7 @@
 
   // --- Next button (from freelancer form) => check email, create temp signup, then open modal ---
     // Hirer form handler
+    // handleHirer(e): Validate hirer form, check email availability, create buyer account.
     window.handleHirer = async function(e){
       e.preventDefault();
       const nameEl = document.getElementById('hirerName');
@@ -125,6 +131,7 @@
     };
 
     // Freelancer form submit fallback (Enter key) just triggers Next button logic
+    // handleFreelancer(e): Fallback submit triggers Next button logic for freelancer path.
     window.handleFreelancer = function(e){ e.preventDefault(); nextBtn?.click(); return false; };
   const nextBtn = $('#nextBtn');
   const formName = $('#freeName');
@@ -133,6 +140,7 @@
   const formPw = $('#freePassword');
   const formCpw = $('#freeConfirm');
 
+  // getIdToken(): Retrieve fresh Firebase auth token if user is logged in.
   async function getIdToken() {
     if (window.firebaseAuth && firebaseAuth.currentUser) {
       try { return await firebaseAuth.currentUser.getIdToken(true); } catch (err) { console.warn('getIdToken error', err); return null; }
@@ -140,6 +148,7 @@
     return null;
   }
 
+  // apiCall(path, body): POST helper to backend with optional Authorization header.
   async function apiCall(path, body) {
     const API_BASE = 'http://localhost:5000';
     const token = await getIdToken();
@@ -158,6 +167,7 @@
     return json;
   }
 
+  // Next button click: Validate freelancer form, check email, create temp signup, open payment modal.
   nextBtn?.addEventListener('click', async (e) => {
     e.preventDefault();
     const name = formName?.value?.trim() || '';
@@ -216,6 +226,7 @@
   });
 
   // --- modal Continue (create order -> open Razorpay -> verify) ---
+  // Continue button: Create payment order, open Razorpay checkout, verify on success, rollback on failure.
   modalContinue?.addEventListener('click', async () => {
     try {
       const selected = document.querySelector('input[name="plan"]:checked');

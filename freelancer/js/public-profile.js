@@ -10,20 +10,27 @@ function letterAvatar(name){
 
 function setText(id, val){ const el = document.getElementById(id); if(el) el.textContent = val; }
 
+// Load by explicit uid (for buyer view) or fallback to current user
+function getTargetUid(){
+  const uid = new URLSearchParams(location.search).get('uid');
+  return uid || (auth.currentUser && auth.currentUser.uid) || '';
+}
+
 auth.onAuthStateChanged(async (user)=>{
-  if(!user){ window.location.href = './login.html'; return; }
+  const uid = getTargetUid();
+  if(!uid){ setText('ppName','Profile not found'); return; }
   try{
-    const doc = await db.collection('users').doc(user.uid).get();
-    const p = doc.exists ? doc.data() : { name: user.displayName, email: user.email };
-    const name = p.name || user.displayName || 'User';
+    const doc = await db.collection('users').doc(uid).get();
+    const p = doc.exists ? doc.data() : {};
+    const name = p.name || p.fullName || (user && (user.displayName||user.email)) || 'User';
     const avatarEl = document.getElementById('ppAvatar');
     if (p.avatarUrl) { avatarEl.src = p.avatarUrl; avatarEl.alt = name; } else { avatarEl.src = letterAvatar(name); avatarEl.alt = name.charAt(0).toUpperCase(); }
     setText('ppName', name);
     setText('ppNameAbout', name);
-    setText('ppRole', p.title || p.roleLong || 'UI/UX Designer');
-    setText('ppLocation', p.location || 'Chennai, India');
-    setText('ppRate', p.hourlyRate ? `₹ ${p.hourlyRate} / Hour` : '₹ 999 / Hour');
-    setText('ppBio', p.bio || 'Lorem ipsum is simply dummy text of the printing and typesetting industry.');
+    setText('ppRole', p.title || p.roleLong || (p.isFreelancer? 'Freelancer' : '') || '');
+    setText('ppLocation', p.location || p.country || '');
+    const hr = p.hourlyRate || p.rate; setText('ppRate', hr ? `₹ ${hr} / Hour` : '');
+    setText('ppBio', p.bio || p.desc || '');
 
     // Stars placeholder (no rating backend yet)
     const stars = document.getElementById('ppStars');
@@ -32,7 +39,7 @@ auth.onAuthStateChanged(async (user)=>{
     // Works (projects)
     const works = document.getElementById('ppWorks');
     if (works){
-      const snap = await db.collection('users').doc(user.uid).collection('projects').orderBy('createdAt','desc').limit(4).get();
+      const snap = await db.collection('users').doc(uid).collection('projects').orderBy('createdAt','desc').limit(4).get();
       if (snap.empty){
         for(let i=0;i<4;i++){ const ph=document.createElement('div'); ph.className='card-ph'; works.appendChild(ph); }
       } else {
@@ -48,7 +55,7 @@ auth.onAuthStateChanged(async (user)=>{
     // Links (social icons)
     const links = document.getElementById('ppLinks');
     if (links){
-      const socials = p.socials || {};
+      const socials = p.socials || { github: p.github, behance: p.behance, dribbble: p.dribbble, linkedin: p.linkedin };
       const ordered = ['github','behance','dribbble','linkedin'];
       ordered.forEach(k=>{
         const url = socials[k];

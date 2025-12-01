@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Settings</title>
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="stylesheet" href="../css/settings.css" />
+  <script src="../js/nav.js"></script>
+</head>
+<body class="admin-app">
+  <aside class="admin-sidebar">
+    <div class="brand">Skiloora</div>
+    <nav class="nav">
+      <div class="section-label">Overview</div>
+      <a class="nav-item" href="./dashboard.html"><span class="icon">▦</span>Dashboard</a>
+      <div class="section-label">Users Management</div>
+      <a class="nav-sublink" href="./users.html#freelancers"><span class="icon">👥</span>Freelancers</a>
+      <a class="nav-sublink" href="./users.html#clients"><span class="icon">🧳</span>Clients / Hirers</a>
+      <div class="section-label">Payments</div>
+      <a class="nav-sublink" href="./payments.html#withdrawals"><span class="icon">📄</span>Withdrawal Requests</a>
+      <a class="nav-sublink" href="./payments.html#revenue"><span class="icon">📈</span>Revenue Dashboard</a>
+      <div class="section-label">Settings</div>
+      <a class="nav-sublink" href="#roles" id="navRoles">Roles &amp; Permissions</a>
+      <a class="nav-sublink" href="#preferences" id="navPrefs">Preferences</a>
+      <div class="section-label">Help &amp; Support</div>
+      <a class="nav-sublink" href="#issues"><span class="icon">❓</span>Issue Reports</a>
+    </nav>
+    <div class="sidebar-bottom"><button id="adminLogout" class="btn-ghost">Logout</button></div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div class="path">Settings</div>
+      <div class="top-actions"><input class="search" placeholder="Search..." /><div class="avatar">A</div></div>
+    </header>
+
+    <section class="section" id="sectionRoles">
+      <h2>Roles & Permissions</h2>
+      <p class="muted">Admin credentials (read-only)</p>
+      <div class="panel">
+        <div class="card">
+          <div class="field"><label>Role</label><input value="Admin" disabled /></div>
+          <div class="field"><label>Email</label><input value="admin@gmail.com" disabled /></div>
+          <div class="field"><label>Password</label><input value="Admin@123" disabled type="password" /></div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="section" id="sectionPrefs">
+      <h2>Preferences</h2>
+      <div class="table cols-6">
+        <div class="row head"><div>Setting</div><div>Value</div><div>Description</div><div></div><div></div><div></div></div>
+        <div class="row"><div>Theme</div><div>Light</div><div>UI theme</div><div></div><div></div><div><button class="btn-ghost">Change</button></div></div>
+        <div class="row"><div>Security</div><div>Strong</div><div>Password policy</div><div></div><div></div><div><button class="btn-ghost">Edit</button></div></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/settings.js"></script>
+</body>
+</html>

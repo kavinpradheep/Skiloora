@@ -1,12 +1,14 @@
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
+// letterAvatar(name): Generate circular SVG avatar (data URI) using first letter.
 function letterAvatar(name){
   const letter = (name||'U').charAt(0).toUpperCase();
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><rect width='32' height='32' rx='16' fill='#111827'/><text x='50%' y='50%' text-anchor='middle' dominant-baseline='central' font-size='16' font-family='Arial,Helvetica,sans-serif' fill='#fff'>${letter}</text></svg>`;
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
+// renderUserNav(profile): Build user nav (avatar, name, dropdown actions) dynamically.
 function renderUserNav(profile){
   const nav = document.getElementById('buyerUserNav');
   if (!nav) return;
@@ -28,6 +30,7 @@ function renderUserNav(profile){
   nav.appendChild(wrap);
 }
 
+// Auth listener: Redirect if unauthenticated; fetch Firestore profile; render nav.
 onAuthStateChanged(window.firebaseAuth, async (user)=>{
   if (!user){ window.location.href='../../freelancer/html/login.html'; return; }
   try{
@@ -41,6 +44,7 @@ onAuthStateChanged(window.firebaseAuth, async (user)=>{
 const form = document.getElementById('roleSearchForm');
 const roleSelect = document.getElementById('roleSelect');
 if (form && roleSelect){
+  // navigate(role): Send user to search page with role query.
   const navigate = (role)=>{
     if (!role) return;
     window.location.href = `./search.html?q=${encodeURIComponent(role)}`;

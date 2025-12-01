@@ -63,6 +63,7 @@ const projImageUrl = document.getElementById('projImageUrl');
 
 // Navigation: smooth scroll instead of show/hide sections
 navButtons.forEach(btn => {
+  // Nav button click: Scroll smoothly to target section and set active state.
   btn.addEventListener('click', (e) => {
     e.preventDefault();
     const targetId = btn.getAttribute('data-target');
@@ -104,7 +105,9 @@ editProfileBtn?.addEventListener('click', () => {
   window.location.href = './edit-profile.html';
 });
 viewPublicBtn?.addEventListener('click', () => {
-  window.location.href = './public-profile.html';
+  const uid = auth.currentUser?.uid || '';
+  const url = uid ? `./public-profile.html?uid=${encodeURIComponent(uid)}` : './public-profile.html';
+  window.location.href = url;
 });
 addCertsBtn?.addEventListener('click', () => {
   window.location.href = './edit-profile.html#certifications';
@@ -114,6 +117,7 @@ btnAddProject?.addEventListener('click', () => modalAdd.classList.remove('hidden
 cancelAdd?.addEventListener('click', () => modalAdd.classList.add('hidden'));
 
 function setText(el, val) { if (el) el.textContent = val ?? '—'; }
+// setChipRow(el, arr): Render simple chip elements for each array item.
 function setChipRow(el, arr) {
   if (!el) return;
   el.innerHTML = '';
@@ -125,6 +129,7 @@ function setChipRow(el, arr) {
   });
 }
 
+// setCertList(el, arr): Render certification items as list blocks.
 function setCertList(el, arr) {
   if (!el) return;
   el.innerHTML = '';
@@ -138,6 +143,7 @@ function setCertList(el, arr) {
   });
 }
 
+// renderProjects(uid): Load project docs, build cards & link chips, enable deletion.
 function renderProjects(uid) {
   if (!projectsGrid || !projectLinks) return;
   projectsGrid.innerHTML = '';
@@ -215,6 +221,7 @@ function renderProjects(uid) {
     .catch(err => console.error('Render projects failed', err));
 }
 
+// renderProfile(user, profile): Populate dashboard profile sections and top bar with user data.
 function renderProfile(user, profile) {
   const displayName = profile?.name || user.displayName || 'User';
   setText(welcomeTitle, `Welcome back, ${displayName}!`);
@@ -309,6 +316,7 @@ function renderProfile(user, profile) {
   }
 }
 
+// renderMetrics(uid): Aggregate mock metrics, order status counts, and build revenue line chart.
 function renderMetrics(uid) {
   db.collection('users').doc(uid).collection('orders').get().then(snap => {
     const total = snap.docs.reduce((sum, d) => sum + (d.data().amount || 0), 0);
@@ -383,6 +391,7 @@ auth.onAuthStateChanged(async (user) => {
   } catch (e) {}
 });
 
+// renderSuggestions(results): Show project search dropdown suggestions; navigate/open on click.
 function renderSuggestions(results) {
   if (!searchSuggest) return;
   if (!results.length) { searchSuggest.innerHTML = '<div class="item"><span class="sub">No projects found</span></div>'; searchSuggest.classList.remove('hidden'); return; }

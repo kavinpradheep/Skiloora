@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Skiloora — Login</title>
   <link rel="stylesheet" href="../css/login.css" />
+
+  <!-- Admin bypass: define interceptor -->
+  <script>
+    window.__adminLoginIntercept = function(e){
+      try{
+        const email = document.getElementById('email')?.value?.trim().toLowerCase();
+        const pw = document.getElementById('password')?.value || '';
+        if (email === 'admin@gmail.com' && pw === 'Admin@123'){
+          localStorage.setItem('skiloora_admin_session', '1');
+          // Navigate to admin dashboard
+          window.location.href = '../../admin/html/dashboard.html';
+          return false; // stop Firebase login
+        }
+      }catch(_){} 
+      return true; // proceed with normal login.js
+    };
+  </script>
   <script type="module" src="../js/login.js" defer></script>
 
   <!-- Firebase (modular) -->
@@ -32,7 +49,7 @@
   <main class="login-wrap">
     <div class="card">
       <h1>Sign in — Skiloora</h1>
-      <form id="loginForm">
+      <form id="loginForm" onsubmit="return window.__adminLoginIntercept(event)">
         <label>Email</label>
         <input id="email" type="email" required placeholder="you@example.com"/>
         <label>Password</label>

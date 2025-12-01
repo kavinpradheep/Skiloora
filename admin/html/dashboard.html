@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Dashboard — Skiloora</title>
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../js/nav.js"></script>
+</head>
+<body class="admin-app">
+  <aside class="admin-sidebar">
+    <div class="brand">Skiloora</div>
+    <nav class="nav">
+      <div class="section-label">Overview</div>
+      <button class="nav-item active"><span class="icon">▦</span>Dashboard</button>
+      <div class="section-label">Users Management</div>
+      <a class="nav-sublink" href="./users.html#freelancers"><span class="icon">👥</span>Freelancers</a>
+      <a class="nav-sublink" href="./users.html#clients"><span class="icon">🧳</span>Clients / Hirers</a>
+      <div class="section-label">Payments</div>
+      <a class="nav-sublink" href="./payments.html#withdrawals"><span class="icon">📄</span>Withdrawal Requests</a>
+      <a class="nav-sublink" href="./payments.html#revenue"><span class="icon">📈</span>Revenue Dashboard</a>
+      <div class="section-label">Settings</div>
+      <a class="nav-sublink" href="./settings.html#roles"><span class="icon">🔒</span>Roles &amp; Permissions</a>
+      <a class="nav-sublink" href="./settings.html#preferences"><span class="icon">⚙️</span>Preferences</a>
+      <div class="section-label">Help &amp; Support</div>
+      <a class="nav-sublink" href="#issues"><span class="icon">❓</span>Issue Reports</a>
+    </nav>
+    <div class="sidebar-bottom"><button id="adminLogout" class="btn-ghost">Logout</button></div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div class="path">Admin Dashboard</div>
+      <div class="top-actions">
+        <input class="search" placeholder="Search..." />
+        <div class="avatar">A</div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p class="muted">High-level metrics</p>
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-title">Total Users</div><div class="metric-value" id="mTotalUsers">—</div><div class="metric-sub" id="mTotalUsersSub">—</div></div>
+        <div class="metric-card"><div class="metric-title">Active Freelancers</div><div class="metric-value" id="mActiveFree">—</div><div class="metric-sub" id="mActiveFreeSub">—</div></div>
+        <div class="metric-card"><div class="metric-title">Total Revenue</div><div class="metric-value" id="mRevenue">—</div><div class="metric-sub" id="mRevenueSub">—</div></div>
+      </div>
+      <div class="charts">
+        <div class="chart-card"><div class="chart-title">Monthly Revenue Breakdown</div><canvas id="revenueChart" height="240"></canvas></div>
+        <div class="chart-card"><div class="chart-title">User Growth Trend</div><canvas id="userChart" height="240"></canvas></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

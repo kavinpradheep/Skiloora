@@ -1,12 +1,14 @@
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 import { doc, getDoc, collection, getDocs, query as fsQuery, limit } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
+// letterAvatar(name): Generate small neutral background letter avatar (unused fallback for user cards).
 function letterAvatar(name){
   const letter = (name||'U').charAt(0).toUpperCase();
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><rect width='32' height='32' rx='16' fill='#e5e7eb'/><text x='50%' y='50%' text-anchor='middle' dominant-baseline='central' font-size='14' font-family='Arial,Helvetica,sans-serif' fill='#374151'>${letter}</text></svg>`;
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
+// renderUserNav(profile): Build signed-in buyer navigation (avatar, name, dropdown with Profile/Logout).
 function renderUserNav(profile){
   const nav = document.getElementById('buyerUserNav');
   if (!nav) return;
@@ -26,6 +28,7 @@ function renderUserNav(profile){
   wrap.appendChild(img); wrap.appendChild(nameEl); wrap.appendChild(caret); wrap.appendChild(menu); nav.appendChild(wrap);
 }
 
+// Auth listener: Redirect unauthenticated users; fetch Firestore profile and render nav.
 onAuthStateChanged(window.firebaseAuth, async (user)=>{
   if (!user){ window.location.href='../../freelancer/html/login.html'; return; }
   try{ const snap = await getDoc(doc(window.firebaseDB,'users',user.uid)); renderUserNav(snap.exists()?snap.data():{ name:user.email }); }catch(e){ renderUserNav({ name:user.email }); }
@@ -38,6 +41,7 @@ const queryParam = (params.get('q')||'').trim();
 // Categories displayed as chips (from screenshot)
 const categories = ['UI UX Designing','Web Development','Data Analyst','AI Engineer'];
 // Normalization helper
+// norm(s): Lowercase + remove separators for consistent matching.
 function norm(s){ return (s||'').toLowerCase().replace(/[\s/_-]+/g,''); }
 
 // Synonyms map for broader matching and mapping query->category
@@ -57,6 +61,7 @@ const roleTitlesByCategory = {
 };
 
 function categoryFromQuery(q){
+  // Map raw query string to internal normalized category key using synonyms.
   const n = norm(q);
   if (!n) return '';
   if (Object.keys(synonyms).includes(n)) return n;
@@ -109,7 +114,12 @@ function renderCards(list){
     const actions = document.createElement('div'); actions.className='rc-actions';
     const btnMsg = document.createElement('button'); btnMsg.className='rc-btn'; btnMsg.textContent='✉';
     const btnProfile = document.createElement('button'); btnProfile.className='rc-btn'; btnProfile.textContent='See profile';
-    if (c.uid){ btnProfile.addEventListener('click', ()=>{ window.location.href = `../../freelancer/html/public-profile.html?uid=${encodeURIComponent(c.uid)}`; }); }
+    if (c.uid){
+      btnProfile.addEventListener('click', ()=>{
+        const origin = location.origin.replace(/\/$/, '');
+        window.location.href = `${origin}/freelancer/html/public-profile.html?uid=${encodeURIComponent(c.uid)}`;
+      });
+    }
     actions.appendChild(btnMsg); actions.appendChild(btnProfile);
     card.appendChild(head); card.appendChild(desc); card.appendChild(stars); card.appendChild(actions);
     cardsWrap.appendChild(card);
@@ -117,6 +127,7 @@ function renderCards(list){
 }
 
 async function loadFreelancers(selected){
+  // Fetch up to 200 users, filter freelance users by selected category (title first, skills fallback) then render.
   try{
     const col = collection(window.firebaseDB, 'users');
     // Fetch users and filter client-side for role=freelancer (case-insensitive)

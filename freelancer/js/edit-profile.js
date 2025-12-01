@@ -36,8 +36,10 @@ const editEducation = document.getElementById('editEducation');
 
 cancelEdit.addEventListener('click', () => { window.location.href = './dashboard.html'; });
 
+// csvToArray(val): Split comma-separated string into trimmed non-empty array.
 function csvToArray(val) { return (val || '').split(',').map(s => s.trim()).filter(Boolean); }
 
+// renderChips(container, items, stacked): Render removable chips (or stacked list) for items.
 function renderChips(container, items, stacked=false) {
   if (!container) return;
   container.innerHTML = '';
@@ -68,6 +70,7 @@ function renderChips(container, items, stacked=false) {
 }
 
 auth.onAuthStateChanged(async (user) => {
+  // Auth listener: Load user profile fields into form; redirect if not logged in.
   if (!user) { window.location.href = './login.html'; return; }
   try {
     const doc = await db.collection('users').doc(user.uid).get();
@@ -98,6 +101,7 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 function gatherAndSave() { return (async () => {
+  // gatherAndSave(): Collect form data, upload avatar (if any), merge updates into user doc, then redirect.
   const user = auth.currentUser;
   if (!user) return alert('Please login again');
   try {
@@ -135,6 +139,7 @@ function gatherAndSave() { return (async () => {
 saveBtn.addEventListener('click', gatherAndSave);
 
 // Chip add handlers
+// addIfAny(val,list,render): Add trimmed value to list then re-render chips.
 function addIfAny(val, list, render, stacked=false) {
   const v = (val||'').trim();
   if (!v) return;

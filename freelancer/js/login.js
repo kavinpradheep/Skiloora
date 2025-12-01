@@ -7,16 +7,19 @@ const emailEl = document.getElementById('email');
 const pwEl = document.getElementById('password');
 const msg = document.getElementById('msg');
 
+// redirectToDashboard(): Simple helper to navigate to dashboard page.
 window.redirectToDashboard = function(){
   try {
     window.location.href = './dashboard.html';
   } catch(e){}
 };
+// showMsg(text,isError): Display status or error message inline.
 function showMsg(text, isError = true){
   msg.textContent = text;
   msg.style.color = isError ? '#e11d48' : '#059669';
 }
 
+// backendLogin(idToken): Send Firebase ID token to backend for verification; returns JSON response.
 async function backendLogin(idToken){
   // call backend to verify token (and create server session if you want)
   try {
@@ -37,6 +40,7 @@ async function backendLogin(idToken){
 }
     // Note: Do not auto-call redirect on page load; only after successful login.
 
+// Login form submit: perform Firebase auth, backend token verification, then role-based redirect.
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = emailEl.value.trim();
