@@ -17,7 +17,6 @@
 .admin-sidebar .nav .nav-sublink{display:block;width:100%;text-align:left;padding:8px 12px;border-radius:999px;border:1px solid transparent;background:transparent;margin:4px 0 4px 8px;cursor:pointer;text-decoration:none;color:#6b7280;font-size:14px}
 .admin-sidebar .nav .nav-sublink.active{background:#111827;color:#fff;border-color:#111827}
 .admin-sidebar .nav .nav-sublink.active .icon{color:#fff}
-.admin-sidebar .nav .nav-sublink:hover{background:transparent;color:inherit}
 .admin-sidebar .nav .nav-item .icon,
 .admin-sidebar .nav .nav-sublink .icon{display:none}
 .admin-sidebar .nav .nav-item.active .icon{color:#fff}
@@ -25,9 +24,11 @@
 .sidebar-bottom{margin-top:12px}
 
 .admin-main{flex:1;padding:20px}
-.admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.admin-topbar .path{font-weight:600}
-.admin-topbar .search{border:1px solid var(--border);border-radius:999px;padding:8px 12px;width:280px}
+.admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;background:#fff;border-bottom:1px solid var(--border);padding:10px 12px;border-radius:12px}
+.admin-topbar .path{font-weight:600;display:flex;align-items:center;gap:8px}
+.admin-topbar .path::before{content:"▦";font-size:14px;color:var(--muted)}
+.admin-topbar .top-actions{display:flex;align-items:center}
+.admin-topbar .search{border:1px solid var(--border);border-radius:999px;padding:8px 12px 8px 32px;width:300px;background:#fff;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>");background-repeat:no-repeat;background-position:10px center}
 .admin-topbar .avatar{width:32px;height:32px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;margin-left:12px}
 
 .section{background:transparent}
