@@ -48,8 +48,33 @@ exports.searchFreelancers = async (req, res) => {
       if (results.length === 0) results = pool;
     }
 
+    // Filter out moderated (banned or currently suspended)
+    async function isActive(uid){
+      try{
+        const m = await db.collection('userModeration').doc(String(uid)).get();
+        if (!m.exists) return true;
+        const d = m.data();
+        const status = String(d.status || 'active').toLowerCase();
+        if (status === 'banned') return false;
+        if (status === 'suspended'){
+          let until = null;
+          if (d.until && typeof d.until.toDate === 'function') until = d.until.toDate();
+          else if (d.until) { const t = new Date(d.until); if (!isNaN(t.getTime())) until = t; }
+          if (until && Date.now() < until.getTime()) return false;
+        }
+      }catch(_){ }
+      return true;
+    }
+
+    const filtered = [];
+    for (const u of results){
+      const ok = await isActive(u.uid);
+      if (ok) filtered.push(u);
+      if (filtered.length >= 100) break; // cap to avoid excessive reads
+    }
+
     // Minimal projection for list
-    const items = results.map(u => ({
+    const items = filtered.map(u => ({
       uid: u.uid,
       name: u.name || u.username || 'Freelancer',
       title: u.title || u.roleLong || '',

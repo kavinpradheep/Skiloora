@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Users — Skiloora</title>
+  <title>Manage Suspensions — Skiloora</title>
   <link rel="stylesheet" href="../css/admin.css" />
   <link rel="stylesheet" href="../css/users.css" />
   <script src="../js/nav.js"></script>
@@ -15,9 +15,9 @@
       <div class="section-label">Overview</div>
       <a class="nav-item" href="./dashboard.html"><span class="icon">▦</span>Dashboard</a>
       <div class="section-label">Users Management</div>
-      <a class="nav-sublink" href="#freelancers" id="navFreelancers">Freelancers</a>
-      <a class="nav-sublink" href="#clients" id="navClients">Clients / Hirers</a>
-      <a class="nav-sublink" href="./users-manage.html" id="navManage">Manage Suspensions</a>
+      <a class="nav-sublink" href="./users.html#freelancers">Freelancers</a>
+      <a class="nav-sublink" href="./users.html#clients">Clients / Hirers</a>
+      <a class="nav-sublink active" href="./users-manage.html" id="navManage">Manage Suspensions</a>
       <div class="section-label">Payments</div>
       <a class="nav-sublink" href="./payments.html#withdrawals"><span class="icon">📄</span>Withdrawal Requests</a>
       <a class="nav-sublink" href="./payments.html#revenue"><span class="icon">📈</span>Revenue Dashboard</a>
@@ -32,44 +32,44 @@
 
   <main class="admin-main">
     <header class="admin-topbar">
-      <div class="path">Users Management</div>
+      <div class="path">Users Management / Manage Suspensions</div>
       <div class="top-actions"><input class="search" placeholder="Search..." /><div class="avatar">A</div></div>
     </header>
 
-    <section class="section" id="sectionFreelancers">
-      <h2>Freelancers</h2>
-      <p class="muted">View and manage registered freelancers</p>
-      <div class="table cols-6">
-        <div class="row head"><div>Name</div><div>Email</div><div>Skills</div><div>Subscription</div><div>Profile</div><div>Actions</div></div>
-        <div id="freelancerRows" class="rows"></div>
+    <section class="section" id="sectionSuspended">
+      <h2>Suspended Users</h2>
+      <p class="muted">Users temporarily suspended. You can lift suspension anytime.</p>
+      <div class="table cols-5">
+        <div class="row head"><div>Name</div><div>Email</div><div>Until</div><div>Reason</div><div>Actions</div></div>
+        <div id="suspendedRows" class="rows"></div>
       </div>
     </section>
 
-    <section class="section" id="sectionClients">
-      <h2>Clients / Hirers</h2>
-      <p class="muted">View and manage all clients</p>
-      <div class="table cols-3">
-        <div class="row head"><div>Company Name</div><div>Email</div><div>Actions</div></div>
-        <div id="clientRows" class="rows"></div>
+    <section class="section" id="sectionBanned">
+      <h2>Banned Users</h2>
+      <p class="muted">Permanently banned users. You can unban if needed.</p>
+      <div class="table cols-4">
+        <div class="row head"><div>Name</div><div>Email</div><div>Reason</div><div>Actions</div></div>
+        <div id="bannedRows" class="rows"></div>
       </div>
     </section>
   </main>
-
-  <script src="../js/users.js"></script>
   
-  <!-- Moderation Modal -->
-  <div id="moderationModal" style="display:none;position:fixed;inset:0;background:#00000055;align-items:center;justify-content:center;z-index:50">
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" style="display:none;position:fixed;inset:0;background:#00000055;align-items:center;justify-content:center;z-index:50">
     <div class="card" style="width:420px;max-width:90vw">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">User Moderation</h3>
-        <button id="modClose" class="btn-ghost">Close</button>
+        <h3 style="margin:0">Please Confirm</h3>
+        <button id="confirmClose" class="btn-ghost">Close</button>
       </div>
-      <div style="margin-top:8px" class="muted">Choose an action for this user:</div>
+      <div id="confirmMessage" style="margin-top:8px" class="muted">Are you sure?</div>
       <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-        <button id="modSuspend" class="btn">Suspend 1 month</button>
-        <button id="modBan" class="btn" style="background:#b91c1c">Ban Permanently</button>
+        <button id="confirmCancel" class="btn-ghost">Cancel</button>
+        <button id="confirmOk" class="btn">Yes, Continue</button>
       </div>
     </div>
   </div>
+
+  <script src="../js/users-manage.js"></script>
 </body>
 </html>

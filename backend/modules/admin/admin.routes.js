@@ -21,4 +21,9 @@ router.get('/revenue-stats', controller.getRevenueStats);
 router.get('/admins', controller.listAdmins);
 router.post('/create-admin', controller.createAdmin);
 
+// Moderation routes
+router.get('/moderation', controller.moderationList);
+router.post('/moderation/set', controller.moderationSet);
+router.post('/moderation/clear', controller.moderationClear);
+
 module.exports = router;

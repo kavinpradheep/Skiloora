@@ -62,6 +62,28 @@ exports.login = async (req, res) => {
     const idToken = match[1];
     const decoded = await admin.auth().verifyIdToken(idToken);
     const uid = decoded.uid;
+    // Moderation check: block banned and active suspensions
+    try {
+      const mdoc = await db.collection('userModeration').doc(uid).get();
+      if (mdoc.exists) {
+        const m = mdoc.data();
+        const status = (m.status || 'active').toLowerCase();
+        if (status === 'banned') {
+          return res.status(403).json({ ok: false, error: 'banned' });
+        }
+        if (status === 'suspended') {
+          let until = null;
+          if (m.until && typeof m.until.toDate === 'function') until = m.until.toDate();
+          else if (m.until) {
+            const d = new Date(m.until);
+            if (!isNaN(d.getTime())) until = d;
+          }
+          if (until && Date.now() < until.getTime()) {
+            return res.status(403).json({ ok: false, error: 'suspended', until: until.toISOString() });
+          }
+        }
+      }
+    } catch (_) { /* ignore moderation lookup errors */ }
     // Determine admin via custom claims first
     let isAdmin = !!decoded.admin || (decoded.role === 'admin');
     // Fallback to Firestore `admins` collection if claim not present

@@ -229,8 +229,32 @@ exports.getUsersList = async (req, res) => {
       return authUidSet.has(String(u.id)) || (email && authEmailSet.has(email));
     });
 
-    // Strict freelancers: isFreelancer true AND intersected
-    const freelancerDocs = intersected.filter(u => u.isFreelancer === true);
+    // Filter out moderated users (banned or currently suspended)
+    async function isActive(uid){
+      try{
+        const m = await admin.firestore().collection('userModeration').doc(String(uid)).get();
+        if (!m.exists) return true;
+        const d = m.data();
+        const status = String(d.status || 'active').toLowerCase();
+        if (status === 'banned') return false;
+        if (status === 'suspended'){
+          let until = null;
+          if (d.until && typeof d.until.toDate === 'function') until = d.until.toDate();
+          else if (d.until) { const t = new Date(d.until); if (!isNaN(t.getTime())) until = t; }
+          if (until && Date.now() < until.getTime()) return false;
+        }
+      }catch(_){ }
+      return true;
+    }
+
+    const activeDocs = [];
+    for (const u of intersected){
+      const ok = await isActive(u.id);
+      if (ok) activeDocs.push(u);
+    }
+
+    // Strict freelancers: isFreelancer true AND not moderated
+    const freelancerDocs = activeDocs.filter(u => u.isFreelancer === true);
 
     // Clients: NOT freelancer and role/roleKey in client/buyer/hirer
     const isClientRole = u => {
@@ -238,7 +262,7 @@ exports.getUsersList = async (req, res) => {
       const r = String(u.role||'').toLowerCase();
       return ['client','buyer','hirer'].includes(rk) || ['client','buyer','hirer'].includes(r);
     };
-    const clientDocs = intersected.filter(u => u.isFreelancer !== true && isClientRole(u));
+    const clientDocs = activeDocs.filter(u => u.isFreelancer !== true && isClientRole(u));
 
     // Map output
     const freelancers = freelancerDocs.map(u => ({
@@ -443,5 +467,105 @@ exports.createAdmin = async (req, res) => {
   } catch (err) {
     console.error('createAdmin error', err);
     return res.status(500).json({ ok: false, error: 'server_error', message: err.message || String(err) });
+  }
+};
+
+// ------------------------------
+// Moderation: suspend / ban / list / clear
+// Collection: userModeration/{uid} => { status: 'active'|'suspended'|'banned', until?: Timestamp, reason?: string, updatedAt, updatedBy }
+// ------------------------------
+
+exports.moderationList = async (req, res) => {
+  try {
+    const snap = await db.collection('userModeration').get();
+    const items = [];
+    for (const doc of snap.docs) {
+      const data = doc.data();
+      const status = (data.status || 'active').toLowerCase();
+      if (status === 'active') continue;
+      // join minimal user info
+      let user = { name: '', email: '' };
+      try {
+        const udoc = await db.collection('users').doc(doc.id).get();
+        if (udoc.exists) {
+          const u = udoc.data();
+          user.name = u.name || u.username || u.company || '';
+          user.email = (u.email || '').toLowerCase();
+        }
+      } catch(_){}
+      items.push({
+        uid: doc.id,
+        status,
+        until: data.until || null,
+        reason: data.reason || '',
+        updatedAt: data.updatedAt || null,
+        updatedBy: data.updatedBy || null,
+        user
+      });
+    }
+    // split into suspended and banned for convenience on UI
+    const suspended = items.filter(x => x.status === 'suspended');
+    const banned = items.filter(x => x.status === 'banned');
+    res.json({ ok: true, suspended, banned, count: items.length });
+  } catch (err) {
+    console.error('moderationList error', err);
+    res.status(500).json({ ok: false, error: 'server_error' });
+  }
+};
+
+exports.moderationSet = async (req, res) => {
+  try {
+    const { uid, action, reason } = req.body || {};
+    if (!uid || !action) return res.status(400).json({ ok: false, error: 'missing_fields' });
+    const now = admin.firestore.FieldValue.serverTimestamp();
+    const adminActor = (req.user && (req.user.uid || req.user.email)) || 'admin';
+    const acts = String(action).toLowerCase();
+    const ref = db.collection('userModeration').doc(uid);
+
+    if (acts === 'suspend') {
+      // 30 days from now (approx): compute client-side Date for display, server uses FieldValue for updatedAt only
+      const untilDate = new Date(Date.now() + 30*24*60*60*1000);
+      await ref.set({
+        status: 'suspended',
+        until: admin.firestore.Timestamp.fromDate(untilDate),
+        reason: reason || 'Suspended by admin',
+        updatedAt: now,
+        updatedBy: adminActor
+      }, { merge: true });
+      return res.json({ ok: true, uid, status: 'suspended', until: untilDate.toISOString() });
+    }
+
+    if (acts === 'ban') {
+      await ref.set({
+        status: 'banned',
+        until: null,
+        reason: reason || 'Banned by admin',
+        updatedAt: now,
+        updatedBy: adminActor
+      }, { merge: true });
+      return res.json({ ok: true, uid, status: 'banned' });
+    }
+
+    return res.status(400).json({ ok: false, error: 'invalid_action' });
+  } catch (err) {
+    console.error('moderationSet error', err);
+    res.status(500).json({ ok: false, error: 'server_error' });
+  }
+};
+
+exports.moderationClear = async (req, res) => {
+  try {
+    const { uid } = req.body || {};
+    if (!uid) return res.status(400).json({ ok: false, error: 'missing_uid' });
+    await db.collection('userModeration').doc(uid).set({
+      status: 'active',
+      until: null,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      reason: 'Cleared by admin'
+    }, { merge: true });
+    res.json({ ok: true, uid, status: 'active' });
+  } catch (err) {
+    console.error('moderationClear error', err);
+    res.status(500).json({ ok: false, error: 'server_error' });
   }
 };
