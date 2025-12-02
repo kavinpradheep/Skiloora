@@ -382,9 +382,32 @@ saveAdd?.addEventListener('click', async () => {
 
 auth.onAuthStateChanged(async (user) => {
   if (!user) { window.location.href = './login.html'; return; }
+  // Role guard: prefer Firestore role; fallback to backend admin flag
   try {
     const userDoc = await db.collection('users').doc(user.uid).get();
     const profile = userDoc.exists ? userDoc.data() : { email: user.email };
+    const role = String(profile.role||'').toLowerCase().trim();
+    if (role === 'admin') { window.location.href='../../admin/html/dashboard.html'; return; }
+    if (role === 'buyer' || role === 'hirer') { window.location.href='../../buyer/html/index.html'; return; }
+
+    // Only if no explicit role, consult backend for admin flag
+    if (!role) {
+      try {
+        const idToken = await user.getIdToken(true);
+        const resp = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+          body: JSON.stringify({})
+        });
+        const json = await resp.json().catch(()=>({}));
+        if (resp.ok && json.isAdmin) {
+          try { localStorage.setItem('skiloora_admin_session', '1'); } catch(_){ }
+          window.location.href = '../../admin/html/dashboard.html';
+          return;
+        }
+      } catch(_) { /* ignore */ }
+    }
+
     renderProfile(user, profile);
     renderMetrics(user.uid);
     renderProjects(user.uid);

@@ -58,25 +58,35 @@ form.addEventListener('submit', async (e) => {
     const backendResp = await backendLogin(idToken);
     if (backendResp.ok) {
       localStorage.setItem('skiloora_id_token', idToken);
-      // If admin, go straight to Admin dashboard
-      if (backendResp.isAdmin) {
+
+      // Prefer Firestore profile role to determine destination
+      let role = '';
+      try {
+        if (window.firebaseDB && window.firebaseAuth?.currentUser) {
+          const snap = await window.firebaseDB.collection('users').doc(window.firebaseAuth.currentUser.uid).get();
+          if (snap.exists) role = String((snap.data().role||'')).toLowerCase().trim();
+        }
+      } catch (e) { console.warn('Role lookup failed', e); }
+
+      if (role === 'admin') {
         try { localStorage.setItem('skiloora_admin_session', '1'); } catch(_){ }
         window.location.href = '../../admin/html/dashboard.html';
         return;
       }
-      // Determine role from Firestore users/{uid}
-      let target = './dashboard.html';
-      if (window.firebaseDB && window.firebaseAuth?.currentUser) {
-        try {
-          const snap = await window.firebaseDB.collection('users').doc(window.firebaseAuth.currentUser.uid).get();
-          if (snap.exists) {
-            const data = snap.data();
-            const role = (data.role || '').toLowerCase();
-            if (role === 'buyer' || role === 'hirer') target = '../../buyer/html/index.html';
-          }
-        } catch (e) { console.warn('Role lookup failed', e); }
+      if (role === 'buyer' || role === 'hirer') {
+        window.location.href = '../../buyer/html/index.html';
+        return;
       }
-      window.location.href = target;
+
+      // Fallback: if no role found, use backend admin flag
+      if (!role && backendResp.isAdmin) {
+        try { localStorage.setItem('skiloora_admin_session', '1'); } catch(_){ }
+        window.location.href = '../../admin/html/dashboard.html';
+        return;
+      }
+
+      // Default: freelancer dashboard
+      window.location.href = './dashboard.html';
     } else {
       showMsg('Login failed: ' + (backendResp.error || 'unknown'));
     }

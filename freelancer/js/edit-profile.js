@@ -70,11 +70,32 @@ function renderChips(container, items, stacked=false) {
 }
 
 auth.onAuthStateChanged(async (user) => {
-  // Auth listener: Load user profile fields into form; redirect if not logged in.
+  // Auth listener: Load user profile; enforce role guard
   if (!user) { window.location.href = './login.html'; return; }
   try {
     const doc = await db.collection('users').doc(user.uid).get();
     const p = doc.exists ? doc.data() : { email: user.email, name: user.displayName };
+    const role = String(p.role||'').toLowerCase().trim();
+    if (role === 'admin') { window.location.href='../../admin/html/dashboard.html'; return; }
+    if (role === 'buyer' || role === 'hirer') { window.location.href='../../buyer/html/index.html'; return; }
+
+    // If no role present, fall back to backend admin flag
+    if (!role) {
+      try {
+        const idToken = await user.getIdToken(true);
+        const resp = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+          body: JSON.stringify({})
+        });
+        const json = await resp.json().catch(()=>({}));
+        if (resp.ok && json.isAdmin) {
+          try { localStorage.setItem('skiloora_admin_session', '1'); } catch(_){ }
+          window.location.href = '../../admin/html/dashboard.html';
+          return;
+        }
+      } catch(_) { /* ignore */ }
+    }
     editName.value = p.name || '';
     editEmail.value = user.email || '';
     editPhone.value = p.phone || '';
