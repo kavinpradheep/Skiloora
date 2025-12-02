@@ -6,21 +6,9 @@
   <title>Skiloora — Login</title>
   <link rel="stylesheet" href="../css/login.css" />
 
-  <!-- Admin bypass: define interceptor -->
+  <!-- Removed insecure admin bypass that relied on a hardcoded password. -->
   <script>
-    window.__adminLoginIntercept = function(e){
-      try{
-        const email = document.getElementById('email')?.value?.trim().toLowerCase();
-        const pw = document.getElementById('password')?.value || '';
-        if (email === 'admin@gmail.com' && pw === 'Admin@123'){
-          localStorage.setItem('skiloora_admin_session', '1');
-          // Navigate to admin dashboard
-          window.location.href = '../../admin/html/dashboard.html';
-          return false; // stop Firebase login
-        }
-      }catch(_){} 
-      return true; // proceed with normal login.js
-    };
+    window.__adminLoginIntercept = function(){ return true; };
   </script>
   <script type="module" src="../js/login.js" defer></script>
 
