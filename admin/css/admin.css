@@ -11,7 +11,7 @@
 .admin-app{display:flex;background:var(--bg);color:var(--text)}
 .admin-sidebar{width:260px;background:var(--card);border-right:1px solid var(--border);min-height:100vh;padding:14px}
 .admin-sidebar .brand{font-weight:700;margin-bottom:12px}
-.admin-sidebar .nav .nav-item{display:block;width:100%;text-align:left;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;margin:6px 0;cursor:pointer;text-decoration:none;color:inherit}
+.admin-sidebar .nav .nav-item{display:block;width:100%;text-align:left;padding:8px 12px;border-radius:999px;border:1px solid transparent;background:transparent;margin:4px 0 4px 8px;cursor:pointer;text-decoration:none;color:#6b7280;font-size:14px}
 .admin-sidebar .nav .nav-item.active{background:#111827;color:#fff;border-color:#111827}
 .admin-sidebar .section-label{font-size:12px;color:var(--muted);margin:12px 0 6px}
 .admin-sidebar .nav .nav-sublink{display:block;width:100%;text-align:left;padding:8px 12px;border-radius:999px;border:1px solid transparent;background:transparent;margin:4px 0 4px 8px;cursor:pointer;text-decoration:none;color:#6b7280;font-size:14px}
@@ -20,7 +20,8 @@
 .admin-sidebar .nav .nav-item .icon,
 .admin-sidebar .nav .nav-sublink .icon{display:none}
 .admin-sidebar .nav .nav-item.active .icon{color:#fff}
-.admin-sidebar .nav .nav-sublink.active .icon{color:#111827}
+/* Consistent icon color when active (if icons are later shown) */
+.admin-sidebar .nav .nav-sublink.active .icon{color:#fff}
 .sidebar-bottom{margin-top:12px}
 
 .admin-main{flex:1;padding:20px}

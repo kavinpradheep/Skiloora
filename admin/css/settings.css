@@ -31,6 +31,6 @@
 .modal-header{ display:flex; align-items:center; justify-content:space-between; padding:8px 4px 12px; }
 .modal-body{ padding:4px 2px 12px; }
 .modal-footer{ display:flex; justify-content:flex-end; gap:8px; padding-top:8px; }
-.btn{ background:#111827; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer; }
-.btn-ghost{ background:transparent; border:none; color:#111827; cursor:pointer; padding:6px 8px; }
+.admin-main .btn{ background:#111827; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer; }
+.admin-main .btn-ghost{ background:transparent; border:none; color:#111827; cursor:pointer; padding:6px 8px; }
 .muted{ color:#6b7280; }

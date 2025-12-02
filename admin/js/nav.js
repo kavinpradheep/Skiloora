@@ -1,9 +1,29 @@
 (() => {
   const path = location.pathname.replace(/\\/g, '/');
   const current = path.split('/').pop();
+  // If user navigates with #issues on a different page, redirect to dedicated issues.html
+  function redirectIssuesIfNeeded(){
+    if (location.hash === '#issues' && current !== 'issues.html') {
+      const dir = path.slice(0, path.lastIndexOf('/') + 1);
+      window.location.replace(dir + 'issues.html');
+      return true;
+    }
+    return false;
+  }
+  // If someone hits deprecated #preferences, send to Settings Roles instead
+  function redirectPreferencesIfNeeded(){
+    if (location.hash === '#preferences'){
+      const dir = path.slice(0, path.lastIndexOf('/') + 1);
+      window.location.replace(dir + 'settings.html#roles');
+      return true;
+    }
+    return false;
+  }
+  if (redirectIssuesIfNeeded() || redirectPreferencesIfNeeded()) return;
+  window.addEventListener('hashchange', () => { redirectIssuesIfNeeded() || redirectPreferencesIfNeeded(); });
   const sidebar = document.querySelector('.admin-sidebar .nav');
   if (!sidebar) return;
-  const links = Array.from(sidebar.querySelectorAll('a.nav-sublink, button.nav-item'));
+  const links = Array.from(sidebar.querySelectorAll('a.nav-sublink, a.nav-item, button.nav-item'));
   links.forEach(el => {
     const href = el.getAttribute('href') || '';
     const target = href.split('/').pop().split('#')[0];
