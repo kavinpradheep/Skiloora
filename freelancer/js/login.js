@@ -1,6 +1,4 @@
-// login.js
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+// login.js (Firebase compat SDK)
 
 const form = document.getElementById('loginForm');
 const emailEl = document.getElementById('email');
@@ -54,7 +52,7 @@ form.addEventListener('submit', async (e) => {
     // firebaseAuth is initialized in the page as window.firebaseAuth
     if (!window.firebaseAuth) throw new Error('Firebase not initialized');
 
-    const cred = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+    const cred = await window.firebaseAuth.signInWithEmailAndPassword(email, password);
     const idToken = await cred.user.getIdToken(true);
     // send token to backend for verification / session creation
     const backendResp = await backendLogin(idToken);
@@ -70,9 +68,8 @@ form.addEventListener('submit', async (e) => {
       let target = './dashboard.html';
       if (window.firebaseDB && window.firebaseAuth?.currentUser) {
         try {
-          const ref = doc(window.firebaseDB, 'users', window.firebaseAuth.currentUser.uid);
-          const snap = await getDoc(ref);
-          if (snap.exists()) {
+          const snap = await window.firebaseDB.collection('users').doc(window.firebaseAuth.currentUser.uid).get();
+          if (snap.exists) {
             const data = snap.data();
             const role = (data.role || '').toLowerCase();
             if (role === 'buyer' || role === 'hirer') target = '../../buyer/html/index.html';
