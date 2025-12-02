@@ -80,23 +80,27 @@
       </section>
       <section class="reviews" id="reviews">
         <h3>Reviews</h3>
-        <div class="review-card">
-          <div class="review-top">
-            <div class="avatar small"></div>
-            <div class="who">
-              <strong>NoorAli</strong>
-              <span class="muted">• Pro Client • 5 days ago</span>
+        <div id="ppReviews" class="reviews-list"></div>
+        <div class="add-review">
+          <button id="btnShowReview" class="btn">Add your Review</button>
+          <div id="reviewForm" class="review-form" style="display:none">
+            <input id="rfName" placeholder="Your name" />
+            <textarea id="rfText" maxlength="1024" placeholder="Write your review" rows="4"></textarea>
+            <div class="stars-input" id="rfStars" data-value="0">
+              <button type="button" data-s="1">☆</button>
+              <button type="button" data-s="2">☆</button>
+              <button type="button" data-s="3">☆</button>
+              <button type="button" data-s="4">☆</button>
+              <button type="button" data-s="5">☆</button>
             </div>
-          </div>
-          <div class="review-stars">★★★★☆</div>
-          <p class="muted">Lorem ipsum review placeholder text matching the mock format.</p>
-          <div class="review-bottom">
-            <span>50 days</span>
-            <span>₹ 18,000 - 36,000</span>
-            <span>Logo Design</span>
+            <div class="review-actions">
+              <button id="rfCancel" class="btn-ghost">Cancel</button>
+              <button id="rfSubmit" class="btn">Submit Review</button>
+            </div>
           </div>
         </div>
       </section>
+      
     </section>
   </main>
 </body>

@@ -8,6 +8,7 @@ const paymentRoutes = require('./payments/payment.routes');
 const webhook = require('./payments/webhook');
 const freelancerRoutes = require('./modules/freelancer/freelancer.routes');
 const adminRoutes = require('./modules/admin/admin.routes');
+const issuesRoutes = require('./modules/issues/issues.routes');
 
 // AUTH ROUTES (login, reset, temp-signups)
 const authRoutes = require('./modules/auth/auth.routes');
@@ -34,6 +35,7 @@ app.use('/api/payments/webhook', webhook);
 // 🔹 Other modules
 app.use('/api/freelancer', freelancerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/issues', issuesRoutes);
 
 // Health
 app.get('/health', (req, res) => res.json({ ok: true, ts: new Date().toISOString() }));

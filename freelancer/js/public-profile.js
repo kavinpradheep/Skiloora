@@ -77,4 +77,89 @@ document.addEventListener('DOMContentLoaded', () => {
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+  // Reviews: UI wiring
+  const btnShow = document.getElementById('btnShowReview');
+  const formWrap = document.getElementById('reviewForm');
+  const rfName = document.getElementById('rfName');
+  const rfText = document.getElementById('rfText');
+  const rfStars = document.getElementById('rfStars');
+  const rfCancel = document.getElementById('rfCancel');
+  const rfSubmit = document.getElementById('rfSubmit');
+
+  function setStars(n){
+    const btns = rfStars ? rfStars.querySelectorAll('button[data-s]') : [];
+    btns.forEach(b=>{
+      const val = Number(b.getAttribute('data-s'));
+      b.textContent = val <= n ? '★' : '☆';
+    });
+    if (rfStars) rfStars.setAttribute('data-value', String(n));
+  }
+  rfStars?.querySelectorAll('button[data-s]')?.forEach(btn=>{
+    btn.addEventListener('click', ()=> setStars(Number(btn.getAttribute('data-s'))));
+  });
+
+  btnShow?.addEventListener('click', ()=>{ if(formWrap) formWrap.style.display = 'block'; });
+  rfCancel?.addEventListener('click', ()=>{ if(formWrap) formWrap.style.display = 'none'; });
+
+  async function loadReviews(){
+    try{
+      const uid = getTargetUid();
+      const listEl = document.getElementById('ppReviews');
+      if (!uid || !listEl) return;
+      listEl.innerHTML = '';
+      const snap = await db.collection('users').doc(uid).collection('reviews').orderBy('createdAt','desc').limit(20).get();
+      if (snap.empty){
+        const p = document.createElement('p'); p.className='muted'; p.textContent='No reviews yet.'; listEl.appendChild(p);
+        return;
+      }
+      snap.forEach(d=>{
+        const r = d.data();
+        const card = document.createElement('div'); card.className='review-card';
+        const top = document.createElement('div'); top.className='review-top';
+        const avatar = document.createElement('div'); avatar.className='avatar small';
+        const who = document.createElement('div'); who.className='who';
+        const strong = document.createElement('strong'); strong.textContent = r.reviewerName || 'Client';
+        const meta = document.createElement('span'); meta.className='muted';
+        const daysAgo = r.createdAt && typeof r.createdAt.toDate === 'function' ? Math.max(1, Math.round((Date.now()-r.createdAt.toDate().getTime())/86400000)) : null;
+        meta.textContent = `• ${daysAgo ? `${daysAgo} days ago` : ''}`;
+        who.appendChild(strong); who.appendChild(meta);
+        top.appendChild(avatar); top.appendChild(who);
+
+        const stars = document.createElement('div'); stars.className='review-stars';
+        const st = Number(r.stars || 0);
+        stars.textContent = '★★★★★'.slice(0, st) + '☆☆☆☆☆'.slice(st, 5);
+
+        const body = document.createElement('p'); body.className='muted'; body.textContent = r.text || '';
+
+        card.appendChild(top); card.appendChild(stars); card.appendChild(body);
+        listEl.appendChild(card);
+      });
+    }catch(e){ console.error('Load reviews failed', e); }
+  }
+
+  rfSubmit?.addEventListener('click', async ()=>{
+    try{
+      const uid = getTargetUid();
+      if (!uid){ alert('Profile not found'); return; }
+      const me = auth.currentUser;
+      const reviewerName = (rfName?.value || '').trim() || (me && (me.displayName || me.email)) || 'User';
+      const text = (rfText?.value || '').trim();
+      const stars = Number(rfStars?.getAttribute('data-value') || 0);
+      if (!reviewerName){ alert('Please enter your name'); return; }
+      if (!text || stars < 1){ alert('Please add review text and select stars'); return; }
+      await db.collection('users').doc(uid).collection('reviews').add({
+        reviewerName, text, stars,
+        createdAt: window.firebase && window.firebase.firestore ? window.firebase.firestore.FieldValue.serverTimestamp() : firebase.firestore.FieldValue.serverTimestamp()
+      });
+      if (formWrap) formWrap.style.display = 'none';
+      if (rfText) rfText.value=''; if (rfName) rfName.value=''; setStars(0);
+      await loadReviews();
+    }catch(e){ console.error('Submit review failed', e); alert('Failed to submit review'); }
+  });
+
+  // Initial load
+  loadReviews();
+
+  // Issue report wiring (freelancer / buyer viewing profile)
+  // Issue reporting moved to freelancer dashboard; no form here.
 });

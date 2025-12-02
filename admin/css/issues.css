@@ -1,0 +1,14 @@
+:root{ --card:#fff; --border:#e5e7eb; --muted:#6b7280; --text:#111827 }
+.issue-metrics{ display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:12px; margin:12px 0 20px }
+.issue-card{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px }
+.ic-head{ display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-size:14px }
+.ic-icon{ display:inline-flex; width:28px; height:28px; align-items:center; justify-content:center; border-radius:50%; background:#f3f4f6; border:1px solid var(--border) }
+.ic-value{ font-weight:700; font-size:26px; margin-top:6px; color:var(--text) }
+
+/* Table tweaks to resemble mock */
+.table .row div:nth-child(2) .chip{ background:#111827; color:#fff; border-color:#111827 }
+.table .row div:nth-child(4) .chip{ background:#f3f4f6 }
+.table .row div:nth-child(5) .chip{ background:#111827; color:#fff; border-color:#111827 }
+
+/* Trash icon button styling */
+.btn-icon{ background:transparent; border:none; cursor:pointer }

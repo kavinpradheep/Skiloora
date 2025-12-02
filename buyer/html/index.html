@@ -213,6 +213,31 @@
             <button class="btn btn-primary" type="submit">Submit</button>
           </div>
         </form>
+        <div class="issue-report" style="margin-top:30px">
+          <h4 style="margin:0 0 10px">Report an Issue</h4>
+          <form id="buyerIssueForm" onsubmit="return false;" class="issue-form">
+            <div class="field">
+              <label>Subject</label>
+              <input id="biSubject" placeholder="Payment not received" maxlength="120" />
+            </div>
+            <div class="field">
+              <label>Priority</label>
+              <select id="biPriority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <textarea id="biDescription" rows="4" maxlength="1000" placeholder="Describe the issue"></textarea>
+            </div>
+            <div class="actions" style="display:flex;gap:8px;justify-content:flex-end">
+              <button id="biSubmit" class="btn btn-primary" type="button">Submit Issue</button>
+            </div>
+            <div id="biMsg" class="muted" style="margin-top:6px"></div>
+          </form>
+        </div>
       </div>
       <div class="contact-right">
         <div class="placeholder"></div>

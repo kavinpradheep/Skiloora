@@ -26,4 +26,10 @@ router.get('/moderation', controller.moderationList);
 router.post('/moderation/set', controller.moderationSet);
 router.post('/moderation/clear', controller.moderationClear);
 
+// Issues (admin view)
+router.get('/issues-list', controller.issuesList);
+router.get('/issues-metrics', controller.issuesMetrics);
+router.post('/issue-delete', controller.issueDelete);
+router.post('/issue-status', controller.issueStatus);
+
 module.exports = router;

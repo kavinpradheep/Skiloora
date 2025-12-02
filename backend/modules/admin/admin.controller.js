@@ -569,3 +569,81 @@ exports.moderationClear = async (req, res) => {
     res.status(500).json({ ok: false, error: 'server_error' });
   }
 };
+
+// ------------------------------
+// Issues (support tickets) admin views
+// Collection: issues => { uid,userType,subject,priority,description,status,displayName,createdAt,updatedAt }
+// ------------------------------
+
+exports.issuesList = async (req, res) => {
+  try {
+    const snap = await db.collection('issues').orderBy('createdAt', 'desc').limit(300).get();
+    const items = snap.docs.map(d => {
+      const v = d.data();
+      return {
+        id: d.id,
+        uid: v.uid || null,
+        userType: v.userType || 'buyer',
+        subject: v.subject || '',
+        priority: v.priority || 'low',
+        status: v.status || 'open',
+        description: v.description || '',
+        displayName: v.displayName || '',
+        createdAt: v.createdAt && typeof v.createdAt.toDate === 'function' ? v.createdAt.toDate().toISOString() : null
+      };
+    });
+    res.json({ ok: true, items });
+  } catch (err) {
+    console.error('issuesList error', err);
+    res.status(500).json({ ok: false, error: 'server_error' });
+  }
+};
+
+exports.issuesMetrics = async (req, res) => {
+  try {
+    const snap = await db.collection('issues').limit(1000).get();
+    let open=0, inProgress=0, resolved=0;
+    snap.docs.forEach(d => {
+      const s = String((d.data().status || 'open')).toLowerCase();
+      if (s === 'open') open++; else if (s === 'in_progress' || s === 'inprogress') inProgress++; else if (s === 'resolved') resolved++; else open++;
+    });
+    res.json({ ok: true, metrics: { open, inProgress, resolved } });
+  } catch (err) {
+    console.error('issuesMetrics error', err);
+    res.status(500).json({ ok: false, error: 'server_error' });
+  }
+};
+
+exports.issueDelete = async (req, res) => {
+  try {
+    const { id } = req.body || {};
+    if (!id) return res.status(400).json({ ok:false, error:'missing_id' });
+    await db.collection('issues').doc(String(id)).delete();
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('issueDelete error', err);
+    res.status(500).json({ ok:false, error:'server_error' });
+  }
+};
+
+exports.issueStatus = async (req, res) => {
+  try {
+    const { id, status } = req.body || {};
+    if (!id || !status) return res.status(400).json({ ok:false, error:'missing_fields' });
+    const raw = String(status).toLowerCase().trim();
+    let normalized = raw;
+    if (raw === 'in progress' || raw === 'inprogress') normalized = 'in_progress';
+    if (raw === 'open' || raw === 'opened') normalized = 'open';
+    if (raw === 'resolved' || raw === 'resolve') normalized = 'resolved';
+    const allowed = new Set(['open','in_progress','resolved']);
+    if (!allowed.has(normalized)) return res.status(400).json({ ok:false, error:'invalid_status' });
+    await db.collection('issues').doc(String(id)).set({
+      status: normalized,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    return res.json({ ok:true, id, status: normalized });
+  } catch (err) {
+    console.error('issueStatus error', err);
+    res.status(500).json({ ok:false, error:'server_error' });
+  }
+};

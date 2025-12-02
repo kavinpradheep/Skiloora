@@ -151,6 +151,31 @@
             <div class="support-card">Help Center — Browse articles & FAQs</div>
             <div class="support-card">Raise a Ticket — Get personalized help</div>
           </div>
+          <div class="issue-report" style="margin-top:24px">
+            <h3 style="margin:0 0 10px">Report an Issue</h3>
+            <form onsubmit="return false;" id="fdIssueForm" class="issue-form" style="max-width:520px;display:flex;flex-direction:column;gap:12px">
+              <div>
+                <label style="font-size:13px;font-weight:600">Subject</label>
+                <input id="fdIssueSubject" placeholder="Feature not working" maxlength="120" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px" />
+              </div>
+              <div>
+                <label style="font-size:13px;font-weight:600">Priority</label>
+                <select id="fdIssuePriority" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:13px;font-weight:600">Description</label>
+                <textarea id="fdIssueDesc" rows="4" maxlength="1000" placeholder="Describe the problem in detail" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px"></textarea>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px">
+                <button type="button" id="fdIssueSubmit" class="btn">Submit Issue</button>
+              </div>
+              <div id="fdIssueMsg" class="muted" style="min-height:18px"></div>
+            </form>
+          </div>
         </section>
       </section>
     </main>

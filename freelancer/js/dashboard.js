@@ -439,3 +439,33 @@ document.addEventListener('click', (e) => {
     searchSuggest?.classList.add('hidden');
   }
 });
+
+// ---------------- Issue Reporting (Freelancer Dashboard) ----------------
+const fdIssueSubject = document.getElementById('fdIssueSubject');
+const fdIssuePriority = document.getElementById('fdIssuePriority');
+const fdIssueDesc = document.getElementById('fdIssueDesc');
+const fdIssueSubmit = document.getElementById('fdIssueSubmit');
+const fdIssueMsg = document.getElementById('fdIssueMsg');
+
+fdIssueSubmit?.addEventListener('click', async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) { alert('Please login first'); return; }
+    const subject = (fdIssueSubject?.value || '').trim();
+    const priority = (fdIssuePriority?.value || 'low').trim();
+    const description = (fdIssueDesc?.value || '').trim();
+    if (!subject || !description){ fdIssueMsg.textContent='Subject and description required.'; return; }
+    fdIssueMsg.textContent='Submitting...';
+    const idToken = await user.getIdToken(true);
+    const resp = await fetch('http://localhost:5000/api/issues/report', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+idToken },
+      body: JSON.stringify({ subject, priority, description })
+    });
+    const json = await resp.json().catch(()=>({}));
+    if (!resp.ok || !json.ok) throw new Error(json.error||'submit_failed');
+    fdIssueSubject.value=''; fdIssueDesc.value=''; fdIssuePriority.value='low';
+    fdIssueMsg.textContent='Issue reported successfully.';
+    setTimeout(()=>{ if(fdIssueMsg) fdIssueMsg.textContent=''; }, 3500);
+  } catch(e){ console.error('Issue report failed', e); fdIssueMsg.textContent='Failed to submit issue.'; }
+});

@@ -53,6 +53,9 @@ onAuthStateChanged(window.firebaseAuth, async (user)=>{
     const snap = await getDoc(doc(window.firebaseDB, 'users', user.uid));
     const profile = snap.exists() ? snap.data() : { name: user.email };
     renderUserNav(profile);
+
+    // Issue form wiring (requires auth user)
+    setupBuyerIssueForm(user);
   }catch(e){ renderUserNav({ name: user.email }); }
 });
 
@@ -69,5 +72,36 @@ if (form && roleSelect){
     e.preventDefault();
     const val = (roleSelect.value || '').trim();
     navigate(val);
+  });
+}
+
+// ---------------- Issue Reporting (Buyer) ----------------
+async function setupBuyerIssueForm(user){
+  const subjectEl = document.getElementById('biSubject');
+  const priorityEl = document.getElementById('biPriority');
+  const descEl = document.getElementById('biDescription');
+  const submitBtn = document.getElementById('biSubmit');
+  const msgEl = document.getElementById('biMsg');
+  if (!submitBtn) return;
+  submitBtn.addEventListener('click', async ()=>{
+    if (!user){ alert('Not authenticated'); return; }
+    const subject = (subjectEl?.value||'').trim();
+    const priority = (priorityEl?.value||'low').trim();
+    const description = (descEl?.value||'').trim();
+    if (!subject || !description){ msgEl.textContent='Please fill subject and description.'; return; }
+    msgEl.textContent='Submitting...';
+    try{
+      const idToken = await user.getIdToken(true);
+      const resp = await fetch('http://localhost:5000/api/issues/report', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+idToken },
+        body: JSON.stringify({ subject, priority, description })
+      });
+      const json = await resp.json().catch(()=>({}));
+      if (!resp.ok || !json.ok){ throw new Error(json.error||'submit_failed'); }
+      subjectEl.value=''; descEl.value=''; priorityEl.value='low';
+      msgEl.textContent='Issue reported successfully.';
+      setTimeout(()=>{ msgEl.textContent=''; }, 3000);
+    }catch(e){ console.error('Issue submit failed', e); msgEl.textContent='Failed to submit issue.'; }
   });
 }
