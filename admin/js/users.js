@@ -18,6 +18,11 @@
 
     const freelancerRows = document.getElementById('freelancerRows');
     const clientRows = document.getElementById('clientRows');
+    const countFreelancers = document.getElementById('countFreelancers');
+    const countClients = document.getElementById('countClients');
+    const topSearch = document.querySelector('.admin-topbar .search');
+    let freelancersData = [];
+    let clientsData = [];
 
   // Moderation modal elements
     const modal = document.getElementById('moderationModal');
@@ -51,23 +56,56 @@
     modBan?.addEventListener('click', ()=> performModeration('ban'));
 
     function renderFreelancerRow(f){
-    const row = document.createElement('div'); row.className='row';
-    const sub = f.plan ? String(f.plan) : '—';
-    const id = f.id || f.uid || '';
-    const href = id ? `../../freelancer/html/public-profile.html?uid=${encodeURIComponent(id)}` : '#';
-    row.innerHTML = `<div>${f.name||''}</div><div>${f.email||''}</div><div>${f.skills || ''}</div><div><span class="badge">${sub}</span></div><div><a href="${href}" target="_blank" rel="noopener">View</a></div><div class="actions"><button class="chip dark" data-uid="${id}">Suspend</button></div>`;
-    freelancerRows.appendChild(row);
-    const btn = row.querySelector('button[data-uid]');
-    btn?.addEventListener('click', ()=> openMod(id));
+      const row = document.createElement('div'); row.className='row';
+      const sub = f.plan ? String(f.plan) : '—';
+      const id = f.id || f.uid || '';
+      const href = id ? `../../freelancer/html/public-profile.html?uid=${encodeURIComponent(id)}` : '#';
+      row.dataset.search = `${(f.name||'')} ${(f.email||'')} ${(f.skills||'')} ${sub}`.toLowerCase();
+      row.innerHTML = `
+        <div class="cell" data-col="Name">${f.name||''}</div>
+        <div class="cell" data-col="Email">${f.email||''}</div>
+        <div class="cell" data-col="Skills">${f.skills || ''}</div>
+        <div class="cell" data-col="Subscription"><span class="badge">${sub}</span></div>
+        <div class="cell" data-col="Profile"><a href="${href}" target="_blank" rel="noopener">View</a></div>
+        <div class="cell actions" data-col="Actions"><button class="chip dark" data-uid="${id}">Suspend</button></div>`;
+      freelancerRows.appendChild(row);
+      const btn = row.querySelector('button[data-uid]');
+      btn?.addEventListener('click', ()=> openMod(id));
     }
 
     function renderClientRow(c){
-    const row = document.createElement('div'); row.className='row';
-    const id = c.id || c.uid || '';
-    row.innerHTML = `<div>${c.company}</div><div>${c.email}</div><div class="actions"><button class="chip dark" data-uid="${id}">Suspend</button></div>`;
-    clientRows.appendChild(row);
-    const btn = row.querySelector('button[data-uid]');
-    btn?.addEventListener('click', ()=> openMod(id));
+      const row = document.createElement('div'); row.className='row';
+      const id = c.id || c.uid || '';
+      row.dataset.search = `${(c.company||'')} ${(c.email||'')}`.toLowerCase();
+      row.innerHTML = `
+        <div class="cell" data-col="Company Name">${c.company||''}</div>
+        <div class="cell" data-col="Email">${c.email||''}</div>
+        <div class="cell actions" data-col="Actions"><button class="chip dark" data-uid="${id}">Suspend</button></div>`;
+      clientRows.appendChild(row);
+      const btn = row.querySelector('button[data-uid]');
+      btn?.addEventListener('click', ()=> openMod(id));
+    }
+
+    function updateCounts(){
+      if (countFreelancers){
+        const visible = Array.from(freelancerRows.children).filter(r => r.style.display !== 'none').length;
+        countFreelancers.textContent = String(visible);
+      }
+      if (countClients){
+        const visible = Array.from(clientRows.children).filter(r => r.style.display !== 'none').length;
+        countClients.textContent = String(visible);
+      }
+    }
+
+    function applySearch(){
+      const q = (topSearch && topSearch.value || '').trim().toLowerCase();
+      const showFreelancers = (location.hash === '#freelancers' || location.hash === '' || location.hash == null);
+      const container = showFreelancers ? freelancerRows : clientRows;
+      Array.from(container.children).forEach(row => {
+        const hay = row.dataset.search || row.textContent.toLowerCase();
+        row.style.display = q ? (hay.includes(q) ? '' : 'none') : '';
+      });
+      updateCounts();
     }
 
     async function loadUsers(){
@@ -77,20 +115,28 @@
       const res = await fetch(`${backend}/api/admin/users-list`, { cache:'no-store' });
       const json = await res.json();
       if (!json || !json.ok) throw new Error('users_list_failed');
-      (json.freelancers || []).forEach(renderFreelancerRow);
-      (json.clients || []).forEach(renderClientRow);
+      freelancersData = json.freelancers || [];
+      clientsData = json.clients || [];
+      freelancersData.forEach(renderFreelancerRow);
+      clientsData.forEach(renderClientRow);
     } catch (e) {
       // Fallback demo rows
-      [
+      freelancersData = [
         { name:'Sarah Johnson', email:'sarah.j@email.com', skills:'React, Node.js, UI/UX', plan:'Premium' },
         { name:'Michael Chen', email:'mchen@email.com', skills:'Python, ML, Data Science', plan:'Premium' }
-      ].forEach(renderFreelancerRow);
-      [
+      ];
+      freelancersData.forEach(renderFreelancerRow);
+      clientsData = [
         { company:'Tech Corp Ltd', email:'contact@techcorp.com' },
         { company:'StartupXYZ', email:'hello@startupzy.com' }
-      ].forEach(renderClientRow);
+      ];
+      clientsData.forEach(renderClientRow);
     }
+    updateCounts();
     }
     loadUsers();
+
+    // Topbar search filters current section
+    topSearch?.addEventListener('input', applySearch);
   });
 })();

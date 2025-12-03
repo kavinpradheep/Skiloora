@@ -14,6 +14,24 @@
   setPaymentsSection(location.hash);
 
   const txRows = document.getElementById('txRows');
+  const countTx = document.getElementById('countTx');
+  const topSearch = document.querySelector('.admin-topbar .search');
+
+  function updateCount(){
+    if (!countTx) return;
+    const visible = Array.from(txRows.children).filter(r => r.classList && r.classList.contains('row') && r.dataset && r.dataset.search !== undefined && r.style.display !== 'none').length;
+    countTx.textContent = String(visible);
+  }
+
+  function applySearch(){
+    const q = (topSearch && topSearch.value || '').trim().toLowerCase();
+    Array.from(txRows.children).forEach(row => {
+      if (!row.dataset || row.dataset.search === undefined) return; // skip status rows
+      const hay = row.dataset.search || row.textContent.toLowerCase();
+      row.style.display = q ? (hay.includes(q) ? '' : 'none') : '';
+    });
+    updateCount();
+  }
   function fmtINR(n){ try{ return new Intl.NumberFormat('en-IN',{ maximumFractionDigits:0 }).format(n); }catch(_){ return String(n); } }
   async function loadPayments(){
     txRows.innerHTML = '';
@@ -32,11 +50,23 @@
       items.forEach(p => {
         const row = document.createElement('div'); row.className='row';
         const date = p.createdAt ? new Date(p.createdAt) : null;
-        const dateStr = date ? date.toISOString().slice(0,10) : '—';
+        const dateStr = date && !isNaN(date) ? date.toISOString().slice(0,10) : '—';
         const name = p.userName || p.userEmail || '—';
-        row.innerHTML = `<div>${p.plan || '—'}</div><div>${name}</div><div>₹${fmtINR(p.amount || 0)}</div><div>${p.method || '—'}</div><div>${p.accountInfo || '—'}</div><div>${dateStr}</div>`;
+        const amountStr = `₹${fmtINR(p.amount || 0)}`;
+        const method = p.method || '—';
+        const plan = p.plan || '—';
+        const acc = p.userEmail || p.accountInfo || '—';
+        row.dataset.search = `${plan} ${name} ${amountStr} ${method} ${acc} ${dateStr}`.toLowerCase();
+        row.innerHTML = `
+          <div class="cell" data-col="Subscription">${plan}</div>
+          <div class="cell" data-col="User">${name}</div>
+          <div class="cell" data-col="Amount">${amountStr}</div>
+          <div class="cell" data-col="Payment Method">${method}</div>
+          <div class="cell" data-col="Account info">${acc}</div>
+          <div class="cell" data-col="Date">${dateStr}</div>`;
         txRows.appendChild(row);
       });
+      updateCount();
     }catch(e){
       const row = document.createElement('div'); row.className='row';
       row.innerHTML = `<div colspan="6" style="grid-column:1/-1;color:#ef4444">Failed to load payments</div>`;
@@ -44,6 +74,9 @@
     }
   }
   loadPayments();
+
+  // Wire search
+  topSearch?.addEventListener('input', applySearch);
 
   async function loadRevenue(){
     const base = location.origin.replace(/\/$/, '');

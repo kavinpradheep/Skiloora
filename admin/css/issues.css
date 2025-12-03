@@ -12,3 +12,59 @@
 
 /* Trash icon button styling */
 .btn-icon{ background:transparent; border:none; cursor:pointer }
+.status-pill{ display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid var(--border); font-size:12px; margin-right:8px }
+.status-open{ background:#eef2ff; border-color:#6366f1; color:#3730a3 }
+.status-in_progress{ background:#fff7ed; border-color:#fb923c; color:#9a3412 }
+.status-resolved{ background:#ecfdf5; border-color:#10b981; color:#065f46 }
+
+/* Status select styling */
+.status-select{
+	appearance:none;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%236b7280" d="M5.5 7.5l4.5 4.5 4.5-4.5z"/></svg>') no-repeat right 8px center;
+	background-size:16px 16px;
+	border:1px solid var(--border);
+	border-radius:8px;
+	padding:6px 30px 6px 10px;
+	font-size:14px;
+	color:var(--text);
+}
+.status-select:focus{ outline:none; border-color:#9ca3af; box-shadow:0 0 0 3px rgba(156,163,175,0.25) }
+.status-select:hover{ border-color:#cbd5e1 }
+.status-select option{ font-size:14px }
+
+/* Align status pill + select neatly in one line */
+.table .row div[data-col="Status"]{ display:flex; align-items:center; gap:8px; flex-wrap:nowrap }
+.table .row div[data-col="Status"] .status-pill{ flex:0 0 auto }
+.table .row div[data-col="Status"] .status-select{ flex:0 0 auto }
+
+/* Prevent downward shift on select open by stabilizing line-height */
+.status-select{ line-height:1.2 }
+
+/* Mobile carded rows for issues table */
+@media (max-width: 768px){
+	.table.cols-6 .row{ grid-template-columns: 1fr !important; align-items:flex-start }
+	.table.cols-6 .row.head{ display:none }
+	.table.cols-6 .row div{ display:flex; gap:8px; padding:8px 0; border-bottom:1px dashed var(--border) }
+	.table.cols-6 .row div:last-child{ border-bottom:none }
+	.table.cols-6 .row div::before{ content: attr(data-col); min-width: 110px; color: var(--muted) }
+	.count-chip{ display:inline-block; margin-left:8px; padding:2px 8px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted); background:#fff }
+}
+
+/* Priority chip colors */
+.chip{ border:1px solid var(--border); border-radius:999px; padding:2px 8px; font-size:12px }
+.chip.high{ background:#fee2e2; border-color:#ef4444; color:#991b1b }
+.chip.medium{ background:#fef3c7; border-color:#f59e0b; color:#9a3412 }
+.chip.low{ background:#dcfce7; border-color:#22c55e; color:#14532d }
+
+/* Modal (shared styles used elsewhere) */
+.modal.hidden{ display:none }
+.modal{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:50 }
+.modal-dialog{ background:#fff; border:1px solid var(--border); border-radius:12px; width: min(520px, 92vw); box-shadow:0 10px 20px rgba(0,0,0,0.08) }
+.modal-header{ display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--border) }
+.modal-body{ padding:14px }
+.modal-footer{ display:flex; justify-content:flex-end; gap:8px; padding:12px 14px; border-top:1px solid var(--border) }
+.backdrop{ position:fixed; inset:0; background:rgba(17,24,39,0.35) }
+.btn-primary{ background:#111827; color:#fff; border:1px solid #111827; padding:6px 12px; border-radius:8px }
+.btn-ghost{ background:#fff; color:#111827; border:1px solid var(--border); padding:6px 12px; border-radius:8px }

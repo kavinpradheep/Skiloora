@@ -9,7 +9,9 @@
   <script src="../js/nav.js"></script>
 </head>
 <body class="admin-app">
-  <aside class="admin-sidebar">
+  <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="adminSidebar" aria-expanded="false">☰</button>
+  <div class="overlay" id="menuOverlay" aria-hidden="true" hidden></div>
+  <aside class="admin-sidebar" id="adminSidebar">
     <div class="brand">Skiloora</div>
     <nav class="nav">
       <div class="section-label">Overview</div>
@@ -36,7 +38,7 @@
     </header>
 
     <section class="section" id="sectionFreelancers">
-      <h2>Freelancers</h2>
+      <h2>Freelancers <span class="chip" id="countFreelancers">0</span></h2>
       <p class="muted">View and manage registered freelancers</p>
       <div class="table cols-6">
         <div class="row head"><div>Name</div><div>Email</div><div>Skills</div><div>Subscription</div><div>Profile</div><div>Actions</div></div>
@@ -45,7 +47,7 @@
     </section>
 
     <section class="section" id="sectionClients">
-      <h2>Clients / Hirers</h2>
+      <h2>Clients / Hirers <span class="chip" id="countClients">0</span></h2>
       <p class="muted">View and manage all clients</p>
       <div class="table cols-3">
         <div class="row head"><div>Company Name</div><div>Email</div><div>Actions</div></div>

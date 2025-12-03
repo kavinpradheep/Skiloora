@@ -5,6 +5,9 @@
 
   const suspendedRows = document.getElementById('suspendedRows');
   const bannedRows = document.getElementById('bannedRows');
+  const countSuspended = document.getElementById('countSuspended');
+  const countBanned = document.getElementById('countBanned');
+  const topSearch = document.querySelector('.admin-topbar .search');
 
   // Confirmation modal elements
   const confirmModal = document.getElementById('confirmModal');
@@ -37,7 +40,13 @@
 
   function renderSuspendedRow(item){
     const row = document.createElement('div'); row.className='row';
-    row.innerHTML = `<div>${item.user.name||''}</div><div>${item.user.email||''}</div><div>${fmtDate(item.until)}</div><div class="muted">${item.reason||''}</div><div class="actions"><button class="chip" data-uid="${item.uid}">Unsuspend</button></div>`;
+    row.dataset.search = `${item.user?.name||''} ${item.user?.email||''} ${item.reason||''}`.toLowerCase();
+    row.innerHTML = `
+      <div class="cell" data-col="Name">${item.user?.name||''}</div>
+      <div class="cell" data-col="Email">${item.user?.email||''}</div>
+      <div class="cell" data-col="Until">${fmtDate(item.until)}</div>
+      <div class="cell" data-col="Reason"><span class="muted">${item.reason||''}</span></div>
+      <div class="cell actions" data-col="Actions"><button class="chip" data-uid="${item.uid}">Unsuspend</button></div>`;
     const btn = row.querySelector('button[data-uid]');
     btn?.addEventListener('click', ()=> openConfirm('unsuspend', item.uid));
     suspendedRows.appendChild(row);
@@ -45,10 +54,38 @@
 
   function renderBannedRow(item){
     const row = document.createElement('div'); row.className='row';
-    row.innerHTML = `<div>${item.user.name||''}</div><div>${item.user.email||''}</div><div class="muted">${item.reason||''}</div><div class="actions"><button class="chip" data-uid="${item.uid}">Unban</button></div>`;
+    row.dataset.search = `${item.user?.name||''} ${item.user?.email||''} ${item.reason||''}`.toLowerCase();
+    row.innerHTML = `
+      <div class="cell" data-col="Name">${item.user?.name||''}</div>
+      <div class="cell" data-col="Email">${item.user?.email||''}</div>
+      <div class="cell" data-col="Reason"><span class="muted">${item.reason||''}</span></div>
+      <div class="cell actions" data-col="Actions"><button class="chip" data-uid="${item.uid}">Unban</button></div>`;
     const btn = row.querySelector('button[data-uid]');
     btn?.addEventListener('click', ()=> openConfirm('unban', item.uid));
     bannedRows.appendChild(row);
+  }
+
+  function updateCounts(){
+    if (countSuspended){
+      const visible = Array.from(suspendedRows.children).filter(r => r.classList.contains('row') ? (r.style.display !== 'none') : false).length;
+      countSuspended.textContent = String(visible);
+    }
+    if (countBanned){
+      const visible = Array.from(bannedRows.children).filter(r => r.classList.contains('row') ? (r.style.display !== 'none') : false).length;
+      countBanned.textContent = String(visible);
+    }
+  }
+
+  function applySearch(){
+    const q = (topSearch && topSearch.value || '').trim().toLowerCase();
+    [suspendedRows, bannedRows].forEach(container => {
+      Array.from(container.children).forEach(row => {
+        if (!row.classList.contains('row')) return;
+        const hay = row.dataset.search || row.textContent.toLowerCase();
+        row.style.display = q ? (hay.includes(q) ? '' : 'none') : '';
+      });
+    });
+    updateCounts();
   }
 
   async function clearModeration(uid){
@@ -85,6 +122,7 @@
       if (!res.ok || !json.ok) throw new Error('list_failed');
       (json.suspended || []).forEach(renderSuspendedRow);
       (json.banned || []).forEach(renderBannedRow);
+      updateCounts();
     }catch(e){
       // No items fallback
       const p1 = document.createElement('p'); p1.className='muted'; p1.textContent = 'No suspended users.'; suspendedRows.appendChild(p1);
@@ -93,4 +131,6 @@
   }
 
   loadList();
+
+  topSearch?.addEventListener('input', applySearch);
 })();

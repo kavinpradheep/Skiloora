@@ -18,6 +18,23 @@
 #sectionRoles > .row{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin:16px 0 8px; }
 #adminCards{ margin-top: 8px; }
 
+/* Bigger admin cards */
+.admin-cards{ grid-template-columns: repeat(auto-fill, minmax(360px,1fr)); }
+.admin-card{ position:relative; display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:14px; padding:18px; background:#fff; min-height:220px; }
+.admin-content{ display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center; }
+.admin-avatar{ width:72px; height:72px; border-radius:50%; background:#111827; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; }
+.admin-meta{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+.admin-name{ font-weight:700; font-size:18px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.admin-email{ color:var(--muted); font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.admin-badges{ position:absolute; top:12px; right:12px; display:flex; gap:8px; align-items:center; }
+.admin-badges .badge{ background:#111827; }
+.admin-actions{ display:none; gap:8px; margin-left:0; margin-top:auto; width:100%; justify-content:flex-end; padding-top:12px; }
+.admin-card.show-actions .admin-actions{ display:flex; }
+.admin-actions .btn-ghost{ border:1px solid var(--border); border-radius:8px; padding:6px 10px; }
+.admin-card{ cursor:pointer; }
+.admin-card:hover{ box-shadow:0 6px 16px rgba(16,24,40,0.08); }
+
+
 /* Responsive: stack fields on small screens */
 @media (max-width: 640px){
 	#sectionRoles .panel .card{ grid-template-columns: 1fr; }
@@ -34,3 +51,9 @@
 .admin-main .btn{ background:#111827; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer; }
 .admin-main .btn-ghost{ background:transparent; border:none; color:#111827; cursor:pointer; padding:6px 8px; }
 .muted{ color:#6b7280; }
+
+/* Add Admin form polish */
+.password-row{ display:flex; align-items:center; gap:8px; }
+.password-row input{ flex:1 }
+.error-text{ color:#b91c1c; font-size:12px; margin-top:4px; display:none }
+.field.invalid input{ border-color:#ef4444 }

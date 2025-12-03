@@ -327,12 +327,12 @@ exports.getPaymentsList = async (req, res) => {
         id: doc.id,
         plan: (d.label || d.plan || '').toString(),
         userName,
-      // module.exports = router;
+        userEmail,
         amount,
         currency: d.currency || 'INR',
         status: d.status || 'pending',
         method: 'Razorpay',
-        accountInfo: '-',
+        accountInfo: userEmail || '-',
         createdAt: createdAt ? createdAt.toISOString() : null
       });
     }
@@ -438,16 +438,44 @@ exports.createAdmin = async (req, res) => {
       return res.status(400).json({ ok: false, error: 'missing_fields' });
     }
 
+    // Prevent duplicate admin entries for the same email
+    try {
+      const q = await db.collection('admins').where('email', '==', normEmail).limit(1).get();
+      if (!q.empty) {
+        return res.status(409).json({ ok: false, error: 'email_exists' });
+      }
+    } catch(_) { /* ignore and continue */ }
+
+    // Disallow promoting an existing non-admin account (freelancer/client) to admin.
+    // If an Auth user exists for this email and is not already admin, block.
+    // Also block if email is present in Firestore 'users' collection.
     let uid = null;
     try {
       const u = await admin.auth().getUserByEmail(normEmail);
       uid = u.uid;
-      // Optionally update displayName
-      if (name && u.displayName !== name) {
-        await admin.auth().updateUser(uid, { displayName: name });
+      const claims = u.customClaims || {};
+      // If already admin via claim, treat as exists
+      if (claims.admin === true) {
+        return res.status(409).json({ ok: false, error: 'email_exists' });
       }
+      // If present in admins collection by uid, also treat as exists
+      try {
+        const adminDoc = await db.collection('admins').doc(String(uid)).get();
+        if (adminDoc.exists) {
+          return res.status(409).json({ ok: false, error: 'email_exists' });
+        }
+      } catch (_) {}
+      // Existing Auth user that is not admin -> considered a regular account; block
+      return res.status(409).json({ ok: false, error: 'email_in_use_by_user' });
     } catch (err) {
-      // If user-not-found, create
+      // If user-not-found, proceed, but still guard against Firestore user email reuse
+      try {
+        const uq = await db.collection('users').where('email', '==', normEmail).limit(1).get();
+        if (!uq.empty) {
+          return res.status(409).json({ ok: false, error: 'email_in_use_by_user' });
+        }
+      } catch (_) { /* ignore */ }
+      // Create fresh Auth user for the admin
       const created = await admin.auth().createUser({ email: normEmail, password, displayName: name });
       uid = created.uid;
     }
@@ -467,6 +495,64 @@ exports.createAdmin = async (req, res) => {
   } catch (err) {
     console.error('createAdmin error', err);
     return res.status(500).json({ ok: false, error: 'server_error', message: err.message || String(err) });
+  }
+};
+
+// Delete an admin (removes from admins collection and clears custom claim if any)
+exports.deleteAdmin = async (req, res) => {
+  try {
+    const { uid, email } = req.body || {};
+    const normEmail = String(email || '').trim().toLowerCase();
+    let targetUid = uid || null;
+
+    if (!targetUid && normEmail){
+      try { const u = await admin.auth().getUserByEmail(normEmail); targetUid = u.uid; } catch(_){ /* ignore */ }
+    }
+
+    if (!targetUid){
+      // Try to locate by admins collection email
+      const q = await db.collection('admins').where('email', '==', normEmail).limit(1).get();
+      if (!q.empty){ targetUid = q.docs[0].id; }
+    }
+
+    if (!targetUid) return res.status(400).json({ ok:false, error:'not_found' });
+
+    const doc = await db.collection('admins').doc(String(targetUid)).get();
+    if (doc.exists && doc.data().isDefault){
+      return res.status(400).json({ ok:false, error:'cannot_delete_default_admin' });
+    }
+
+    // Remove admin doc
+    await db.collection('admins').doc(String(targetUid)).delete();
+    // Best-effort clear custom claims (non-fatal)
+    try {
+      const u = await admin.auth().getUser(String(targetUid));
+      const existing = u.customClaims || {};
+      if (existing.admin){ await admin.auth().setCustomUserClaims(String(targetUid), { ...existing, admin: undefined }); }
+    } catch(_){}
+    // Delete from Firebase Authentication as well
+    try { await admin.auth().deleteUser(String(targetUid)); } catch(_){ /* ignore if already absent */ }
+    return res.json({ ok:true, uid: String(targetUid) });
+  } catch (err) {
+    console.error('deleteAdmin error', err);
+    return res.status(500).json({ ok:false, error:'server_error' });
+  }
+};
+
+// Generate a password reset link for an admin email
+exports.resetAdminPassword = async (req, res) => {
+  try {
+    const { email } = req.body || {};
+    const normEmail = String(email || '').trim().toLowerCase();
+    if (!normEmail) return res.status(400).json({ ok:false, error:'missing_email' });
+    // Ensure is in admins list
+    const q = await db.collection('admins').where('email','==', normEmail).limit(1).get();
+    if (q.empty) return res.status(404).json({ ok:false, error:'not_admin' });
+    const link = await admin.auth().generatePasswordResetLink(normEmail);
+    return res.json({ ok:true, link });
+  } catch (err) {
+    console.error('resetAdminPassword error', err);
+    return res.status(500).json({ ok:false, error:'server_error' });
   }
 };
 

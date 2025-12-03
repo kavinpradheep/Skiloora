@@ -20,6 +20,8 @@ router.get('/revenue-stats', controller.getRevenueStats);
 // Admin management
 router.get('/admins', controller.listAdmins);
 router.post('/create-admin', controller.createAdmin);
+router.post('/admin-delete', controller.deleteAdmin);
+router.post('/reset-admin-password', controller.resetAdminPassword);
 
 // Moderation routes
 router.get('/moderation', controller.moderationList);

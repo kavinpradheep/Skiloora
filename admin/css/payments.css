@@ -1,2 +1,15 @@
 /* Payments page specific overrides */
-/* Ready for page-specific layout tweaks */
+/* Responsive table -> cards on small screens */
+
+.table .row .cell{display:block}
+
+@media (max-width: 760px){
+	.table{border:none}
+	.table .row.head{display:none}
+	.table .rows{display:grid;gap:12px}
+	.table .row{grid-template-columns:1fr !important; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:10px}
+	.table .row .cell{display:grid; grid-template-columns:140px 1fr; gap:8px; padding:6px 0; border-top:1px dashed var(--border)}
+	.table .row .cell:first-child{border-top:none; padding-top:0}
+	.table .row .cell::before{content:attr(data-col); color:var(--muted); font-size:12px}
+	.table .row .actions{justify-content:flex-start}
+}

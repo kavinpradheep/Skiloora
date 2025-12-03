@@ -9,7 +9,9 @@
   <script src="../js/nav.js"></script>
 </head>
 <body class="admin-app">
-  <aside class="admin-sidebar">
+  <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="adminSidebar" aria-expanded="false">☰</button>
+  <div class="overlay" id="menuOverlay" aria-hidden="true" hidden></div>
+  <aside class="admin-sidebar" id="adminSidebar">
     <div class="brand">Skiloora</div>
     <nav class="nav">
       <div class="section-label">Overview</div>
@@ -37,21 +39,13 @@
 
     <section class="section" id="sectionRoles">
       <h2>Roles & Permissions</h2>
-      <p class="muted">Admin credentials</p>
-      <div class="panel">
-        <div class="card">
-          <div class="field"><label>Role</label><input value="Admin" disabled /></div>
-          <div class="field"><label>Email</label><input value="admin@gmail.com" disabled /></div>
-          <div class="field"><label>Password</label><input placeholder="(hidden)" disabled type="password" autocomplete="off" /></div>
-          <div class="field" style="margin-top:6px"><small class="muted">For security we do not display or store plaintext passwords here. Use the reset flow to change.</small></div>
-        </div>
-      </div>
+      <p class="muted">Manage the list of administrators with access to this dashboard.</p>
 
       <div class="row" style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
         <h3 style="margin:0">All Admins</h3>
         <button id="btnAddAdmin" class="btn">Add Admin</button>
       </div>
-      <div id="adminCards" class="cards-grid"></div>
+      <div id="adminCards" class="cards-grid admin-cards"></div>
 
     </section>
 
@@ -61,20 +55,56 @@
   <script src="../js/settings.js"></script>
 
   <!-- Add Admin Modal -->
-  <div id="addAdminModal" style="display:none;position:fixed;inset:0;background:#00000055;align-items:center;justify-content:center;z-index:50">
-    <div class="card" style="width:520px;max-width:90vw">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+  <div id="addAdminModal" class="modal hidden">
+    <div class="modal-backdrop" id="backdropAddAdmin"></div>
+    <div class="modal-content">
+      <div class="modal-header">
         <h3 style="margin:0">Add New Admin</h3>
-        <button id="closeAddAdmin" class="btn-ghost">Close</button>
+        <button id="closeAddAdmin" class="btn-ghost" aria-label="Close">✕</button>
       </div>
-      <div class="grid" style="grid-template-columns:1fr;gap:10px;margin-top:12px">
-        <label>Name<input id="adminName" placeholder="Full name" /></label>
-        <label>Email<input id="adminEmail" type="email" placeholder="you@example.com" /></label>
-        <label>Password<input id="adminPassword" type="password" placeholder="Set a password" /></label>
+      <div class="modal-body">
+        <div class="field" id="fieldName">
+          <label>Name</label>
+          <input id="adminName" placeholder="Full name" autocomplete="name" />
+          <div class="error-text" id="errName"></div>
+        </div>
+        <div class="field" id="fieldEmail">
+          <label>Email</label>
+          <input id="adminEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+          <div class="error-text" id="errEmail"></div>
+        </div>
+        <div class="field" id="fieldPassword">
+          <label>Password</label>
+          <div class="password-row">
+            <input id="adminPassword" type="password" placeholder="Set a password" autocomplete="new-password" />
+            <button type="button" id="togglePw" class="icon-btn" aria-label="Show password">👁</button>
+          </div>
+          <small class="muted">At least 6 characters.</small>
+          <div class="error-text" id="errPw"></div>
+        </div>
       </div>
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+      <div class="modal-footer">
         <button id="cancelAddAdmin" class="btn-ghost">Cancel</button>
         <button id="saveAddAdmin" class="btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Remove Admin Modal -->
+  <div id="confirmRemoveModal" class="modal hidden">
+    <div class="modal-backdrop" id="backdropRm"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="margin:0">Remove Admin</h3>
+        <button id="rmClose" class="btn-ghost" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin:0 0 6px">Are you sure you want to remove <strong id="rmAdminName">this admin</strong>?</p>
+        <small class="muted">This will also delete the account from Authentication.</small>
+      </div>
+      <div class="modal-footer">
+        <button id="rmCancel" class="btn-ghost">Cancel</button>
+        <button id="rmConfirm" class="btn" style="background:#b91c1c">Remove</button>
       </div>
     </div>
   </div>

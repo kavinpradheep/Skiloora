@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin Dashboard — Skiloora</title>
   <link rel="stylesheet" href="../css/admin.css" />
-  <link rel="stylesheet" href="../css/dashboard.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="../js/nav.js"></script>
 </head>
 <body class="admin-app">
-  <aside class="admin-sidebar">
+  <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="adminSidebar" aria-expanded="false">☰</button>
+  <div class="overlay" id="menuOverlay" aria-hidden="true" hidden></div>
+  <aside class="admin-sidebar" id="adminSidebar">
     <div class="brand">Skiloora</div>
     <nav class="nav">
       <div class="section-label">Overview</div>
