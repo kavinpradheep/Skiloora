@@ -157,6 +157,12 @@ body{
   cursor:pointer;
   color:var(--text);
 }
+.chip:hover{ background:#e5e7eb; }
+
+/* Focus states */
+.btn:focus, .chip:focus, .search-input:focus{ outline:2px solid rgba(17,24,39,0.2); outline-offset:2px }
+.btn-primary:hover{ filter:brightness(0.95) }
+.btn-outline:hover{ background:#f9fafb }
 
 /* right column image */
 .hero-right{
@@ -234,4 +240,10 @@ body{
   .testimonials{ grid-template-columns: 1fr; }
   .contact-inner{ grid-template-columns: 1fr; }
   .footer-cols{ grid-template-columns: 1fr 1fr; }
+}
+
+/* Auto-fit grids on large screens */
+@media (min-width:1100px){
+  .cards{ grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .testimonials{ grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 }

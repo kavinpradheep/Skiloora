@@ -88,6 +88,22 @@ categories.forEach(r=>{
 
 // Load freelancers from Firestore and filter by selected role
 const cardsWrap = document.getElementById('resultCards');
+async function fetchAverageRating(uid){
+  try{
+    const col = collection(window.firebaseDB, 'users', uid, 'reviews');
+    const snap = await getDocs(col);
+    if (snap.empty) return 5.0; // default to 5 if no reviews
+    let sum = 0, count = 0;
+    snap.forEach(d=>{ const r=d.data(); const s=Number(r.stars||0); if (s>0){ sum+=s; count++; } });
+    return count ? Math.round((sum/count)*10)/10 : 5.0;
+  }catch(e){ console.error('rating_fetch_failed', e); return 5.0; }
+}
+
+function renderStarText(val){
+  const filled = Math.max(1, Math.round(val));
+  return '★★★★★'.slice(0, filled) + '☆☆☆☆☆'.slice(filled, 5) + ' ' + Number(val).toFixed(1);
+}
+
 function renderCards(list){
   cardsWrap.innerHTML='';
   if (!list || list.length === 0){
@@ -109,8 +125,13 @@ function renderCards(list){
     const fav = document.createElement('button'); fav.className='rc-fav'; fav.textContent='♡';
     head.appendChild(av); head.appendChild(info); head.appendChild(fav);
     const desc = document.createElement('p'); desc.className='rc-desc'; desc.textContent = c.desc || c.bio || 'Connect with top freelancers to turn goals into success. Find the perfect talent.';
-    const ratingVal = typeof c.rating === 'number' ? c.rating : 4.0;
-    const stars = document.createElement('div'); stars.className='rc-stars'; stars.innerHTML = '★ ★ ★ ★ ☆ ' + ratingVal.toFixed(1);
+    const stars = document.createElement('div'); stars.className='rc-stars';
+    // Default optimistic rating while loading
+    stars.textContent = renderStarText(typeof c.rating === 'number' ? c.rating : 5.0);
+    if (c.uid){
+      // Compute average from buyer reviews and update asynchronously
+      fetchAverageRating(c.uid).then(avg=>{ stars.textContent = renderStarText(avg); }).catch(()=>{});
+    }
     const actions = document.createElement('div'); actions.className='rc-actions';
     const btnMsg = document.createElement('button'); btnMsg.className='rc-btn'; btnMsg.textContent='✉';
     const btnProfile = document.createElement('button'); btnProfile.className='rc-btn'; btnProfile.textContent='See profile';
