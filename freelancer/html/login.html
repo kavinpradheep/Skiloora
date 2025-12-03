@@ -34,19 +34,35 @@
 </head>
 <body>
   <main class="login-wrap">
-    <div class="card">
-      <h1>Sign in — Skiloora</h1>
-      <form id="loginForm" onsubmit="return window.__adminLoginIntercept(event)">
-        <label>Email</label>
-        <input id="email" type="email" required placeholder="you@example.com"/>
-        <label>Password</label>
-        <input id="password" type="password" required placeholder="Password"/>
-        <button id="loginBtn" type="submit">Login</button>
+    <section class="login-card" aria-label="Sign in">
+      <div class="brand">Skiloora</div>
+      <h1 class="title">Welcome back</h1>
+      <p class="subtitle">Sign in to continue</p>
+      <form id="loginForm" class="form" onsubmit="return window.__adminLoginIntercept(event)">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" required placeholder="you@example.com" autocomplete="email"/>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" required placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <button id="loginBtn" type="submit" class="btn primary">Sign in</button>
       </form>
-
-      <p class="hint">Don't have account? Go back to <a href="signup.html">Signup</a></p>
-      <div id="msg" class="msg" aria-live="polite"></div>
-    </div>
+      <div class="forgot-wrap" hidden>
+        <button id="forgotToggle" class="btn-ghost small" aria-expanded="false">Forgot password?</button>
+        <div id="forgotPanel" class="forgot-panel" hidden>
+          <p class="muted">We will send a reset link to the email you entered above.</p>
+          <div class="actions">
+            <button id="forgotCancel" class="btn-ghost small">Cancel</button>
+            <button id="forgotSend" class="btn small">Send reset link</button>
+          </div>
+          <div id="forgotMsg" class="msg" aria-live="polite"></div>
+        </div>
+      </div>
+      <div id="msg" class="msg" aria-live="polite" role="status"></div>
+      <p class="hint">New here? <a href="signup.html">Create an account</a></p>
+    </section>
   </main>
 </body>
 </html>

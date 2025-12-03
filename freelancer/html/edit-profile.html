@@ -33,15 +33,30 @@
       <button class="btn-ghost" id="cancelEdit">Cancel</button>
     </header>
     
-
-    <section class="card">
+    <section class="card" aria-labelledby="profileFormTitle">
+      <h2 id="profileFormTitle" class="visually-hidden">Profile Details</h2>
       <div class="grid">
-        <label>Name<input id="editName" /></label>
-        <label>Email<input id="editEmail" disabled /></label>
-        <label>Phone<input id="editPhone" /></label>
-        <label>Location<input id="editLocation" /></label>
-        <label>Hourly Rate<input id="editRate" type="number" /></label>
-        <label>Primary Role
+        <div class="avatar-block">
+          <div class="avatar" id="avatarPreview" aria-label="Avatar preview" role="img"></div>
+          <div class="avatar-actions">
+            <label class="btn-ghost small" for="editAvatarFile">Upload Avatar</label>
+            <button class="btn-ghost small" id="removeAvatar">Remove</button>
+          </div>
+          <input id="editAvatarFile" type="file" accept="image/*" hidden />
+        </div>
+        <label for="editName">Name<input id="editName" name="name" autocomplete="name" /></label>
+        <label for="editEmail">Email<input id="editEmail" name="email" autocomplete="email" disabled /></label>
+        <label for="editPhone">Phone<input id="editPhone" name="tel" autocomplete="tel" /></label>
+        <label for="editLocation">Location<input id="editLocation" name="address-level2" autocomplete="address-level2" /></label>
+        <label for="editRate">Hourly Rate
+          <div class="rate-control">
+            <button type="button" class="rate-btn" id="rateDec" aria-label="Decrease rate">−</button>
+            <input id="editRate" name="hourly-rate" type="number" inputmode="decimal" min="0" step="50" />
+            <button type="button" class="rate-btn" id="rateInc" aria-label="Increase rate">+</button>
+            <span class="rate-suffix">/ hour</span>
+          </div>
+        </label>
+        <label for="editPrimaryRole">Primary Role
           <select id="editPrimaryRole">
             <option value="">Select role</option>
             <option value="Full Stack Developer">Full Stack Developer</option>
@@ -53,37 +68,48 @@
             <option value="AI Engineer">AI Engineer</option>
           </select>
         </label>
-        <label>Bio<textarea id="editBio" rows="3" placeholder="Short professional bio"></textarea></label>
-        <label>GitHub<input id="editGithub" placeholder="github.com/username" /></label>
-        <label>Dribbble<input id="editDribbble" placeholder="dribbble.com/username" /></label>
-        <label>LinkedIn<input id="editLinkedin" placeholder="linkedin.com/in/username" /></label>
-        <label>X (Twitter)<input id="editX" placeholder="x.com/handle" /></label>
-        <label>Avatar Image<input id="editAvatarFile" type="file" accept="image/*" /></label>
+        <label for="editBio">Bio<textarea id="editBio" name="bio" rows="3" placeholder="Short professional bio"></textarea></label>
+        <label for="editGithub">GitHub<input id="editGithub" name="github" placeholder="github.com/username" inputmode="url" /></label>
+        <label for="editDribbble">Dribbble<input id="editDribbble" name="dribbble" placeholder="dribbble.com/username" inputmode="url" /></label>
+        <label for="editLinkedin">LinkedIn<input id="editLinkedin" name="linkedin" placeholder="linkedin.com/in/username" inputmode="url" /></label>
+        <label for="editX">X (Twitter)<input id="editX" name="x" placeholder="x.com/handle" inputmode="url" /></label>
       </div>
       <div class="row">
         <div class="fieldset">
           <div class="legend">Language</div>
           <div id="editLangList" class="chips-row"></div>
-          <div class="chip-editor"><input id="editLangInput" placeholder="Add language" /><button id="addLangBtn" class="btn-ghost small">+</button></div>
+          <div class="chip-editor"><input id="editLangInput" placeholder="Add language" aria-label="Add language" /><button id="addLangBtn" class="btn-ghost small" aria-label="Add language">+</button></div>
         </div>
       </div>
       <div class="row">
         <div class="fieldset">
           <div class="legend">Certifications</div>
           <div id="editCertsList" class="stack-list"></div>
-          <div class="chip-editor"><input id="editCertsInput" placeholder="Add certification" /><button id="addCertBtn" class="btn-ghost small">+</button></div>
+          <div class="chip-editor"><input id="editCertsInput" placeholder="Add certification" aria-label="Add certification" /><button id="addCertBtn" class="btn-ghost small" aria-label="Add certification">+</button></div>
         </div>
       </div>
       <div class="row">
         <div class="fieldset">
           <div class="legend">Skills</div>
           <div id="editSkillsList" class="chips-row"></div>
-          <div class="chip-editor"><input id="editSkillsInput" placeholder="Add skill" /><button id="addSkillBtn" class="btn-ghost small">+</button></div>
+          <div class="chip-editor"><input id="editSkillsInput" placeholder="Add skill" aria-label="Add skill" /><button id="addSkillBtn" class="btn-ghost small" aria-label="Add skill">+</button></div>
         </div>
       </div>
-      <label>Education<textarea id="editEducation"></textarea></label>
+      <label for="editEducation">Education<textarea id="editEducation" name="education" rows="3"></textarea></label>
       <div class="actions"><button class="btn" id="saveProfile">Save</button></div>
     </section>
   </main>
+  <script>
+    (function(){
+      const inc = document.getElementById('rateInc');
+      const dec = document.getElementById('rateDec');
+      const input = document.getElementById('editRate');
+      if(inc && dec && input){
+        const step = Number(input.step) || 50;
+        inc.addEventListener('click', ()=>{ const v = Number(input.value||0); input.value = String(v + step); });
+        dec.addEventListener('click', ()=>{ const v = Number(input.value||0); const next = v - step; input.value = String(next < 0 ? 0 : next); });
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -4,6 +4,12 @@ const form = document.getElementById('loginForm');
 const emailEl = document.getElementById('email');
 const pwEl = document.getElementById('password');
 const msg = document.getElementById('msg');
+const forgotToggle = document.getElementById('forgotToggle');
+const forgotPanel = document.getElementById('forgotPanel');
+const forgotWrap = document.querySelector('.forgot-wrap');
+const forgotSend = document.getElementById('forgotSend');
+const forgotCancel = document.getElementById('forgotCancel');
+const forgotMsg = document.getElementById('forgotMsg');
 
 // redirectToDashboard(): Simple helper to navigate to dashboard page.
 window.redirectToDashboard = function(){
@@ -93,5 +99,46 @@ form.addEventListener('submit', async (e) => {
   } catch (err) {
     console.error('Login error', err);
     showMsg(err.message || 'Login failed');
+    // Show forgot password option on typical credential errors
+    const code = err && err.code ? String(err.code) : '';
+    const show = code.includes('wrong-password') || code.includes('user-not-found') || code.includes('invalid-credential');
+    if (show && forgotWrap){ forgotWrap.removeAttribute('hidden'); }
   }
 });
+
+// Forgot password toggle and submit
+if (forgotToggle && forgotPanel){
+  forgotToggle.addEventListener('click', ()=>{
+    const isHidden = forgotPanel.hasAttribute('hidden');
+    if (isHidden){ forgotPanel.removeAttribute('hidden'); forgotToggle.setAttribute('aria-expanded','true'); }
+    else { forgotPanel.setAttribute('hidden',''); forgotToggle.setAttribute('aria-expanded','false'); }
+  });
+}
+forgotCancel?.addEventListener('click', ()=>{ forgotPanel?.setAttribute('hidden',''); forgotToggle?.setAttribute('aria-expanded','false'); });
+if (forgotSend){
+  forgotSend.addEventListener('click', async ()=>{
+    const email = (emailEl?.value||'').trim();
+    if (!email){ if(forgotMsg) forgotMsg.textContent='Please enter your email above.'; return; }
+    try{
+      if (!window.firebaseAuth) throw new Error('Firebase not initialized');
+      // Validate email exists either in Auth or Firestore profile
+      if(forgotMsg) forgotMsg.textContent='Checking account...';
+      let exists = false;
+      try{
+        const methods = await window.firebaseAuth.fetchSignInMethodsForEmail(email);
+        exists = Array.isArray(methods) && methods.length > 0;
+      }catch(_){ exists = false; }
+      if (!exists && window.firebaseDB){
+        try{
+          const qs = await window.firebaseDB.collection('users').where('email','==',email).limit(1).get();
+          exists = !qs.empty;
+        }catch(_){ /* ignore */ }
+      }
+      if (!exists){ if(forgotMsg) forgotMsg.textContent='No account found for this email.'; return; }
+      if(forgotMsg) forgotMsg.textContent='Sending reset email...';
+      await window.firebaseAuth.sendPasswordResetEmail(email);
+      if(forgotMsg) forgotMsg.textContent='Reset link sent. Check your inbox.';
+      setTimeout(()=>{ forgotPanel?.setAttribute('hidden',''); forgotToggle?.setAttribute('aria-expanded','false'); }, 2000);
+    }catch(e){ console.error('Reset email error', e); if(forgotMsg) forgotMsg.textContent='Failed to send reset email.'; }
+  });
+}

@@ -31,7 +31,9 @@
   <script type="module" src="../js/dashboard.js" defer></script>
 </head>
 <body>
-  <div class="app">
+  <div class="app" id="appRoot">
+    <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">☰</button>
+    <div class="overlay hidden" id="menuOverlay" aria-hidden="true"></div>
     <aside class="sidebar" id="sidebar">
       <div class="brand">Skiloora</div>
       <nav class="nav">
@@ -47,7 +49,7 @@
       </div>
     </aside>
 
-    <main class="main">
+    <main class="main" role="main">
       <header class="topbar">
         <div class="search">
           <input id="globalSearch" placeholder="Search projects..." autocomplete="off" />
@@ -197,6 +199,10 @@
   </div>
 
   <style>
+    .mobile-menu { position:fixed; top:10px; left:10px; z-index:110; background:#111827; color:#fff; border:none; border-radius:10px; padding:8px 10px; display:none; }
+    @media (max-width: 900px){ .mobile-menu{ display:block; } .sidebar{ transform: translateX(-100%); position:fixed; top:0; left:0; height:100vh; z-index:106; transition: transform .25s ease; } .sidebar.open{ transform: translateX(0); } .main{ margin-left:0!important; } }
+    .overlay{ position:fixed; inset:0; background: rgba(0,0,0,0.35); z-index:105; }
+    .hidden{ display:none !important; }
     .modal { position: fixed; inset:0; background: rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:50; }
     .modal.hidden { display:none; }
     .modal-inner { background:white; padding:18px; border-radius:12px; width:420px; max-width:95%; }
@@ -206,5 +212,27 @@
     .btn { background:#111827;color:white;padding:8px 12px;border-radius:10px;border:none; cursor:pointer; }
     .btn-ghost { background:transparent;border:1px solid #e5e7eb;padding:8px 12px;border-radius:10px; cursor:pointer; }
   </style>
+  <script>
+    (function(){
+      const btn = document.getElementById('mobileMenu');
+      const sb = document.getElementById('sidebar');
+      const ov = document.getElementById('menuOverlay');
+      if (!btn || !sb) return;
+      btn.addEventListener('click', ()=>{
+        const open = sb.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+        if (ov){ ov.classList.toggle('hidden', !open); ov.setAttribute('aria-hidden', String(!open)); }
+        document.body.style.overflow = open ? 'hidden' : '';
+      });
+      document.addEventListener('click', (e)=>{
+        if (sb.classList.contains('open') && !sb.contains(e.target) && e.target !== btn){
+          sb.classList.remove('open');
+          btn.setAttribute('aria-expanded','false');
+          if (ov){ ov.classList.add('hidden'); ov.setAttribute('aria-hidden','true'); }
+          document.body.style.overflow = '';
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

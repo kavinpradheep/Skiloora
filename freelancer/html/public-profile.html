@@ -27,9 +27,9 @@
   <script defer src="../js/public-profile.js"></script>
 </head>
 <body>
-  <header class="cover">
+  <header class="cover" role="banner">
     <div class="brand">Skiloora</div>
-    <h1 class="cover-title">COVER PICTURE</h1>
+    <h1 class="cover-title">Public Profile</h1>
   </header>
   <main class="layout">
     <aside class="left">
@@ -60,7 +60,7 @@
       </div>
     </aside>
     <section class="right">
-      <nav class="tabs">
+      <nav class="tabs" aria-label="Profile sections">
         <button class="tab active" data-target="about">About</button>
         <button class="tab" data-target="works">Works</button>
         <button class="tab" data-target="links">Links</button>
@@ -69,14 +69,19 @@
       <section class="about" id="about">
         <h3 id="ppNameAbout">Name</h3>
         <p id="ppBio" class="muted">—</p>
+        <div class="stats">
+          <div class="stat"><div class="stat-label">Projects</div><div class="stat-value" id="ppProjects">0</div></div>
+          <div class="stat"><div class="stat-label">Response Time</div><div class="stat-value" id="ppResponse">—</div></div>
+          <div class="stat"><div class="stat-label">Hourly Rate</div><div class="stat-value" id="ppRateInline">—</div></div>
+        </div>
       </section>
       <section class="works" id="works">
         <h3>My Works</h3>
-        <div class="cards" id="ppWorks"></div>
+        <div class="gallery" id="ppWorks"></div>
       </section>
       <section class="links" id="links">
         <h3>Links</h3>
-        <div class="social" id="ppLinks"></div>
+        <div class="social chips" id="ppLinks"></div>
       </section>
       <section class="reviews" id="reviews">
         <h3>Reviews</h3>
@@ -84,7 +89,7 @@
         <div class="add-review">
           <button id="btnShowReview" class="btn">Add your Review</button>
           <div id="reviewForm" class="review-form" style="display:none">
-            <input id="rfName" placeholder="Your name" />
+            <input id="rfName" placeholder="Your name" autocomplete="name" />
             <textarea id="rfText" maxlength="1024" placeholder="Write your review" rows="4"></textarea>
             <div class="stars-input" id="rfStars" data-value="0">
               <button type="button" data-s="1">☆</button>

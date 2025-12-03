@@ -52,6 +52,15 @@ onAuthStateChanged(window.firebaseAuth, async (user)=>{
 
     const snap = await getDoc(doc(window.firebaseDB, 'users', user.uid));
     const profile = snap.exists() ? snap.data() : { name: user.email };
+
+    // Role guard: prevent freelancers from viewing buyer pages
+    const role = (profile.role || profile.userType || '').toLowerCase();
+    const isBuyer = profile.isBuyer === true || profile.isHirer === true || role === 'buyer' || role === 'hirer';
+    const isFreelancer = profile.isFreelancer === true || role === 'freelancer';
+    if (!isBuyer && isFreelancer){
+      window.location.href = '../../freelancer/html/dashboard.html';
+      return;
+    }
     renderUserNav(profile);
 
     // Issue form wiring (requires auth user)

@@ -1,27 +1,43 @@
-*{box-sizing:border-box}
-body{
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  background:#f6f7fb;
-  margin:0;
-  color:#111827;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-}
-.login-wrap{width:100%;max-width:420px}
-.card{
-  background:white;
-  padding:28px;
-  border-radius:12px;
-  box-shadow:0 8px 30px rgba(2,6,23,0.06);
-}
-h1{font-size:20px;margin:0 0 14px}
-label{display:block;margin:10px 0 6px;font-size:13px;color:#374151}
-input{width:100%;padding:12px;border-radius:8px;border:1px solid #e6e9ef;font-size:14px}
-button{
-  margin-top:18px;width:100%;padding:12px;border-radius:10px;background:#111827;color:#fff;border:0;font-weight:600;cursor:pointer;
-}
-.hint{margin-top:12px;color:#6b7280;font-size:13px}
-.msg{margin-top:12px;font-size:14px;color:#e11d48}
+/* Light theme variables */
+:root{ --bg:#f6f7fb; --card:#ffffff; --text:#111827; --muted:#6b7280; --border:#e6e9ef; --accent:#111827; --accentHover:#0f172a; --link:#2563eb; --danger:#e11d48; --radius:14px }
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{ margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:var(--bg); color:var(--text); }
+
+.login-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px }
+.login-card{ width:100%; max-width:420px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:0 8px 30px rgba(2,6,23,0.06); padding:24px }
+.brand{ font-weight:800; letter-spacing:.2px; color:var(--text); font-size:20px; margin-bottom:6px }
+.title{ margin:0; font-size:24px; font-weight:700 }
+.subtitle{ margin:6px 0 16px; color:var(--muted) }
+
+.form{ display:flex; flex-direction:column; gap:12px }
+.field label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px }
+.field input{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:#ffffff; color:var(--text); outline:none }
+.field input::placeholder{ color:#9aa3af }
+.field input:focus{ border-color:#cbd5e1; box-shadow:0 0 0 3px rgba(17,24,39,.12) }
+
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 14px; border-radius:12px; border:none; cursor:pointer }
+.btn.primary{ background:var(--accent); color:#ffffff; font-weight:700 }
+.btn.primary:hover{ background:var(--accentHover) }
+.btn.small{ padding:8px 12px; border-radius:10px }
+.btn-ghost{ background:transparent; border:1px solid var(--border); color:var(--text) }
+.btn-ghost.small{ padding:8px 12px; border-radius:10px }
+
+.hint{ margin-top:12px; color:var(--muted); text-align:center }
+.hint a{ color:var(--link); text-decoration:none }
+.hint a:hover{ text-decoration:underline }
+
+.msg{ min-height:18px; margin-top:8px; font-size:13px }
+.msg[role="status"]{ color:#93c5fd }
+.msg.error{ color:var(--danger) }
+
+/* Forgot password */
+.forgot-wrap{ margin-top:10px }
+.forgot-panel{ margin-top:8px; border:1px solid var(--border); border-radius:12px; padding:12px; background:#f9fafb; box-shadow:0 8px 24px rgba(2,6,23,0.06) }
+.forgot-panel p{ font-size:13px; color:var(--muted); margin:0 }
+.forgot-panel .actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:8px }
+/* Inline status message styling inside forgot panel */
+#forgotMsg{ margin-top:6px; font-size:12px; color:var(--muted) }
+
+/* Responsive */
+@media (max-width: 420px){ .login-card{ padding:18px; border-radius:12px } .title{ font-size:22px } }

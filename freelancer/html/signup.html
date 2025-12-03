@@ -67,17 +67,17 @@
         <!-- HIRER form (buyer) -->
         <form id="hirerForm" class="signup-form" onsubmit="return handleHirer(event)">
           <input type="hidden" name="role" value="hirer">
-          <label class="field-label">Full name</label>
-          <input type="text" id="hirerName" class="field" placeholder="Your name" required>
+          <label class="field-label" for="hirerName">Full name</label>
+          <input type="text" id="hirerName" class="field" placeholder="Your name" required autocomplete="name">
 
-          <label class="field-label">Email</label>
-          <input type="email" id="hirerEmail" class="field" placeholder="name@example.com" required>
+          <label class="field-label" for="hirerEmail">Email</label>
+          <input type="email" id="hirerEmail" class="field" placeholder="name@example.com" required autocomplete="email">
 
-          <label class="field-label">Password</label>
-          <input type="password" id="hirerPassword" class="field" placeholder="Password" required>
+          <label class="field-label" for="hirerPassword">Password</label>
+          <input type="password" id="hirerPassword" class="field" placeholder="Password" required autocomplete="new-password">
 
-          <label class="field-label">Confirm Password</label>
-          <input type="password" id="hirerConfirm" class="field" placeholder="Confirm password" required>
+          <label class="field-label" for="hirerConfirm">Confirm Password</label>
+          <input type="password" id="hirerConfirm" class="field" placeholder="Confirm password" required autocomplete="new-password">
 
           <div class="terms">
             <input type="checkbox" id="hirerTos">
@@ -94,20 +94,20 @@
         <!-- FREELANCER form (detailed) -->
         <form id="freelancerForm" class="signup-form hidden" onsubmit="return handleFreelancer(event)">
           <input type="hidden" name="role" value="freelancer">
-          <label class="field-label">Full name</label>
-          <input type="text" id="freeName" class="field" placeholder="Your name" required>
+          <label class="field-label" for="freeName">Full name</label>
+          <input type="text" id="freeName" class="field" placeholder="Your name" required autocomplete="name">
 
-          <label class="field-label">Email</label>
-          <input type="email" id="freeEmail" class="field" placeholder="name@example.com" required>
+          <label class="field-label" for="freeEmail">Email</label>
+          <input type="email" id="freeEmail" class="field" placeholder="name@example.com" required autocomplete="email">
 
-          <label class="field-label">Location</label>
-          <input type="text" id="freeLocation" class="field" placeholder="City, Country">
+          <label class="field-label" for="freeLocation">Location</label>
+          <input type="text" id="freeLocation" class="field" placeholder="City, Country" autocomplete="address-level2">
 
-          <label class="field-label">Password</label>
-          <input type="password" id="freePassword" class="field" placeholder="Password" required>
+          <label class="field-label" for="freePassword">Password</label>
+          <input type="password" id="freePassword" class="field" placeholder="Password" required autocomplete="new-password">
 
-          <label class="field-label">Confirm Password</label>
-          <input type="password" id="freeConfirm" class="field" placeholder="Confirm password" required>
+          <label class="field-label" for="freeConfirm">Confirm Password</label>
+          <input type="password" id="freeConfirm" class="field" placeholder="Confirm password" required autocomplete="new-password">
 
           <label class="field-label">ID Proof (Aadhar / PAN) - optional</label>
           <div class="file-row">

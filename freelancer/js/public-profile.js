@@ -10,6 +10,27 @@ function letterAvatar(name){
 
 function setText(id, val){ const el = document.getElementById(id); if(el) el.textContent = val; }
 
+// Compute and render stars from buyer reviews; default to 5.0
+async function updateStars(uid){
+  const starsEl = document.getElementById('ppStars');
+  if (!starsEl) return;
+  // Default display to 5 stars in case of no reviews or errors
+  starsEl.textContent = '★★★★★ 5.0';
+  try{
+    const snap = await db.collection('users').doc(uid).collection('reviews').get();
+    if (snap.empty){
+      // keep default
+      return;
+    }
+    let sum = 0, count = 0;
+    snap.forEach(d=>{ const r=d.data(); const s=Number(r.stars||0); if (s>0){ sum+=s; count++; } });
+    const avg = count ? Math.round((sum/count)*10)/10 : 5;
+    const filled = Math.max(1, Math.round(avg));
+    const starsText = '★★★★★'.slice(0, filled) + '☆☆☆☆☆'.slice(filled, 5);
+    starsEl.textContent = `${starsText} ${avg.toFixed(1)}`;
+  }catch(e){ console.error('Update stars failed', e); /* leave default */ }
+}
+
 // Load by explicit uid (for buyer view) or fallback to current user
 function getTargetUid(){
   const uid = new URLSearchParams(location.search).get('uid');
@@ -31,10 +52,11 @@ auth.onAuthStateChanged(async (user)=>{
     setText('ppLocation', p.location || p.country || '');
     const hr = p.hourlyRate || p.rate; setText('ppRate', hr ? `₹ ${hr} / Hour` : '');
     setText('ppBio', p.bio || p.desc || '');
+    // Inline stats under About
+    setText('ppRateInline', hr ? `₹ ${hr} / Hour` : '—');
 
-    // Stars placeholder (no rating backend yet)
-    const stars = document.getElementById('ppStars');
-    if (stars) stars.textContent = '★ ★ ★ ★ ☆ 4.0';
+    // Stars: compute from buyer reviews; default to 5 if none
+    await updateStars(uid);
 
     // Works (projects)
     const works = document.getElementById('ppWorks');
@@ -51,6 +73,15 @@ auth.onAuthStateChanged(async (user)=>{
         });
       }
     }
+
+    // Projects count
+    try{
+      const countSnap = await db.collection('users').doc(uid).collection('projects').get();
+      setText('ppProjects', String(countSnap.size || 0));
+    }catch(e){ setText('ppProjects','0'); }
+
+    // Response time (placeholder if not tracked)
+    setText('ppResponse', p.responseTime || '—');
 
     // Links (social icons)
     const links = document.getElementById('ppLinks');
@@ -110,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const snap = await db.collection('users').doc(uid).collection('reviews').orderBy('createdAt','desc').limit(20).get();
       if (snap.empty){
         const p = document.createElement('p'); p.className='muted'; p.textContent='No reviews yet.'; listEl.appendChild(p);
+        // keep stars at default handled by updateStars
         return;
       }
       snap.forEach(d=>{
@@ -136,6 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }catch(e){ console.error('Load reviews failed', e); }
   }
+
+  // Ensure stars render even if auth state is not yet resolved
+  const uid = getTargetUid(); if (uid) { updateStars(uid); }
 
   rfSubmit?.addEventListener('click', async ()=>{
     try{

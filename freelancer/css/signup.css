@@ -25,8 +25,8 @@ body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 /* role selector */
 .role-selector{display:flex;gap:12px;margin-bottom:20px}
 .role-card{
-  flex:1; display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:12px;
-  background:transparent;border:1px solid rgba(0,0,0,0.06);cursor:pointer;text-align:left;
+  flex:1; display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:12px;
+  background:#fff;border:1px solid rgba(0,0,0,0.06);cursor:pointer;text-align:left; box-shadow:0 8px 30px rgba(2,6,23,0.04);
 }
 .role-card .role-title{font-weight:700}
 .role-card .role-sub{color:var(--muted);font-size:13px}
@@ -34,15 +34,15 @@ body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
 /* form */
 .signup-form{display:flex;flex-direction:column;gap:12px;margin-top:6px}
-.field-label{font-size:13px;color:var(--muted)}
-.field{padding:12px 14px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);font-size:15px;background:#fff}
+.field-label{font-size:13px;color:var(--muted); margin-bottom:6px}
+.field{padding:12px 14px;border-radius:10px;border:1px solid rgba(0,0,0,0.08);font-size:15px;background:#fff}
 .file-row{display:flex;gap:10px;align-items:center}
 .btn-file-view{padding:8px 12px;border-radius:8px;border:1px solid #ddd;background:#f3f4f6;cursor:pointer}
 .note{font-size:13px;color:var(--muted);padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);margin-top:6px}
 
 /* actions */
 .form-actions{display:flex;justify-content:flex-start;margin-top:8px}
-.btn{font-weight:600;border:0;padding:10px 18px;border-radius:999px;cursor:pointer}
+.btn{font-weight:600;border:0;padding:10px 18px;border-radius:12px;cursor:pointer}
 .btn-outline{background:transparent;border:1px solid rgba(17,24,39,0.12)}
 .btn-primary{background:#111827;color:#fff}
 
@@ -51,7 +51,7 @@ body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
 /* right column */
 .right-col{display:flex;align-items:flex-start;justify-content:center}
-.hero-image{width:100%;height:420px;object-fit:cover;border-radius:12px;background:#eee;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+.hero-image{width:100%;height:420px;object-fit:cover;border-radius:14px;background:#eee;box-shadow:0 16px 40px rgba(2,6,23,0.08)}
 
 /* --- existing signup.css above --- */
 /* Modal overlay + modal styles (in-place on same page) */
@@ -65,20 +65,21 @@ body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
   z-index:1000;
 }
 .modal{
-  width:760px;
+  width:820px;
   max-width:94%;
   background:#fff;
-  border-radius:12px;
+  border-radius:14px;
   padding:20px;
-  box-shadow:0 30px 80px rgba(2,6,23,0.35);
+  box-shadow:0 20px 60px rgba(2,6,23,0.25);
 }
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .modal-header h2{margin:0;font-size:18px}
 .modal-body{padding:6px 0}
-.plans{display:flex;gap:18px;justify-content:center;align-items:flex-start;padding:10px}
+.plans{display:flex;gap:18px;justify-content:center;align-items:flex-start;padding:10px; flex-wrap:wrap}
 .plan-card{
-  display:flex;flex-direction:column;gap:10px;width:260px;padding:14px;border-radius:10px;
-  border:1px solid rgba(0,0,0,0.09);background:#fff;position:relative;
+  display:flex;flex-direction:column;gap:10px;width:280px;padding:16px;border-radius:12px;
+  border:1px solid rgba(0,0,0,0.09);background:#fff;position:relative; box-shadow:0 10px 30px rgba(2,6,23,0.06);
+  transition: box-shadow .2s ease, border-color .2s ease, transform .08s ease;
 }
 .plan-card input[type="radio"]{position:absolute;right:12px;top:12px}
 .plan-price{font-weight:800;font-size:20px}
@@ -91,8 +92,17 @@ body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 .modal-footer .btn{min-width:120px}
 
 /* slight selected styling when radio checked (optional) */
-.plan-card input[type="radio"]:checked + .plan-price,
-.plan-card input[type="radio"]:checked ~ .plan-title { /* no-op placeholder */ }
+/* Selected state visuals */
+.plan-card input[type="radio"]:checked ~ .plan-title,
+.plan-card input[type="radio"]:checked ~ .plan-price{ color:#0f172a }
+.plan-card input[type="radio"]:checked ~ .plan-price::after{ content:" ✓"; color:#10b981; font-weight:700 }
+.plan-card input[type="radio"]:checked ~ .plan-features{ color:#111827 }
+.plan-card:hover{ box-shadow:0 12px 36px rgba(2,6,23,0.12) }
+.plan-card:active{ transform: scale(0.995) }
+.plan-card input[type="radio"]:checked ~ .plan-action .btn{ background:#111827; color:#fff }
+
+/* Badge for recommended */
+.plan-badge{ position:absolute; left:16px; top:12px; font-size:12px; font-weight:700; color:#2563eb; background:#eaf2ff; border:1px solid #d0e1ff; padding:4px 8px; border-radius:999px }
 
 /* hide by default helper */
 .hidden{display:none}
@@ -101,4 +111,9 @@ body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 @media (max-width:980px){
   .signup-inner{grid-template-columns:1fr;gap:20px}
   .hero-image{height:220px}
+}
+
+@media (max-width:560px){
+  .role-selector{flex-direction:column}
+  .plan-card{width:100%}
 }
