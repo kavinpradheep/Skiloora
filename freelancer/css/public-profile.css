@@ -1,7 +1,18 @@
 body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto}
 html,body{scroll-behavior:smooth}
 .muted{color:#6b7280}
-.cover{min-height:160px;background:#f3f4f6;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #e5e7eb;padding:20px}
+.cover{min-height:220px;background:#f3f4f6;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #e5e7eb;padding:24px;background-size:cover;background-position:center}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom, rgba(17,24,39,0.55), rgba(17,24,39,0.25));pointer-events:none}
+.cover, .brand, .cover-title{position:relative}
+.brand{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.25)}
+.cover-title{color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.35)}
+
+/* Variant B – centered title and rounded seam */
+.cover.variant-b{min-height:260px;border-bottom:none}
+.cover.variant-b::after{background:linear-gradient(to bottom, rgba(17,24,39,0.6), rgba(17,24,39,0.3))}
+.cover.variant-b .cover-title{font-size:28px;letter-spacing:0.6px}
+.cover.variant-b::before{content:"";position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);width:92%;height:36px;background:#fff;border-radius:18px;box-shadow:0 6px 14px rgba(16,24,40,0.08)}
+.layout{margin-top:10px}
 .cover-title{font-size:24px;letter-spacing:0.5px;max-width:960px;width:100%;text-align:center;word-wrap:break-word;overflow-wrap:anywhere}
 .brand{position:absolute;left:20px;top:14px;font-weight:700}
 .layout{display:grid;grid-template-columns:320px 1fr;gap:20px;padding:20px;max-width:960px;margin:0 auto 20px}
