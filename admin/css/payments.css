@@ -3,6 +3,10 @@
 
 .table .row .cell{display:block}
 
+.actions-row{ display:flex; gap:8px; margin:8px 0 12px }
+.btn-primary{ background:#111827; color:#fff; border:1px solid #111827; padding:6px 12px; border-radius:8px }
+.btn-ghost{ background:#fff; color:#111827; border:1px solid var(--border); padding:6px 12px; border-radius:8px }
+
 @media (max-width: 760px){
 	.table{border:none}
 	.table .row.head{display:none}

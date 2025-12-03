@@ -41,6 +41,10 @@
     <section class="section" id="sectionWithdrawals">
       <h2>Membership Payments <span class="chip" id="countTx">0</span></h2>
       <p class="muted">Recent membership payments</p>
+      <div class="actions-row">
+        <button id="btnExportCsv" class="btn-ghost">Download CSV</button>
+        <button id="btnPrint" class="btn-primary">Print Statement</button>
+      </div>
       <div class="table cols-6">
         <div class="row head"><div>Subscription</div><div>User</div><div>Amount</div><div>Payment Method</div><div>Account info</div><div>Date</div></div>
         <div id="txRows" class="rows"></div>

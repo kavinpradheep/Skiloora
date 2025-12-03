@@ -16,6 +16,8 @@
   const txRows = document.getElementById('txRows');
   const countTx = document.getElementById('countTx');
   const topSearch = document.querySelector('.admin-topbar .search');
+  const btnExportCsv = document.getElementById('btnExportCsv');
+  const btnPrint = document.getElementById('btnPrint');
 
   function updateCount(){
     if (!countTx) return;
@@ -35,6 +37,7 @@
   function fmtINR(n){ try{ return new Intl.NumberFormat('en-IN',{ maximumFractionDigits:0 }).format(n); }catch(_){ return String(n); } }
   async function loadPayments(){
     txRows.innerHTML = '';
+    window.__paymentsCache = [];
     try{
       const base = location.origin.replace(/\/$/, '');
       const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
@@ -42,6 +45,7 @@
       const json = await res.json();
       if (!json || !json.ok) throw new Error('payments_list_failed');
       const items = json.items || [];
+      window.__paymentsCache = items;
       if (items.length === 0){
         const row = document.createElement('div'); row.className='row';
         row.innerHTML = `<div colspan="6" style="grid-column:1/-1;color:#6b7280">No payments yet.</div>`;
@@ -112,4 +116,64 @@
     }
   }
   loadRevenue();
+
+  // Export CSV (uses current filtered visible rows to honor search)
+  function exportCsv(){
+    const headers = ['Subscription','User','Amount','Payment Method','Account info','Date'];
+    const rows = Array.from(document.querySelectorAll('#txRows .row'));
+    const data = [];
+    rows.forEach(r => {
+      if (r.style.display === 'none') return;
+      const cells = r.querySelectorAll('.cell');
+      if (cells.length < 6) return;
+      const row = [];
+      cells.forEach((c, idx) => {
+        const t = c.textContent.trim();
+        if (idx === 2){
+          // Amount: output as a pure number so Excel parses correctly
+          const num = t.replace(/[^0-9.]/g, '');
+          row.push(num);
+        } else {
+          const s = t.replace(/\"/g,'\"\"');
+          row.push(`\"${s}\"`);
+        }
+      });
+      data.push(row.join(','));
+    });
+    // Prepend UTF-8 BOM so Excel renders unicode (₹) correctly
+    const csv = ['\uFEFF' + headers.join(','), ...data].join('\n');
+    const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const now = new Date();
+    const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    a.download = `payments-${stamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Print statement (opens native print of the current list section)
+  function printStatement(){
+    const section = document.getElementById('sectionWithdrawals');
+    if (!section) { window.print(); return; }
+    const w = window.open('', '_blank');
+    if (!w) { window.print(); return; }
+    const cssLinks = [
+      '../css/admin.css',
+      '../css/payments.css'
+    ];
+    const head = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${cssLinks.map(h=>`<link rel="stylesheet" href="${h}">`).join('')}</head><body>`;
+    const title = '<h2>Membership Payments Statement</h2>';
+    const html = section.querySelector('.table')?.outerHTML || section.innerHTML;
+    w.document.open();
+    w.document.write(head + title + html + '</body></html>');
+    w.document.close();
+    w.addEventListener('load', ()=>{ w.focus(); w.print(); setTimeout(()=>{ try{ w.close(); }catch(_){ } }, 200); });
+  }
+
+  btnExportCsv?.addEventListener('click', exportCsv);
+  btnPrint?.addEventListener('click', printStatement);
 })();
