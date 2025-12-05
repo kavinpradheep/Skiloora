@@ -55,6 +55,24 @@ auth.onAuthStateChanged(async (user)=>{
     // Inline stats under About
     setText('ppRateInline', hr ? `₹ ${hr} / Hour` : '—');
 
+    // Message button wiring
+    const btnMsg = document.getElementById('btnMessage');
+    if (btnMsg){
+      const url = (p.contactLink || '').trim();
+      if (url){
+        const href = url.startsWith('http') ? url : ('https://' + url);
+        btnMsg.href = href;
+        btnMsg.target = '_blank';
+        btnMsg.classList.remove('disabled');
+        btnMsg.textContent = 'Message';
+      } else {
+        btnMsg.removeAttribute('href');
+        btnMsg.removeAttribute('target');
+        btnMsg.classList.add('disabled');
+        btnMsg.textContent = 'Message (link not set)';
+      }
+    }
+
     // Stars: compute from buyer reviews; default to 5 if none
     await updateStars(uid);
 

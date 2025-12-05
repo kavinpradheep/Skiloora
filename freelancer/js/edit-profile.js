@@ -17,6 +17,7 @@ const editGithub = document.getElementById('editGithub');
 const editDribbble = document.getElementById('editDribbble');
 const editLinkedin = document.getElementById('editLinkedin');
 const editX = document.getElementById('editX');
+const editContactLink = document.getElementById('contactLink');
 
 // Chip editors
 const editLangList = document.getElementById('editLangList');
@@ -110,6 +111,7 @@ auth.onAuthStateChanged(async (user) => {
     editDribbble.value = s.dribbble || '';
     editLinkedin.value = s.linkedin || '';
     editX.value = s.x || '';
+    if (editContactLink) editContactLink.value = p.contactLink || '';
 
     langs = [...(p.languages || [])];
     skills = [...(p.skills || [])];
@@ -151,6 +153,8 @@ function gatherAndSave() { return (async () => {
     const socials = {};
     [["github", editGithub.value],["dribbble", editDribbble.value],["linkedin", editLinkedin.value],["x", editX.value]].forEach(([k,v])=>{ v=v.trim(); if(v) socials[k]=v; });
     if(Object.keys(socials).length) payload.socials = socials;
+    const cl = (editContactLink?.value || '').trim();
+    if (cl) payload.contactLink = cl;
     if (avatarUrl) payload.avatarUrl = avatarUrl;
     await db.collection('users').doc(user.uid).set(payload, { merge: true });
     window.location.href = './dashboard.html';
