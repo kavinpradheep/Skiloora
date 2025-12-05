@@ -35,13 +35,12 @@
     updateCount();
   }
   function fmtINR(n){ try{ return new Intl.NumberFormat('en-IN',{ maximumFractionDigits:0 }).format(n); }catch(_){ return String(n); } }
+  const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
   async function loadPayments(){
     txRows.innerHTML = '';
     window.__paymentsCache = [];
     try{
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
-      const res = await fetch(`${backend}/api/admin/payments-list`, { cache: 'no-store' });
+      const res = await fetch(`${API_ORIGIN}/api/admin/payments-list`, { cache: 'no-store' });
       const json = await res.json();
       if (!json || !json.ok) throw new Error('payments_list_failed');
       const items = json.items || [];
@@ -83,15 +82,13 @@
   topSearch?.addEventListener('input', applySearch);
 
   async function loadRevenue(){
-    const base = location.origin.replace(/\/$/, '');
-    const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
     const totalEl = document.getElementById('revTotalValue');
     const totalSub = document.getElementById('revTotalSub');
     const growthEl = document.getElementById('revGrowthValue');
     const growthSub = document.getElementById('revGrowthSub');
     const ctx = document.getElementById('revBreakdownChart');
     try{
-      const res = await fetch(`${backend}/api/admin/revenue-stats`, { cache:'no-store' });
+      const res = await fetch(`${API_ORIGIN}/api/admin/revenue-stats`, { cache:'no-store' });
       const json = await res.json();
       if (!json || !json.ok) throw new Error('revenue_stats_failed');
       const nf = (n)=>{ try{ return new Intl.NumberFormat('en-IN',{ maximumFractionDigits:0 }).format(n); }catch(_){ return String(n); } };
