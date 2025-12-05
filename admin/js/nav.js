@@ -154,15 +154,16 @@
       document.addEventListener('keydown', (e)=>{ if (e.key==='Escape') menu.style.display='none'; });
     }
 
-    // Mobile-visible topbar logout button
-    const logoutTop = document.getElementById('adminLogoutTop');
-    if (logoutTop){
-      logoutTop.addEventListener('click', ()=>{
-        localStorage.removeItem('skiloora_admin_session');
-        const loginUrl = `${location.origin.replace(/\/$/, '')}/freelancer/html/login.html`;
-        window.location.href = loginUrl;
-      });
+    // Bind explicit Logout buttons (sidebar + mobile topbar)
+    function doLogout(){
+      try { localStorage.removeItem('skiloora_admin_session'); } catch(_){ }
+      const loginUrl = `${location.origin.replace(/\/$/, '')}/freelancer/html/login.html`;
+      window.location.href = loginUrl;
     }
+    const sLogout = document.getElementById('adminLogout');
+    if (sLogout) sLogout.addEventListener('click', doLogout);
+    const mLogout = document.getElementById('mobileLogout');
+    if (mLogout) mLogout.addEventListener('click', doLogout);
   }
 
   if (document.readyState === 'loading') {
