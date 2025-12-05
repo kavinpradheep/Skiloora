@@ -25,6 +25,11 @@
   function initDom(){
     const sidebar = document.querySelector('.admin-sidebar .nav');
     if (!sidebar) return;
+    // Ensure body has padding/margin adjusted when sidebar is present
+    const rootBody = document.body;
+    if (window.matchMedia('(min-width: 1025px)').matches){
+      rootBody.classList.remove('menu-open');
+    }
     const links = Array.from(sidebar.querySelectorAll('a.nav-sublink, a.nav-item, button.nav-item'));
     links.forEach(el => {
       const href = el.getAttribute('href') || '';
@@ -48,7 +53,7 @@
     // Mobile sidebar toggle
     const menuBtn = document.getElementById('mobileMenu');
     const overlay = document.getElementById('menuOverlay');
-    const rootBody = document.body;
+    
     function closeMenu(){
       rootBody.classList.remove('menu-open');
       if (menuBtn) menuBtn.setAttribute('aria-expanded','false');
