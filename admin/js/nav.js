@@ -153,6 +153,17 @@
       document.addEventListener('click', (e)=>{ if (!wrap.contains(e.target)) menu.style.display='none'; });
       document.addEventListener('keydown', (e)=>{ if (e.key==='Escape') menu.style.display='none'; });
     }
+
+    // Bind explicit Logout buttons (sidebar + mobile topbar)
+    function doLogout(){
+      try { localStorage.removeItem('skiloora_admin_session'); } catch(_){ }
+      const loginUrl = `${location.origin.replace(/\/$/, '')}/freelancer/html/login.html`;
+      window.location.href = loginUrl;
+    }
+    const sLogout = document.getElementById('adminLogout');
+    if (sLogout) sLogout.addEventListener('click', doLogout);
+    const mLogout = document.getElementById('mobileLogout');
+    if (mLogout) mLogout.addEventListener('click', doLogout);
   }
 
   if (document.readyState === 'loading') {
