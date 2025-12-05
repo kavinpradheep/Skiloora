@@ -30,7 +30,8 @@
 .admin-sidebar .nav .nav-item.active .icon{color:#fff}
 /* Consistent icon color when active (if icons are later shown) */
 .admin-sidebar .nav .nav-sublink.active .icon{color:#fff}
-.sidebar-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--border);background:var(--card)}
+.sidebar-bottom{margin-top:auto;padding:12px 0;border-top:1px solid var(--border);background:var(--card);flex:0 0 auto;display:flex;justify-content:stretch}
+.sidebar-bottom .btn-ghost{width:100%}
 
 .admin-main{flex:1;padding:20px;margin-left:240px}
 .admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;background:#fff;border-bottom:1px solid var(--border);padding:10px 12px;border-radius:12px}
@@ -78,7 +79,7 @@ canvas{flex:1}
 /* Responsive adjustments */
 @media (max-width: 1024px){
 	.mobile-menu{display:inline-flex;align-items:center;justify-content:center}
-	.admin-sidebar{position:fixed;top:0;left:0;height:100vh;overflow:hidden;z-index:120;transform:translateX(-100%);transition:transform .25s ease;width:260px;display:flex;flex-direction:column}
+	.admin-sidebar{position:fixed;top:0;left:0;height:100vh;overflow:hidden;z-index:120;transform:translateX(-100%);transition:transform .25s ease;width:260px;display:flex;flex-direction:column;padding-bottom:0}
 	.admin-sidebar .nav{flex:1 1 auto;overflow:auto}
 	body.menu-open .admin-sidebar{transform:translateX(0)}
 	#menuOverlay{display:block}
@@ -87,7 +88,7 @@ canvas{flex:1}
 	.admin-main{padding-top:58px;margin-left:0}
 	.admin-topbar .search{display:none}
 	/* Keep sidebar logout visible at bottom while content scrolls */
-	.admin-sidebar .sidebar-bottom{position:sticky;bottom:0;box-shadow:0 -6px 20px rgba(2,6,23,0.06);padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+	.admin-sidebar .sidebar-bottom{position:sticky;bottom:0;box-shadow:0 -6px 20px rgba(2,6,23,0.06);padding-bottom:calc(12px + env(safe-area-inset-bottom));z-index:2}
 }
 
 @media (max-width: 1280px){
