@@ -30,7 +30,7 @@
 .admin-sidebar .nav .nav-item.active .icon{color:#fff}
 /* Consistent icon color when active (if icons are later shown) */
 .admin-sidebar .nav .nav-sublink.active .icon{color:#fff}
-.sidebar-bottom{margin-top:auto}
+.sidebar-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--border);background:var(--card)}
 
 .admin-main{flex:1;padding:20px;margin-left:240px}
 .admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;background:#fff;border-bottom:1px solid var(--border);padding:10px 12px;border-radius:12px}
@@ -85,7 +85,10 @@ canvas{flex:1}
 	body.menu-open{overflow:hidden}
 	.admin-main{padding-top:58px;margin-left:0}
 	.admin-topbar .search{display:none}
-	.admin-topbar .top-logout{display:inline-flex}
+	/* Show topbar logout only when menu (sidebar) is open */
+	body.menu-open .admin-topbar .top-logout{display:inline-flex}
+	/* Keep sidebar logout pinned/visible at bottom */
+	.admin-sidebar .sidebar-bottom{position:sticky;bottom:0;box-shadow:0 -6px 20px rgba(2,6,23,0.06)}
 }
 
 @media (max-width: 1280px){
