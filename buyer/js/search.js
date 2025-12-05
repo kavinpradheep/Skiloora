@@ -300,5 +300,36 @@ if (sortBtn){
 // Global search bar enter navigation
 const globalSearch = document.getElementById('globalSearch');
 if (globalSearch){
-  globalSearch.addEventListener('keydown', (e)=>{ if (e.key==='Enter'){ const val = globalSearch.value.trim(); if (val) window.location.href = `./search.html?q=${encodeURIComponent(val)}`; }});
+  // Suggest roles as user types
+  const wrap = document.createElement('div');
+  wrap.style.position = 'relative';
+  const parent = globalSearch.parentElement; if (parent){ parent.insertBefore(wrap, globalSearch); wrap.appendChild(globalSearch); }
+  const dd = document.createElement('div');
+  dd.style.position='absolute'; dd.style.top='110%'; dd.style.left='0'; dd.style.right='0';
+  dd.style.background='#fff'; dd.style.border='1px solid #e5e7eb'; dd.style.borderRadius='8px'; dd.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)';
+  dd.style.padding='6px'; dd.style.zIndex='40'; dd.style.display='none';
+  wrap.appendChild(dd);
+
+  function renderSuggest(term){
+    const q = String(term||'').toLowerCase();
+    const base = categories.map(c=>({ name:c, key:norm(c) }));
+    // Include synonyms as direct options too
+    Object.entries(synonyms).forEach(([cat, words])=>{ words.forEach(w=> base.push({ name: w.replace(/([a-z])([A-Z])/g,'$1 $2'), key: cat })); });
+    const items = base.filter(x=> x.name.toLowerCase().includes(q)).slice(0,6);
+    dd.innerHTML='';
+    if (!q || items.length===0){ dd.style.display='none'; return; }
+    items.forEach(x=>{
+      const a=document.createElement('a'); a.textContent=x.name; a.href=`./search.html?q=${encodeURIComponent(x.name)}`;
+      a.style.display='block'; a.style.padding='6px 8px'; a.style.borderRadius='6px'; a.style.color='#111827';
+      a.addEventListener('mouseover', ()=>{ a.style.background='#f3f4f6'; });
+      a.addEventListener('mouseout', ()=>{ a.style.background='transparent'; });
+      dd.appendChild(a);
+    });
+    dd.style.display='block';
+  }
+
+  globalSearch.addEventListener('input', ()=> renderSuggest(globalSearch.value));
+  globalSearch.addEventListener('focus', ()=> renderSuggest(globalSearch.value));
+  document.addEventListener('click', (e)=>{ if (!wrap.contains(e.target)) dd.style.display='none'; });
+  globalSearch.addEventListener('keydown', (e)=>{ if (e.key==='Enter'){ const val = globalSearch.value.trim(); if (val){ window.location.href = `./search.html?q=${encodeURIComponent(val)}`; dd.style.display='none'; } }});
 }
