@@ -88,6 +88,60 @@ categories.forEach(r=>{
 
 // Load freelancers from Firestore and filter by selected role
 const cardsWrap = document.getElementById('resultCards');
+let currentList = [];
+let sortMode = 'newest'; // 'newest' | 'rating' | 'name'
+const ratingCache = new Map();
+
+function getFavorites(){
+  const favKey = 'buyer.favorites';
+  try{
+    const arr = JSON.parse(localStorage.getItem(favKey) || '[]');
+    return Array.isArray(arr) ? new Set(arr) : new Set();
+  }catch(_){ return new Set(); }
+}
+
+async function computeRatings(list){
+  const items = Array.isArray(list) ? list : [];
+  const jobs = items.map(async (u)=>{
+    if (!u.uid) return;
+    if (ratingCache.has(u.uid)) { u.ratingAvg = ratingCache.get(u.uid); return; }
+    const avg = await fetchAverageRating(u.uid).catch(()=>5.0);
+    ratingCache.set(u.uid, avg);
+    u.ratingAvg = avg;
+  });
+  await Promise.allSettled(jobs);
+}
+
+function applySort(list){
+  const arr = [...(list||[])];
+  // Bring favorites to the top only when no role/category filter is active
+  if (!activeCat){
+    const favs = getFavorites();
+    arr.sort((a,b)=>{
+      const af = a.uid && favs.has(a.uid) ? 1 : 0;
+      const bf = b.uid && favs.has(b.uid) ? 1 : 0;
+      return bf - af; // favored first
+    });
+  }
+  if (sortMode === 'newest'){
+    // Sort by createdAt (desc); fallback to uid string order
+    arr.sort((a,b)=>{
+      const av = a.createdAt && typeof a.createdAt.toDate === 'function' ? a.createdAt.toDate().getTime() : 0;
+      const bv = b.createdAt && typeof b.createdAt.toDate === 'function' ? b.createdAt.toDate().getTime() : 0;
+      return bv - av;
+    });
+  } else if (sortMode === 'name'){
+    arr.sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
+  } else if (sortMode === 'rating'){
+    arr.sort((a,b)=>{
+      const ar = typeof a.ratingAvg === 'number' ? a.ratingAvg : 0;
+      const br = typeof b.ratingAvg === 'number' ? b.ratingAvg : 0;
+      return br - ar;
+    });
+  }
+  // Note: rating sort would require async fetches; keep UI simple for now
+  return arr;
+}
 async function fetchAverageRating(uid){
   try{
     const col = collection(window.firebaseDB, 'users', uid, 'reviews');
@@ -114,6 +168,10 @@ function renderCards(list){
     cardsWrap.appendChild(empty);
     return;
   }
+  // Favorites store
+  const favKey = 'buyer.favorites';
+  const favsSet = getFavorites();
+
   list.forEach(c=>{
     const card = document.createElement('div'); card.className='result-card';
     const head = document.createElement('div'); head.className='rc-head';
@@ -122,20 +180,35 @@ function renderCards(list){
     const name = document.createElement('div'); name.className='rc-name'; name.textContent = c.name || c.username || 'Freelancer';
     const badge = document.createElement('div'); badge.className='rc-badge'; badge.innerHTML = `${c.title || c.roleLong || 'Pro Client'} <span style='font-size:11px'>${c.country? '🇮🇳 '+c.country : ''}</span>`;
     info.appendChild(name); info.appendChild(badge);
-    const fav = document.createElement('button'); fav.className='rc-fav'; fav.textContent='♡';
+    const fav = document.createElement('button'); fav.className='rc-fav';
+    const isFav = c.uid && favsSet.has(c.uid);
+    fav.textContent = isFav ? '♥' : '♡';
+    fav.style.color = isFav ? '#e11d48' : '#6b7280';
+    fav.title = isFav ? 'Remove from favorites' : 'Add to favorites';
     head.appendChild(av); head.appendChild(info); head.appendChild(fav);
     const desc = document.createElement('p'); desc.className='rc-desc'; desc.textContent = c.desc || c.bio || 'Connect with top freelancers to turn goals into success. Find the perfect talent.';
     const stars = document.createElement('div'); stars.className='rc-stars';
     // Default optimistic rating while loading
-    stars.textContent = renderStarText(typeof c.rating === 'number' ? c.rating : 5.0);
+    const initial = typeof c.ratingAvg === 'number' ? c.ratingAvg : (typeof c.rating === 'number' ? c.rating : 5.0);
+    stars.textContent = renderStarText(initial);
     if (c.uid){
       // Compute average from buyer reviews and update asynchronously
-      fetchAverageRating(c.uid).then(avg=>{ stars.textContent = renderStarText(avg); }).catch(()=>{});
+      fetchAverageRating(c.uid).then(avg=>{ stars.textContent = renderStarText(avg); c.ratingAvg = avg; ratingCache.set(c.uid, avg); }).catch(()=>{});
     }
     const actions = document.createElement('div'); actions.className='rc-actions';
     const btnMsg = document.createElement('button'); btnMsg.className='rc-btn'; btnMsg.textContent='✉';
     const btnProfile = document.createElement('button'); btnProfile.className='rc-btn'; btnProfile.textContent='See profile';
     if (c.uid){
+      fav.addEventListener('click', ()=>{
+        let cur;
+        try { const arr = JSON.parse(localStorage.getItem(favKey) || '[]'); cur = Array.isArray(arr) ? arr : []; } catch(_) { cur = []; }
+        const idx = cur.indexOf(c.uid);
+        if (idx === -1) { cur.push(c.uid); fav.textContent='♥'; fav.style.color='#e11d48'; fav.title='Remove from favorites'; }
+        else { cur.splice(idx,1); fav.textContent='♡'; fav.style.color='#6b7280'; fav.title='Add to favorites'; }
+        try { localStorage.setItem(favKey, JSON.stringify(cur)); } catch(_) {}
+        // Re-apply sorting; favorites-first applies only when no category filter
+        renderCards(applySort(currentList));
+      });
       btnProfile.addEventListener('click', ()=>{
         const origin = location.origin.replace(/\/$/, '');
         window.location.href = `${origin}/freelancer/html/public-profile.html?uid=${encodeURIComponent(c.uid)}`;
@@ -167,15 +240,19 @@ async function loadFreelancers(selected){
     const filtered = selNorm
       ? onlyFreelancers.filter(u => {
           const normalizedTitle = norm(u.title || u.roleLong || '');
-          if (normalizedTitle && allowedTitles.has(normalizedTitle)) return true;
-          // If no explicit title, fall back to skills/tags intersection
+          // If the user has an explicit title, require a strict match to the selected category
+          if (normalizedTitle) {
+            return allowedTitles.has(normalizedTitle);
+          }
+          // Otherwise, fall back to skills/tags intersection for users without a title
           const terms = [];
           if (Array.isArray(u.skills)) terms.push(...u.skills.map(norm));
           if (Array.isArray(u.tags)) terms.push(...u.tags.map(norm));
           return terms.some(t => auxTokens.has(t));
         })
       : onlyFreelancers;
-    renderCards(filtered);
+    currentList = filtered;
+    renderCards(applySort(currentList));
   }catch(err){
     console.error('Failed to load freelancers', err);
     renderCards([]);
@@ -184,15 +261,41 @@ async function loadFreelancers(selected){
 
 loadFreelancers(queryParam);
 
-// Filters (placeholder functionality)
-const priceList = document.getElementById('priceList');
-priceList.addEventListener('change', ()=>{ /* hook: apply filter on price */ });
+// Price range filters removed
 
-document.getElementById('applyRange').addEventListener('click', ()=>{ /* range filter placeholder */ alert('Range applied'); });
-
-// Sorting placeholder
+// Sorting UI
 const sortBtn = document.getElementById('sortBtn');
-sortBtn.addEventListener('click', ()=>{ alert('Sorting options placeholder'); });
+if (sortBtn){
+  const wrap = document.createElement('span');
+  wrap.style.position = 'relative';
+  const parent = sortBtn.parentElement; if (parent){ parent.insertBefore(wrap, sortBtn); wrap.appendChild(sortBtn); }
+  const menu = document.createElement('div');
+  menu.style.position='absolute'; menu.style.top='120%'; menu.style.right='0';
+  menu.style.background='#fff'; menu.style.border='1px solid #e5e7eb'; menu.style.borderRadius='8px'; menu.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)';
+  menu.style.padding='6px'; menu.style.minWidth='180px'; menu.style.display='none';
+  function addItem(label, mode){
+    const b = document.createElement('button');
+    b.textContent = label; b.style.display='block'; b.style.width='100%'; b.style.textAlign='left';
+    b.style.padding='8px 10px'; b.style.border='none'; b.style.background='transparent'; b.style.cursor='pointer'; b.style.borderRadius='6px';
+    b.addEventListener('mouseover', ()=>{ b.style.background='#f3f4f6'; });
+    b.addEventListener('mouseout', ()=>{ b.style.background='transparent'; });
+    b.addEventListener('click', async ()=>{
+      sortMode = mode; sortBtn.textContent = `Short by: ${label} ▾`;
+      menu.style.display='none';
+      if (mode === 'rating'){
+        await computeRatings(currentList);
+      }
+      renderCards(applySort(currentList));
+    });
+    menu.appendChild(b);
+  }
+  addItem('Newest', 'newest');
+  addItem('Name (A-Z)', 'name');
+  addItem('Top Rated', 'rating');
+  wrap.appendChild(menu);
+  sortBtn.addEventListener('click', (e)=>{ e.stopPropagation(); menu.style.display = (menu.style.display==='none'||!menu.style.display) ? 'block' : 'none'; });
+  document.addEventListener('click', (e)=>{ if (!wrap.contains(e.target)) menu.style.display='none'; });
+}
 
 // Global search bar enter navigation
 const globalSearch = document.getElementById('globalSearch');
