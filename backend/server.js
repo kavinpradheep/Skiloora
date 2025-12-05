@@ -40,8 +40,21 @@ app.use('/api/issues', issuesRoutes);
 // Health
 app.get('/health', (req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Skiloora backend running on port ${PORT}`);
-});
+// Start server with port fallback
+const DEFAULT_PORT = Number(process.env.PORT) || 5000;
+function start(port){
+  const srv = app.listen(port, () => {
+    console.log(`Skiloora backend running on port ${port}`);
+  });
+  srv.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE'){
+      const next = port + 1;
+      console.warn(`Port ${port} in use. Trying ${next}...`);
+      start(next);
+    } else {
+      console.error('Server start error:', err);
+      process.exit(1);
+    }
+  });
+}
+start(DEFAULT_PORT);

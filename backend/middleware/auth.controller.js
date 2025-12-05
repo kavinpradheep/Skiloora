@@ -1,6 +1,8 @@
 // backend/middleware/auth.controller.js
 const admin = require('../config/firebaseAdmin'); // adjust relative path if needed
 const db = admin.firestore();
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'skiloora_dev_secret_change_me';
 
 /**
  * Check whether an email already exists.
@@ -52,7 +54,7 @@ exports.checkEmail = async (req, res) => {
   }
 };
 
-// LOGIN (verifies ID token sent as "Authorization: Bearer <idToken>")
+// LOGIN: verify Firebase ID token and issue backend JWT for admin APIs
 exports.login = async (req, res) => {
   try {
     const authHeader = req.headers.authorization || '';
@@ -93,11 +95,50 @@ exports.login = async (req, res) => {
         isAdmin = doc.exists;
       } catch (_) {}
     }
-    return res.json({ ok: true, uid, email: decoded.email, isAdmin });
+    // Issue server JWT (2h expiry)
+    const payload = { uid, email: decoded.email, isAdmin };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
+    return res.json({ ok: true, uid, email: decoded.email, isAdmin, token });
   } catch (err) {
     console.error('Auth login error', err);
     return res.status(401).json({ error: 'invalid_token', message: err.message });
   }
+};
+
+// Strict JWT middleware
+exports.verifyJwtMiddleware = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || '';
+    const match = authHeader.match(/Bearer (.+)/);
+    if (!match) return res.status(401).json({ error: 'missing_jwt' });
+    const token = match[1];
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.uid = decoded.uid;
+    req.email = decoded.email;
+    req.isAdmin = !!decoded.isAdmin;
+    return next();
+  } catch (err) {
+    return res.status(401).json({ error: 'invalid_jwt', message: err.message });
+  }
+};
+
+// Optional JWT middleware: allow through in dev without JWT
+exports.verifyJwtOptional = (req, res, next) => {
+  const origin = req.headers.origin || '';
+  const host = req.headers.host || '';
+  const isDev = origin.includes(':5500') || host.includes(':5500') || process.env.NODE_ENV === 'development';
+  const authHeader = req.headers.authorization || '';
+  const match = authHeader.match(/Bearer (.+)/);
+  if (!match){
+    if (isDev) return next();
+    return res.status(401).json({ error: 'missing_jwt' });
+  }
+  try{
+    const token = match[1];
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.uid = decoded.uid; req.email = decoded.email; req.isAdmin = !!decoded.isAdmin;
+    return next();
+  }catch(err){ return res.status(401).json({ error: 'invalid_jwt', message: err.message }); }
 };
 
 // sendReset - generate a firebase password reset link and return it (dev only)
