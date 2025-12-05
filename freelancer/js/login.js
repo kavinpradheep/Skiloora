@@ -27,7 +27,8 @@ function showMsg(text, isError = true){
 async function backendLogin(idToken){
   // call backend to verify token (and create server session if you want)
   try {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
+    const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+    const res = await fetch(API_ORIGIN + '/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

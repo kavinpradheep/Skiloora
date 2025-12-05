@@ -37,7 +37,8 @@ onAuthStateChanged(window.firebaseAuth, async (user)=>{
     // Check admin via backend; redirect admins out of buyer area
     try{
       const idToken = await user.getIdToken(true);
-      const resp = await fetch('http://localhost:5000/api/auth/login', {
+      const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+      const resp = await fetch(API_ORIGIN + '/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
         body: JSON.stringify({})
@@ -101,7 +102,8 @@ async function setupBuyerIssueForm(user){
     msgEl.textContent='Submitting...';
     try{
       const idToken = await user.getIdToken(true);
-      const resp = await fetch('http://localhost:5000/api/issues/report', {
+      const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+      const resp = await fetch(API_ORIGIN + '/api/issues/report', {
         method:'POST',
         headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+idToken },
         body: JSON.stringify({ subject, priority, description })

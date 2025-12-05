@@ -7,9 +7,8 @@
 
   async function loadRealData(){
     try {
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
-      const res = await fetch(`${backend}/api/admin/metrics`, { cache:'no-store' });
+      const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+      const res = await fetch(`${API_ORIGIN}/api/admin/metrics`, { cache:'no-store' });
       const json = await res.json();
       if (!json || !json.ok) throw new Error('metrics_failed');
       const totals = json.totals || { users: 0, activeFreelancers: 0, totalRevenue: 0 };

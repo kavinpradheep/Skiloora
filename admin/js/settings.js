@@ -115,10 +115,9 @@ document.addEventListener('DOMContentLoaded', function(){
   rmConfirm?.addEventListener('click', async ()=>{
     if (!pendingRemove) return;
     try{
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
+      const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
       rmConfirm.disabled = true; rmConfirm.textContent = 'Removing…';
-      const res = await fetch(`${backend}/api/admin/admin-delete`, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ uid: pendingRemove.uid, email: pendingRemove.email }) });
+      const res = await fetch(`${API_ORIGIN}/api/admin/admin-delete`, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ uid: pendingRemove.uid, email: pendingRemove.email }) });
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error(json.error||'delete_failed');
       closeRemove();
@@ -129,9 +128,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function loadAdmins(){
     try{
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
-      const res = await fetch(`${backend}/api/admin/admins`, { cache:'no-store' });
+      const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+      const res = await fetch(`${API_ORIGIN}/api/admin/admins`, { cache:'no-store' });
       const json = await res.json();
       if (!json || !json.ok) throw new Error('admins_list_failed');
       renderAdmins(json.items || []);

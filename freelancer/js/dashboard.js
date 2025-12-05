@@ -394,7 +394,8 @@ auth.onAuthStateChanged(async (user) => {
     if (!role) {
       try {
         const idToken = await user.getIdToken(true);
-        const resp = await fetch('http://localhost:5000/api/auth/login', {
+        const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+        const resp = await fetch(API_ORIGIN + '/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
           body: JSON.stringify({})
@@ -480,7 +481,8 @@ fdIssueSubmit?.addEventListener('click', async () => {
     if (!subject || !description){ fdIssueMsg.textContent='Subject and description required.'; return; }
     fdIssueMsg.textContent='Submitting...';
     const idToken = await user.getIdToken(true);
-    const resp = await fetch('http://localhost:5000/api/issues/report', {
+    const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+    const resp = await fetch(API_ORIGIN + '/api/issues/report', {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+idToken },
       body: JSON.stringify({ subject, priority, description })
