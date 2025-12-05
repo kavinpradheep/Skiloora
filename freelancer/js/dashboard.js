@@ -38,6 +38,34 @@ const profileAvatar = document.getElementById('profileAvatar');
 const profileName = document.getElementById('profileName');
 const profileRole = document.getElementById('profileRole');
 const profileTagline = document.getElementById('profileTagline');
+
+// Mobile sidebar logic
+const sidebar = document.querySelector('.sidebar');
+const menuBtn = document.getElementById('mobileMenu');
+const overlay = document.getElementById('menuOverlay');
+const rootBody = document.body;
+
+function openMenu() {
+  rootBody.classList.add('menu-open');
+  menuBtn && menuBtn.setAttribute('aria-expanded','true');
+  overlay && overlay.removeAttribute('aria-hidden');
+  overlay && overlay.removeAttribute('hidden');
+}
+function closeMenu() {
+  rootBody.classList.remove('menu-open');
+  menuBtn && menuBtn.setAttribute('aria-expanded','false');
+  overlay && overlay.setAttribute('aria-hidden','true');
+  overlay && overlay.setAttribute('hidden','');
+}
+if (menuBtn) {
+  menuBtn.addEventListener('click', () => {
+    if (rootBody.classList.contains('menu-open')) closeMenu(); else openMenu();
+  });
+}
+if (overlay) {
+  overlay.addEventListener('click', closeMenu);
+}
+// Do not close sidebar when clicking nav item
 const infoEmail = document.getElementById('infoEmail');
 const infoPhone = document.getElementById('infoPhone');
 const infoLocation = document.getElementById('infoLocation');
