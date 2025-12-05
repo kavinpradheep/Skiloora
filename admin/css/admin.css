@@ -80,7 +80,7 @@ canvas{flex:1}
 @media (max-width: 1024px){
 	.mobile-menu{display:inline-flex;align-items:center;justify-content:center}
 	.admin-sidebar{position:fixed;top:0;left:0;height:100vh;overflow:hidden;z-index:120;transform:translateX(-100%);transition:transform .25s ease;width:260px;display:flex;flex-direction:column;padding-bottom:0}
-	.admin-sidebar .nav{flex:1 1 auto;overflow:auto;padding-bottom:84px}
+	.admin-sidebar .nav{flex:1 1 auto;overflow:auto;padding-bottom:120px}
 	body.menu-open .admin-sidebar{transform:translateX(0)}
 	#menuOverlay{display:block}
 	body:not(.menu-open) #menuOverlay{display:none}
@@ -88,8 +88,9 @@ canvas{flex:1}
 	.admin-main{padding-top:58px;margin-left:0}
 	.admin-topbar .search{display:none}
 	/* Keep sidebar logout visible at bottom while content scrolls */
-	/* Pin the logout to the absolute bottom of the fixed sidebar */
-	.admin-sidebar .sidebar-bottom{position:absolute;left:14px;right:14px;bottom:12px;box-shadow:0 -6px 20px rgba(2,6,23,0.06);padding-bottom:calc(0px + env(safe-area-inset-bottom));z-index:2}
+	/* Mobile: show footer only when menu is open; pin to viewport bottom aligned to sidebar */
+	.admin-sidebar .sidebar-bottom{display:none}
+	body.menu-open .admin-sidebar .sidebar-bottom{display:flex;position:fixed;left:14px;width:calc(260px - 28px);bottom:calc(12px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(2,6,23,0.06);z-index:130}
 }
 
 @media (max-width: 1280px){
