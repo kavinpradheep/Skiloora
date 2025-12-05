@@ -105,12 +105,29 @@ exports.login = async (req, res) => {
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
     return res.json({ ok: true, uid, email: decoded.email, isAdmin, token });
   } catch (err) {
+    // Collect diagnostics without exposing secrets
+    let diag = {};
     try {
       const adminApp = admin && admin.app ? admin.app() : null;
       const proj = adminApp && adminApp.options ? (adminApp.options.projectId || adminApp.options.credential?.projectId) : undefined;
-      console.error('Auth login error', err && (err.message||err), 'admin projectId:', proj);
-    } catch(_){ console.error('Auth login error', err); }
-    return res.status(401).json({ error: 'invalid_token', message: err.message });
+      diag.adminProjectId = proj;
+    } catch(_){ /* ignore */ }
+    try {
+      const authHeader = req.headers.authorization || '';
+      const match = authHeader.match(/Bearer (.+)/);
+      const idToken = match ? match[1] : '';
+      const payload = JSON.parse(Buffer.from(idToken.split('.')[1]||'', 'base64').toString('utf8')) || {};
+      diag.tokenAud = payload && payload.aud;
+      diag.tokenIss = payload && payload.iss;
+    } catch(_){ /* ignore */ }
+    // Log server-side for certainty
+    console.error('Auth login error', err && (err.message||err), diag);
+    // In production, keep errors minimal; in non-prod include diagnostics
+    const body = { error: 'invalid_token', message: err.message };
+    if (process.env.NODE_ENV !== 'production') {
+      body.diagnostics = diag;
+    }
+    return res.status(401).json(body);
   }
 };
 
