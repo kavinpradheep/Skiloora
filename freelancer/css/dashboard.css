@@ -24,7 +24,7 @@ html{scroll-behavior:smooth}
 .user-menu.hidden{display:none}
 .user-menu button{width:100%;text-align:left;padding:8px 10px;border:none;background:transparent;border-radius:8px;cursor:pointer}
 .user-menu button:hover{background:#f3f4f6}
-.user img{width:44px;height:44px;border-radius:50%}
+.user img{width:44px;height:44px;border-radius:50%;background:#e5e7eb}
 .main{flex:1;display:flex;flex-direction:column;margin-left:220px}
 .content{padding:28px 40px;overflow:auto}
 .section{margin-top:28px;background:transparent;padding:0}
@@ -44,7 +44,7 @@ html{scroll-behavior:smooth}
 .project-card .proj-body{padding:8px;display:flex;justify-content:space-between;align-items:center}
 .profile-grid{display:grid;grid-template-columns:280px 1fr;gap:20px}
 .profile-card{text-align:center;padding:18px;border-radius:12px;border:1px solid var(--border);box-shadow:var(--card-shadow);background:#fff}
-.avatar-large img{width:120px;height:120px;border-radius:100px;object-fit:cover}
+.avatar-large img{width:120px;height:120px;border-radius:100px;object-fit:cover;background:#e5e7eb}
 .profile-card #profileRole{margin-top:4px;margin-bottom:10px;display:block}
 .profile-card .profile-actions{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:8px}
 .profile-card .rating{margin-top:6px;font-weight:600}
