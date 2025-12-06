@@ -1,3 +1,9 @@
+@media (max-width:900px){
+	.cards.grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width:600px){
+	.cards.grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+}
 @media (min-width:901px) {
 	.topbar {
 		display: flex;
@@ -66,19 +72,31 @@ html{scroll-behavior:smooth}
 .user-menu button{width:100%;text-align:left;padding:8px 10px;border:none;background:transparent;border-radius:8px;cursor:pointer}
 .user-menu button:hover{background:#f3f4f6}
 .user img{width:44px;height:44px;border-radius:50%;background:#e5e7eb}
-.main{flex:1;display:flex;flex-direction:column;margin-left:220px}
+.main{flex:1;display:flex;flex-direction:column;margin-left:220px;max-width:100vw;overflow-x:hidden;}
 .content{padding:28px 40px;overflow:auto}
 .section{margin-top:28px;background:transparent;padding:0}
 .section h2{margin-bottom:14px;font-size:20px}
 .cards.row{display:grid;grid-template-columns: repeat(4, minmax(0,1fr)); gap:16px}
-.card{background:#fff;border-radius:var(--radius);box-shadow:var(--card-shadow);padding:16px;border:1px solid var(--border);display:flex;flex-direction:column;min-width:220px}
-.card.metric{min-width:220px;flex:1 1 220px;max-width:320px}
+@media (max-width:1280px){ .cards.row{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width:900px){ .cards.row{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width:600px){ .cards.row{ grid-template-columns: repeat(2, 1fr); } }
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--card-shadow);padding:16px;border:1px solid var(--border);display:flex;flex-direction:column;min-width:0;max-width:100%;box-sizing:border-box;}
+.card.metric{min-width:0;flex:1 1 100%;max-width:100%;box-sizing:border-box;}
+@media (max-width:900px){
+	.card, .card.metric { min-width:0; max-width:100%; width:100%; }
+}
 .card-title{color:var(--muted);font-size:13px}
 .card-value{font-size:20px;font-weight:700;margin-top:8px}
 .chart-card{margin-top:16px;padding:18px;border-radius:var(--radius);box-shadow:var(--card-shadow);border:1px solid var(--border);background:#fff}
 .chart-card canvas{width:100% !important;height:320px !important}
 .grid-3{display:grid;grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px}
-.stat{min-width:160px;padding:14px;display:flex;gap:12px;align-items:center;border-radius:12px;border:1px solid var(--border);background:#fff}
+@media (max-width:1280px){ .grid-3{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width:900px){ .grid-3{ grid-template-columns: repeat(2, 1fr); } }
+@media (max-width:600px){ .grid-3{ grid-template-columns: repeat(2, 1fr); } }
+.stat{min-width:0;width:100%;padding:14px;display:flex;gap:12px;align-items:center;border-radius:12px;border:1px solid var(--border);background:#fff;box-sizing:border-box;}
+@media (max-width:900px){
+	.grid-3 .card, .card.stat { min-width:0; width:100%; box-sizing:border-box; }
+}
 .projects-grid{display:grid;grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px}
 .projects-grid .project-card{width:260px;height:150px;border-radius:12px;border:1px solid var(--border);box-shadow:var(--card-shadow);overflow:hidden;background:#fff;display:flex;flex-direction:column}
 .project-card img{width:100%;height:90px;object-fit:cover}
