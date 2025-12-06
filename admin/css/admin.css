@@ -237,7 +237,9 @@ canvas{flex:1}
 /* Responsive adjustments */
 @media (max-width: 1024px){
 	.mobile-menu{display:inline-flex !important;align-items:center;justify-content:center}
-	.admin-sidebar{position:fixed;top:0;left:0;height:100vh;overflow:auto;z-index:120;transform:translateX(-100%);transition:transform .25s ease;width:260px}
+	.admin-sidebar{position:fixed;top:0;left:0;height:100vh;overflow:auto;z-index:120;transform:translateX(-100%);transition:transform .25s ease;width:260px;display:flex;flex-direction:column;}
+	.admin-sidebar .sidebar-bottom{margin-top:auto; padding: 16px 0; display: flex; justify-content: center;}
+	.admin-sidebar .sidebar-bottom button { width: 90%; font-size: 1rem; }
 	body.menu-open .admin-sidebar{transform:translateX(0)}
 	#menuOverlay{display:block}
 	body:not(.menu-open) #menuOverlay{display:none}
