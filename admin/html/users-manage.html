@@ -9,7 +9,7 @@
   <script src="../js/nav.js"></script>
 </head>
 <body class="admin-app">
-  <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="adminSidebar" aria-expanded="false">☰</button>
+  <!-- Removed duplicate mobile-menu button -->
   <div class="overlay" id="menuOverlay" aria-hidden="true" hidden></div>
   <aside class="admin-sidebar" id="adminSidebar">
     <div class="brand">Skiloora</div>
@@ -33,8 +33,13 @@
 
   <main class="admin-main">
     <header class="admin-topbar">
-      <div class="path">Users Management / Manage Suspensions</div>
-      <div class="top-actions"><input class="search" placeholder="Search..." /><button id="mobileLogout" class="btn-ghost mobile-logout">Logout</button><div class="avatar">A</div></div>
+      <div class="admin-topbar-row">
+        <div class="admin-topbar-left">
+          <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="adminSidebar" aria-expanded="false">☰</button>
+          <div class="path">Users Management / Manage Suspensions</div>
+        </div>
+        <div class="avatar">A</div>
+      </div>
     </header>
 
     <section class="section" id="sectionSuspended">
