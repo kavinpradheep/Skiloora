@@ -99,7 +99,22 @@ form.addEventListener('submit', async (e) => {
     }
   } catch (err) {
     console.error('Login error', err);
-    showMsg(err.message || 'Login failed');
+    // Map Firebase errors to friendly messages
+    let friendlyMsg = 'Login failed';
+    if (err && err.code) {
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+        friendlyMsg = 'Incorrect email or password.';
+      } else if (err.code === 'auth/too-many-requests') {
+        friendlyMsg = 'Too many attempts. Please try again later.';
+      } else if (err.code === 'auth/network-request-failed') {
+        friendlyMsg = 'Network error. Please check your connection.';
+      } else {
+        friendlyMsg = 'Login failed. Please try again.';
+      }
+    } else {
+      friendlyMsg = 'Login failed. Please try again.';
+    }
+    showMsg(friendlyMsg);
     // Show forgot password option on typical credential errors
     const code = err && err.code ? String(err.code) : '';
     const show = code.includes('wrong-password') || code.includes('user-not-found') || code.includes('invalid-credential');
