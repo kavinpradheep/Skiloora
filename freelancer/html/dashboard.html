@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Skiloora — Dashboard</title>
+  <title>Skiloora – Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="../css/dashboard.css" />
   <!-- Firebase SDKs (compat) -->
@@ -32,7 +32,6 @@
 </head>
 <body>
   <div class="app" id="appRoot">
-    <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">☰</button>
     <div class="overlay" id="menuOverlay" aria-hidden="true" hidden></div>
     <aside class="sidebar" id="sidebar">
       <div class="brand">Skiloora</div>
@@ -51,19 +50,26 @@
 
     <main class="main" role="main">
       <header class="topbar">
-        <div class="search">
-          <input id="globalSearch" placeholder="Search projects..." autocomplete="off" />
-          <div id="searchSuggest" class="search-suggest hidden"></div>
+        <div class="topbar-left">
+          <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">☰</button>
         </div>
-        <div class="user" id="userMenuRoot">
-          <img id="userAvatar" alt="avatar" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
-          <div class="user-info">
-            <div id="userName">User</div>
-            <small id="userRole">Developer</small>
+        <div class="topbar-center">
+          <div class="search">
+            <input type="text" id="globalSearch" placeholder="Search projects..." />
+            <div id="searchSuggest" class="search-suggest hidden"></div>
           </div>
-          <button id="userMenuToggle" class="user-caret" aria-haspopup="menu" aria-expanded="false">▾</button>
-          <div id="userMenu" class="user-menu hidden" role="menu">
-            <button id="menuLogout" role="menuitem">Logout</button>
+        </div>
+        <div class="topbar-right">
+          <div class="user" id="userMenuRoot">
+            <img id="userAvatar" alt="avatar" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+            <div class="user-info">
+              <div id="userName">User</div>
+              <small id="userRole">Developer</small>
+            </div>
+            <button id="userMenuToggle" class="user-caret" aria-haspopup="menu" aria-expanded="false">▾</button>
+            <div id="userMenu" class="user-menu hidden" role="menu">
+              <button id="menuLogout" role="menuitem">Logout</button>
+            </div>
           </div>
         </div>
       </header>
@@ -98,8 +104,8 @@
         <section class="section" id="orders">
           <h2>Orders Overview</h2>
           <div class="cards grid-3">
-            <div class="card stat"><div class="stat-icon">📥</div><div class="stat-body"><div class="stat-count" id="ordersNew">0</div><div class="muted">New Orders</div></div></div>
-            <div class="card stat"><div class="stat-icon">🔁</div><div class="stat-body"><div class="stat-count" id="ordersActive">0</div><div class="muted">Active Orders</div></div></div>
+            <div class="card stat"><div class="stat-icon">🔥</div><div class="stat-body"><div class="stat-count" id="ordersNew">0</div><div class="muted">New Orders</div></div></div>
+            <div class="card stat"><div class="stat-icon">📝</div><div class="stat-body"><div class="stat-count" id="ordersActive">0</div><div class="muted">Active Orders</div></div></div>
             <div class="card stat"><div class="stat-icon">💬</div><div class="stat-body"><div class="stat-count" id="ordersPending">0</div><div class="muted">Pending Feedback</div></div></div>
             <div class="card stat"><div class="stat-icon">✅</div><div class="stat-body"><div class="stat-count" id="ordersDelivered">0</div><div class="muted">Delivered Orders</div></div></div>
             <div class="card stat"><div class="stat-icon">❌</div><div class="stat-body"><div class="stat-count" id="ordersCancelled">0</div><div class="muted">Cancelled Orders</div></div></div>
@@ -149,9 +155,9 @@
         <section class="section" id="support">
           <h2>Support</h2>
           <div class="support-list">
-            <div class="support-card">Support — Need help? Our support team is here for you 24/7.</div>
-            <div class="support-card">Help Center — Browse articles & FAQs</div>
-            <div class="support-card">Raise a Ticket — Get personalized help</div>
+            <div class="support-card">Support – Need help? Our support team is here for you 24/7.</div>
+            <div class="support-card">Help Center – Browse articles & FAQs</div>
+            <div class="support-card">Raise a Ticket – Get personalized help</div>
           </div>
           <div class="issue-report" style="margin-top:24px">
             <h3 style="margin:0 0 10px">Report an Issue</h3>
@@ -190,7 +196,6 @@
       <label>Link<input id="projLink" /></label>
       <label>Image URL<input id="projImageUrl" type="url" placeholder="https://example.com/image.jpg" /></label>
       <label>Image Upload (optional)<input id="projImageFile" type="file" accept="image/*" /></label>
-      <!-- Description removed per request -->
       <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
         <button id="cancelAdd" class="btn-ghost">Cancel</button>
         <button id="saveAdd" class="btn">Save</button>
@@ -198,20 +203,6 @@
     </div>
   </div>
 
-  <style>
-    .mobile-menu { position:fixed; top:10px; left:10px; z-index:110; background:#111827; color:#fff; border:none; border-radius:10px; padding:8px 10px; display:none; }
-    @media (max-width: 900px){ .mobile-menu{ display:block; } .sidebar{ transform: translateX(-100%); position:fixed; top:0; left:0; height:100vh; z-index:106; transition: transform .25s ease; } .sidebar.open{ transform: translateX(0); } .main{ margin-left:0!important; } }
-    .overlay{ position:fixed; inset:0; background: rgba(0,0,0,0.35); z-index:105; }
-    .hidden{ display:none !important; }
-    .modal { position: fixed; inset:0; background: rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:50; }
-    .modal.hidden { display:none; }
-    .modal-inner { background:white; padding:18px; border-radius:12px; width:420px; max-width:95%; }
-    .modal-inner label { display:block; margin-top:8px; font-size:13px; }
-    .modal-inner input, .modal-inner textarea { width:100%; padding:8px; margin-top:6px; border-radius:8px; border:1px solid #e5e7eb; }
-    .muted { color:#6b7280; }
-    .btn { background:#111827;color:white;padding:8px 12px;border-radius:10px;border:none; cursor:pointer; }
-    .btn-ghost { background:transparent;border:1px solid #e5e7eb;padding:8px 12px;border-radius:10px; cursor:pointer; }
-  </style>
   <script>
     (function(){
       const btn = document.getElementById('mobileMenu');
@@ -221,14 +212,26 @@
       btn.addEventListener('click', ()=>{
         const open = sb.classList.toggle('open');
         btn.setAttribute('aria-expanded', String(open));
-        if (ov){ ov.classList.toggle('hidden', !open); ov.setAttribute('aria-hidden', String(!open)); }
+        if (ov){ 
+          ov.classList.toggle('hidden', !open); 
+          ov.setAttribute('aria-hidden', String(!open)); 
+          if (open) {
+            ov.removeAttribute('hidden');
+          } else {
+            ov.setAttribute('hidden', '');
+          }
+        }
         document.body.style.overflow = open ? 'hidden' : '';
       });
       document.addEventListener('click', (e)=>{
         if (sb.classList.contains('open') && !sb.contains(e.target) && e.target !== btn){
           sb.classList.remove('open');
           btn.setAttribute('aria-expanded','false');
-          if (ov){ ov.classList.add('hidden'); ov.setAttribute('aria-hidden','true'); }
+          if (ov){ 
+            ov.classList.add('hidden'); 
+            ov.setAttribute('aria-hidden','true'); 
+            ov.setAttribute('hidden', '');
+          }
           document.body.style.overflow = '';
         }
       });

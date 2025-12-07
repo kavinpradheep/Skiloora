@@ -47,25 +47,31 @@ const rootBody = document.body;
 
 function openMenu() {
   rootBody.classList.add('menu-open');
+  sidebar.classList.add('open');
   menuBtn && menuBtn.setAttribute('aria-expanded','true');
   overlay && overlay.removeAttribute('aria-hidden');
   overlay && overlay.removeAttribute('hidden');
 }
+
 function closeMenu() {
   rootBody.classList.remove('menu-open');
+  sidebar.classList.remove('open');
   menuBtn && menuBtn.setAttribute('aria-expanded','false');
   overlay && overlay.setAttribute('aria-hidden','true');
   overlay && overlay.setAttribute('hidden','');
+  document.body.style.overflow = '';
 }
+
 if (menuBtn) {
   menuBtn.addEventListener('click', () => {
     if (rootBody.classList.contains('menu-open')) closeMenu(); else openMenu();
   });
 }
+
 if (overlay) {
   overlay.addEventListener('click', closeMenu);
 }
-// Do not close sidebar when clicking nav item
+
 const infoEmail = document.getElementById('infoEmail');
 const infoPhone = document.getElementById('infoPhone');
 const infoLocation = document.getElementById('infoLocation');
@@ -87,21 +93,38 @@ const projTitle = document.getElementById('projTitle');
 const projLink = document.getElementById('projLink');
 const projImageFile = document.getElementById('projImageFile');
 const projImageUrl = document.getElementById('projImageUrl');
-// Description removed
 
-// Navigation: smooth scroll instead of show/hide sections
+// Navigation: smooth scroll and close sidebar on mobile
 navButtons.forEach(btn => {
-  // Nav button click: Scroll smoothly to target section and set active state.
   btn.addEventListener('click', (e) => {
     e.preventDefault();
     const targetId = btn.getAttribute('data-target');
     if (!targetId) return;
+    
+    // Update active state
     navButtons.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    
     // Ensure all sections visible when using scroll navigation
-    document.querySelectorAll('.content > .section, .content > .hero').forEach(sec => { sec.style.display = ''; });
+    document.querySelectorAll('.content > .section, .content > .hero').forEach(sec => { 
+      sec.style.display = ''; 
+    });
+    
+    // Close sidebar on mobile after clicking
+    closeMenu();
+    
+    // Force re-enable scrolling after a short delay
+    setTimeout(() => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }, 100);
+    
+    // Scroll to target section
     const targetEl = document.getElementById(targetId);
-    if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 });
 
@@ -113,15 +136,21 @@ logoutBtn?.addEventListener('click', async () => {
     alert('Failed to logout.');
   }
 });
+
 menuLogout?.addEventListener('click', async () => {
-  try { await auth.signOut(); window.location.href = './login.html'; } catch(e){}
+  try { 
+    await auth.signOut(); 
+    window.location.href = './login.html'; 
+  } catch(e){}
 });
+
 userMenuToggle?.addEventListener('click', (e) => {
   e.stopPropagation();
   const isOpen = !userMenu.classList.contains('hidden');
   userMenu.classList.toggle('hidden', isOpen);
   userMenuToggle.setAttribute('aria-expanded', String(!isOpen));
 });
+
 document.addEventListener('click', (e) => {
   if (!userMenuRoot?.contains(e.target)) {
     userMenu?.classList.add('hidden');
@@ -132,11 +161,13 @@ document.addEventListener('click', (e) => {
 editProfileBtn?.addEventListener('click', () => {
   window.location.href = './edit-profile.html';
 });
+
 viewPublicBtn?.addEventListener('click', () => {
   const uid = auth.currentUser?.uid || '';
   const url = uid ? `./public-profile.html?uid=${encodeURIComponent(uid)}` : './public-profile.html';
   window.location.href = url;
 });
+
 addCertsBtn?.addEventListener('click', () => {
   window.location.href = './edit-profile.html#certifications';
 });
@@ -145,7 +176,7 @@ btnAddProject?.addEventListener('click', () => modalAdd.classList.remove('hidden
 cancelAdd?.addEventListener('click', () => modalAdd.classList.add('hidden'));
 
 function setText(el, val) { if (el) el.textContent = val ?? '—'; }
-// setChipRow(el, arr): Render simple chip elements for each array item.
+
 function setChipRow(el, arr) {
   if (!el) return;
   el.innerHTML = '';
@@ -157,7 +188,6 @@ function setChipRow(el, arr) {
   });
 }
 
-// setCertList(el, arr): Render certification items as list blocks.
 function setCertList(el, arr) {
   if (!el) return;
   el.innerHTML = '';
@@ -171,7 +201,6 @@ function setCertList(el, arr) {
   });
 }
 
-// renderProjects(uid): Load project docs, build cards & link chips, enable deletion.
 function renderProjects(uid) {
   if (!projectsGrid || !projectLinks) return;
   projectsGrid.innerHTML = '';
@@ -249,7 +278,6 @@ function renderProjects(uid) {
     .catch(err => console.error('Render projects failed', err));
 }
 
-// renderProfile(user, profile): Populate dashboard profile sections and top bar with user data.
 function renderProfile(user, profile) {
   const displayName = profile?.name || user.displayName || 'User';
   setText(welcomeTitle, `Welcome back, ${displayName}!`);
@@ -269,7 +297,6 @@ function renderProfile(user, profile) {
       profileAvatar.src = profile.avatarUrl;
       profileAvatar.alt = displayName;
     } else {
-      // Generate letter avatar SVG data URI
       const letter = displayName.charAt(0).toUpperCase();
       const bg = '#111827';
       const fg = '#ffffff';
@@ -308,7 +335,6 @@ function renderProfile(user, profile) {
       }
     });
   }
-  // Topbar user info
   if (topUserName) topUserName.textContent = displayName;
   if (topUserRole) topUserRole.textContent = profile?.title || profile?.roleLong || 'Developer';
   if (topUserAvatar) {
@@ -324,7 +350,6 @@ function renderProfile(user, profile) {
       topUserAvatar.alt = letter;
     }
   }
-  // Also render social icons in card
   const cardSocial = document.getElementById('cardSocial');
   if (cardSocial) {
     cardSocial.innerHTML = '';
@@ -344,7 +369,6 @@ function renderProfile(user, profile) {
   }
 }
 
-// renderMetrics(uid): Aggregate mock metrics, order status counts, and build revenue line chart.
 function renderMetrics(uid) {
   db.collection('users').doc(uid).collection('orders').get().then(snap => {
     const total = snap.docs.reduce((sum, d) => sum + (d.data().amount || 0), 0);
@@ -382,11 +406,9 @@ saveAdd?.addEventListener('click', async () => {
   console.log('Uploading as uid:', user.uid);
   const title = (projTitle.value || '').trim();
   const link = (projLink.value || '').trim();
-  // Description removed
   const file = projImageFile.files?.[0];
   const imageUrlInput = (projImageUrl?.value || '').trim();
   if (!title) return alert('Project title is required');
-  // Image is optional: prefer provided URL; if none, use upload; if neither, use placeholder.
   try {
     const projDocRef = db.collection('users').doc(user.uid).collection('projects').doc();
     let imageUrl = imageUrlInput;
@@ -410,7 +432,6 @@ saveAdd?.addEventListener('click', async () => {
 
 auth.onAuthStateChanged(async (user) => {
   if (!user) { window.location.href = './login.html'; return; }
-  // Role guard: prefer Firestore role; fallback to backend admin flag
   try {
     const userDoc = await db.collection('users').doc(user.uid).get();
     const profile = userDoc.exists ? userDoc.data() : { email: user.email };
@@ -418,7 +439,6 @@ auth.onAuthStateChanged(async (user) => {
     if (role === 'admin') { window.location.href='../../admin/html/dashboard.html'; return; }
     if (role === 'buyer' || role === 'hirer') { window.location.href='../../buyer/html/index.html'; return; }
 
-    // Only if no explicit role, consult backend for admin flag
     if (!role) {
       try {
         const idToken = await user.getIdToken(true);
@@ -443,7 +463,6 @@ auth.onAuthStateChanged(async (user) => {
   } catch (e) {}
 });
 
-// renderSuggestions(results): Show project search dropdown suggestions; navigate/open on click.
 function renderSuggestions(results) {
   if (!searchSuggest) return;
   if (!results.length) { searchSuggest.innerHTML = '<div class="item"><span class="sub">No projects found</span></div>'; searchSuggest.classList.remove('hidden'); return; }
@@ -451,7 +470,7 @@ function renderSuggestions(results) {
   results.forEach(p => {
     const row = document.createElement('div');
     row.className = 'item';
-    const icon = document.createElement('span'); icon.textContent = '📁';
+    const icon = document.createElement('span'); icon.textContent = '🔍';
     const textWrap = document.createElement('div');
     const title = document.createElement('div'); title.className = 'title'; title.textContent = p.title;
     const sub = document.createElement('div'); sub.className = 'sub'; sub.textContent = p.link || 'No link';
@@ -473,6 +492,7 @@ searchInput?.addEventListener('input', () => {
   const matches = projectsCache.filter(p => p.title.toLowerCase().includes(q) || (p.link||'').toLowerCase().includes(q)).slice(0,8);
   renderSuggestions(matches);
 });
+
 searchInput?.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     const q = (searchInput.value || '').trim().toLowerCase();
@@ -486,13 +506,13 @@ searchInput?.addEventListener('keydown', (e) => {
     searchSuggest?.classList.add('hidden');
   }
 });
+
 document.addEventListener('click', (e) => {
   if (!searchSuggest?.contains(e.target) && e.target !== searchInput) {
     searchSuggest?.classList.add('hidden');
   }
 });
 
-// ---------------- Issue Reporting (Freelancer Dashboard) ----------------
 const fdIssueSubject = document.getElementById('fdIssueSubject');
 const fdIssuePriority = document.getElementById('fdIssuePriority');
 const fdIssueDesc = document.getElementById('fdIssueDesc');
