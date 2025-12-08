@@ -2,3 +2,12 @@
 /buyer       /buyer/html/index.html
 /freelancer  /freelancer/html/index.html
 /admin       /admin/html/dashboard.html
+
+# Pretty URLs for freelancer HTML pages
+/freelancer/html/:page  /freelancer/html/:page.html  200
+
+# Pretty URLs for buyer HTML pages
+/buyer/html/:page  /buyer/html/:page.html  200
+
+# Pretty URLs for admin HTML pages
+/admin/html/:page  /admin/html/:page.html  200
