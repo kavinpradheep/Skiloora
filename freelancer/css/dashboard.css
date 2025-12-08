@@ -1060,9 +1060,15 @@ html {
 /* Small Mobile - 400px and below */
 @media (max-width: 400px) {
   .topbar {
-    top: 8px;
-    left: 8px;
-    right: 8px;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    padding: 0 12px;
+  }
+
+  .content {
+    padding: 24px 18px;
+    padding-top: 28px;
   }
 
   .topbar-center {
@@ -1098,7 +1104,7 @@ html {
   }
 
   .card {
-    padding: 12px;
+    padding: 16px;
   }
 
   .card.summary {
@@ -1120,5 +1126,21 @@ html {
 
   .user-caret {
     padding: 2px 4px;
+  }
+
+  .section {
+    margin-top: 24px;
+  }
+
+  .section h2 {
+    margin-bottom: 16px;
+  }
+
+  .cards {
+    gap: 16px;
+  }
+
+  .profile-card {
+    padding: 20px 16px;
   }
 }
