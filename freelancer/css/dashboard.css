@@ -44,6 +44,7 @@ html {
   left: 0;
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   z-index: 100;
   transition: transform 0.3s ease;
 }
@@ -52,12 +53,17 @@ html {
   font-weight: 700;
   font-size: 20px;
   margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 .nav {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: 12px;
 }
 
 .nav-item {
@@ -82,6 +88,13 @@ html {
 
 .sidebar-bottom {
   margin-top: auto;
+  flex-shrink: 0;
+  padding: 12px 0;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
 }
 
 /* Mobile Menu Button */
@@ -812,14 +825,41 @@ html {
     top: 0;
     left: 0;
     height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile */
     z-index: 106;
     transition: transform 0.25s ease;
     width: 80vw;
     max-width: 280px;
+    padding-bottom: 80px; /* Extra padding for logout button visibility */
   }
 
   .sidebar.open {
     transform: translateX(0);
+  }
+  
+  .nav {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 0;
+  }
+  
+  .sidebar-bottom {
+    margin-top: 16px;
+    padding: 16px 0;
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .sidebar-bottom button {
+    width: 90%;
+    margin: 0 auto;
+    display: block;
+    padding: 12px 16px;
   }
 
   .main {
@@ -975,11 +1015,11 @@ html {
   }
 
   .cards.row {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 
   .cards.grid-3 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 
   .card-value {
