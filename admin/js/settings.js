@@ -155,6 +155,8 @@ document.addEventListener('DOMContentLoaded', function(){
     const password = (pwEl?.value || '').trim();
     let ok = true;
     const show = Boolean(forceShow || submitAttempted);
+      const btn = document.getElementById('saveAddAdmin');
+      const prev = btn?.textContent;
     const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (show){
       setError(fieldName, errName, name ? '' : 'Name is required'); if (!name) ok = false;
