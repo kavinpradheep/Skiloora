@@ -186,8 +186,13 @@ document.addEventListener('DOMContentLoaded', function(){
     submitAttempted = true;
     if (!validate(true)) return;
     try{
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
+// Use local backend if running locally, otherwise use current origin
+      let backend;
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        backend = 'http://localhost:5000';
+      } else {
+        backend = location.origin.replace(/\/$/, '');
+      }
       const btn = document.getElementById('saveAddAdmin');
       const prev = btn?.textContent;
       if (btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
