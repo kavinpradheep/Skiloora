@@ -11,7 +11,8 @@ function initFirebaseAdmin() {
 
   // 1) Explicit path via env
   if (svcPathEnv && fs.existsSync(svcPathEnv)) {
-    const serviceAccount = require(svcPathEnv);
+    console.log('[firebaseAdmin] Using service account from env path:', svcPathEnv);
+    const serviceAccount = JSON.parse(fs.readFileSync(svcPathEnv, 'utf8'));
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
@@ -30,13 +31,17 @@ function initFirebaseAdmin() {
       path.join(backendRoot, 'serviceAccountKey.json'),
       path.join(backendRoot, 'config', 'serviceAccountKey.json')
     ];
+    console.log('[firebaseAdmin] Checking for service account key at:');
+    candidates.forEach(p => console.log('  -', p, fs.existsSync(p) ? '[FOUND]' : '[NOT FOUND]'));
     const found = candidates.find(p => fs.existsSync(p));
     if (found) {
-      const serviceAccount = require(found);
+      console.log('[firebaseAdmin] Using service account from:', found);
+      const serviceAccount = JSON.parse(fs.readFileSync(found, 'utf8'));
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
     } else {
+      console.warn('[firebaseAdmin] No service account key found. Falling back to ADC.');
       // 4) Fallback to ADC (requires GOOGLE_APPLICATION_CREDENTIALS or GCP metadata)
       admin.initializeApp();
     }
