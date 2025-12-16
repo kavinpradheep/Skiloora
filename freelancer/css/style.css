@@ -168,8 +168,69 @@ body{
 
 /* responsive */
 @media (max-width:980px){
+  .container { padding: 0 12px; }
   .hero-inner{ grid-template-columns: 1fr; gap:20px; }
-  .hero-image{ height:260px; max-width:100%; }
-  .hero-title{ font-size:36px; }
-  .topbar-inner{ padding:14px 0; }
+  .hero-image{ height:220px; max-width:100%; }
+  .hero-title{ font-size:32px; }
+  .topbar-inner{ flex-direction: column; gap: 10px; padding:14px 0; }
+}
+
+@media (max-width:600px){
+  .container { padding: 0 9vw; }
+  .hero { padding: 48px 0 52px; }
+  .hero-inner { gap: 8px; }
+  .hero-title {
+    font-size: 1.6rem;
+    line-height: 1.18;
+    margin-bottom: 22px;
+    font-weight: 800;
+    word-break: break-word;
+    text-align: left;
+  }
+  .hero-sub {
+    font-size: 1.08rem;
+    margin-bottom: 28px;
+    color: var(--muted);
+    word-break: break-word;
+    text-align: left;
+  }
+  .search-form {
+    margin-bottom: 22px;
+  }
+  .chips {
+    margin-bottom: 10px;
+  }
+  .hero-left { padding-right: 0; }
+  .search-form { flex-direction: column; gap: 6px; align-items: stretch; }
+  .search-input { font-size: 1rem; padding: 10px 12px; }
+  .btn-search { width: 100%; font-size: 1rem; padding: 10px 0; }
+  .chips { gap: 6px; }
+  .chip { font-size: 0.95rem; padding: 6px 10px; }
+  .hero-image { height: 200px; border-radius: 14px; }
+  .topbar-inner {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+    padding: 8px 12px;
+  }
+  .brand {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-align: left;
+  }
+  .top-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: flex-end;
+    width: auto;
+  }
+  .signup-btn, .btn, .btn-outline, .btn-primary {
+    font-size: 0.98rem;
+    padding: 8px 12px;
+    min-width: 80px;
+    width: auto;
+  }
 }

@@ -35,12 +35,11 @@
     function closeMod(){ currentModUid = null; if (modal) modal.style.display='none'; }
     modClose?.addEventListener('click', closeMod);
 
+    const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
     async function performModeration(action){
     if (!currentModUid) return;
     try{
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
-      const res = await fetch(`${backend}/api/admin/moderation/set`, {
+      const res = await fetch(`${API_ORIGIN}/api/admin/moderation/set`, {
         method:'POST',
         headers:{ 'Content-Type':'application/json' },
         body: JSON.stringify({ uid: currentModUid, action })
@@ -110,9 +109,7 @@
 
     async function loadUsers(){
     try {
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
-      const res = await fetch(`${backend}/api/admin/users-list`, { cache:'no-store' });
+      const res = await fetch(`${API_ORIGIN}/api/admin/users-list`, { cache:'no-store' });
       const json = await res.json();
       if (!json || !json.ok) throw new Error('users_list_failed');
       freelancersData = json.freelancers || [];

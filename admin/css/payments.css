@@ -1,3 +1,30 @@
+/* Responsive metrics and chart for payments page */
+@media (max-width: 760px) {
+	.metrics {
+		grid-template-columns: 1fr !important;
+		gap: 10px;
+	}
+	.metric-card {
+		padding: 10px 8px;
+		font-size: 15px;
+	}
+	.chart-card {
+		padding: 8px 4px;
+		border-radius: 10px;
+		margin-bottom: 12px;
+	}
+	.actions-row {
+		flex-direction: column;
+		gap: 6px;
+		align-items: stretch;
+	}
+	.section {
+		padding: 8px 2vw;
+	}
+	h2 {
+		font-size: 1.1rem;
+	}
+}
 /* Payments page specific overrides */
 /* Responsive table -> cards on small screens */
 

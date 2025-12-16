@@ -3,13 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin Dashboard — Skiloora</title>
+  <title>Admin Dashboard – Skiloora</title>
   <link rel="stylesheet" href="../css/admin.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="../js/nav.js"></script>
 </head>
 <body class="admin-app">
-  <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="adminSidebar" aria-expanded="false">☰</button>
   <div class="overlay" id="menuOverlay" aria-hidden="true" hidden></div>
   <aside class="admin-sidebar" id="adminSidebar">
     <div class="brand">Skiloora</div>
@@ -24,7 +23,7 @@
       <a class="nav-sublink" href="./payments.html#withdrawals"><span class="icon">📄</span>Payments</a>
       <a class="nav-sublink" href="./payments.html#revenue"><span class="icon">📈</span>Revenue Dashboard</a>
       <div class="section-label">Settings</div>
-      <a class="nav-sublink" href="./settings.html#roles"><span class="icon">🔒</span>Roles &amp; Permissions</a>
+      <a class="nav-sublink" href="./settings.html#roles"><span class="icon">🔑</span>Roles &amp; Permissions</a>
       <div class="section-label">Help &amp; Support</div>
       <a class="nav-sublink" href="./issues.html"><span class="icon">❓</span>Issue Reports</a>
     </nav>
@@ -33,10 +32,18 @@
 
   <main class="admin-main">
     <header class="admin-topbar">
-      <div class="path">Admin Dashboard</div>
-      <div class="top-actions">
-        <input class="search" placeholder="Search..." />
-        <div class="avatar">A</div>
+      <div class="admin-topbar-row">
+        <div class="admin-topbar-left">
+          <button class="mobile-menu" id="mobileMenu" aria-label="Open menu" aria-controls="adminSidebar" aria-expanded="false">☰</button>
+          <div class="path">Admin Dashboard</div>
+        </div>
+        <div class="admin-user-menu" id="adminUserMenuRoot">
+          <div class="avatar">A</div>
+          <button id="adminUserMenuToggle" class="admin-user-caret" aria-haspopup="menu" aria-expanded="false">▾</button>
+          <div id="adminUserMenu" class="admin-user-dropdown hidden" role="menu">
+            <button id="adminMenuLogout" role="menuitem">Logout</button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -49,12 +56,45 @@
         <div class="metric-card"><div class="metric-title">Total Revenue</div><div class="metric-value" id="mRevenue">—</div><div class="metric-sub" id="mRevenueSub">—</div></div>
       </div>
       <div class="charts">
-        <div class="chart-card"><div class="chart-title">Monthly Revenue Breakdown</div><canvas id="revenueChart" height="240"></canvas></div>
-        <div class="chart-card"><div class="chart-title">User Growth Trend</div><canvas id="userChart" height="240"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Monthly Revenue Breakdown</div><canvas id="revenueChart"></canvas></div>
+        <div class="chart-card"><div class="chart-title">User Growth Trend</div><canvas id="userChart"></canvas></div>
       </div>
     </section>
   </main>
 
   <script src="../js/dashboard.js"></script>
+  <script>
+    // Admin user menu dropdown toggle
+    (function(){
+      const menuRoot = document.getElementById('adminUserMenuRoot');
+      const menuToggle = document.getElementById('adminUserMenuToggle');
+      const menu = document.getElementById('adminUserMenu');
+      const menuLogout = document.getElementById('adminMenuLogout');
+      
+      if (menuToggle && menu) {
+        menuToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isOpen = !menu.classList.contains('hidden');
+          menu.classList.toggle('hidden', isOpen);
+          menuToggle.setAttribute('aria-expanded', String(!isOpen));
+        });
+        
+        document.addEventListener('click', (e) => {
+          if (menuRoot && !menuRoot.contains(e.target)) {
+            menu.classList.add('hidden');
+            menuToggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+      
+      if (menuLogout) {
+        menuLogout.addEventListener('click', () => {
+          localStorage.removeItem('skiloora_admin_session');
+          const loginUrl = `${location.origin.replace(/\/$/, '')}/freelancer/html/login.html`;
+          window.location.href = loginUrl;
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: skiloora-backend
+    env: node
+    rootDir: backend
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RAZORPAY_KEY_ID
+        fromSecret: rz_key_id
+      - key: RAZORPAY_KEY_SECRET
+        fromSecret: rz_key_secret
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        fromSecret: firebase_admin_json
+      # Render injects PORT automatically; server already reads PORT.

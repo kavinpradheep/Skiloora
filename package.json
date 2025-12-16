@@ -1,0 +1,7 @@
+{
+  "name": "skiloora-site",
+  "private": true,
+  "engines": {
+    "node": "20.x"
+  }
+}

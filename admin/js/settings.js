@@ -115,10 +115,9 @@ document.addEventListener('DOMContentLoaded', function(){
   rmConfirm?.addEventListener('click', async ()=>{
     if (!pendingRemove) return;
     try{
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
+      const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
       rmConfirm.disabled = true; rmConfirm.textContent = 'Removing…';
-      const res = await fetch(`${backend}/api/admin/admin-delete`, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ uid: pendingRemove.uid, email: pendingRemove.email }) });
+      const res = await fetch(`${API_ORIGIN}/api/admin/admin-delete`, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ uid: pendingRemove.uid, email: pendingRemove.email }) });
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error(json.error||'delete_failed');
       closeRemove();
@@ -129,9 +128,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function loadAdmins(){
     try{
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
-      const res = await fetch(`${backend}/api/admin/admins`, { cache:'no-store' });
+      const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+      const res = await fetch(`${API_ORIGIN}/api/admin/admins`, { cache:'no-store' });
       const json = await res.json();
       if (!json || !json.ok) throw new Error('admins_list_failed');
       renderAdmins(json.items || []);
@@ -157,6 +155,8 @@ document.addEventListener('DOMContentLoaded', function(){
     const password = (pwEl?.value || '').trim();
     let ok = true;
     const show = Boolean(forceShow || submitAttempted);
+      const btn = document.getElementById('saveAddAdmin');
+      const prev = btn?.textContent;
     const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (show){
       setError(fieldName, errName, name ? '' : 'Name is required'); if (!name) ok = false;
@@ -188,36 +188,45 @@ document.addEventListener('DOMContentLoaded', function(){
     submitAttempted = true;
     if (!validate(true)) return;
     try{
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
+// Use local backend if running locally, otherwise use current origin
       const btn = document.getElementById('saveAddAdmin');
       const prev = btn?.textContent;
-      if (btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
-      const res = await fetch(`${backend}/api/admin/create-admin`, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({ name, email, password })
-      });
-      const json = await res.json();
-      if (!res.ok || !json.ok){
-        if (json && (json.error === 'email_exists')){
-          setError(fieldEmail, errEmail, 'This email is already an admin');
-          if (btn){ btn.disabled=false; btn.textContent = prev || 'Save'; }
-          return;
+      try{
+        let backend;
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+          backend = 'http://localhost:5000';
+        } else {
+          backend = 'https://skiloora.onrender.com';
         }
-        if (json && (json.error === 'email_in_use_by_user' || json.error === 'email_in_use')){
-          setError(fieldEmail, errEmail, 'This email is already used by a user account');
-          if (btn){ btn.disabled=false; btn.textContent = prev || 'Save'; }
-          return;
+        if (btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
+        const res = await fetch(`${backend}/api/admin/create-admin`, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok){
+          if (json && (json.error === 'email_exists')){
+            setError(fieldEmail, errEmail, 'This email is already an admin');
+            if (btn){ btn.disabled=false; btn.textContent = prev || 'Save'; }
+            return;
+          }
+          if (json && (json.error === 'email_in_use_by_user' || json.error === 'email_in_use')){
+            setError(fieldEmail, errEmail, 'This email is already used by a user account');
+            if (btn){ btn.disabled=false; btn.textContent = prev || 'Save'; }
+            return;
+          }
+          throw new Error(json && json.error || 'create_failed');
         }
-        throw new Error(json && json.error || 'create_failed');
-      }
-      closeModal();
-      if (nameEl) nameEl.value='';
-      if (emailEl) emailEl.value='';
-      if (pwEl) pwEl.value='';
-      await loadAdmins();
-      alert('Admin added successfully');
+        closeModal();
+        if (nameEl) nameEl.value='';
+        if (emailEl) emailEl.value='';
+        if (pwEl) pwEl.value='';
+        await loadAdmins();
+        alert('Admin added successfully');
+        submitAttempted = false;
+      }catch(err){ alert('Failed to add admin'); }
+      finally{ if (btn){ btn.disabled=false; btn.textContent = prev || 'Save'; } }
       submitAttempted = false;
     }catch(err){ alert('Failed to add admin'); }
     finally{ const btn = document.getElementById('saveAddAdmin'); if (btn){ btn.disabled=false; btn.textContent = prev || 'Save'; } }

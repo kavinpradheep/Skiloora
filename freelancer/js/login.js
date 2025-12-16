@@ -27,7 +27,8 @@ function showMsg(text, isError = true){
 async function backendLogin(idToken){
   // call backend to verify token (and create server session if you want)
   try {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
+    const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+    const res = await fetch(API_ORIGIN + '/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,7 +99,22 @@ form.addEventListener('submit', async (e) => {
     }
   } catch (err) {
     console.error('Login error', err);
-    showMsg(err.message || 'Login failed');
+    // Map Firebase errors to friendly messages
+    let friendlyMsg = 'Login failed';
+    if (err && err.code) {
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+        friendlyMsg = 'Incorrect email or password.';
+      } else if (err.code === 'auth/too-many-requests') {
+        friendlyMsg = 'Too many attempts. Please try again later.';
+      } else if (err.code === 'auth/network-request-failed') {
+        friendlyMsg = 'Network error. Please check your connection.';
+      } else {
+        friendlyMsg = 'Login failed. Please try again.';
+      }
+    } else {
+      friendlyMsg = 'Login failed. Please try again.';
+    }
+    showMsg(friendlyMsg);
     // Show forgot password option on typical credential errors
     const code = err && err.code ? String(err.code) : '';
     const show = code.includes('wrong-password') || code.includes('user-not-found') || code.includes('invalid-credential');

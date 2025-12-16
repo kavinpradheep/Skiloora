@@ -1,5 +1,11 @@
 // freelancer/js/signup.js — corrected version (email check before temp-save)
 (function () {
+  // Detect API origin: Render in production, localhost in dev
+  const API_ORIGIN = (function(){
+    const h = location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1') return 'http://localhost:5000';
+    return 'https://skiloora.onrender.com';
+  })();
   // helper selectors
   // $(selector): Shortcut for querySelector; $$(selector): array of all matches.
   const $ = (s) => document.querySelector(s);
@@ -150,7 +156,7 @@
 
   // apiCall(path, body): POST helper to backend with optional Authorization header.
   async function apiCall(path, body) {
-    const API_BASE = 'http://localhost:5000';
+    const API_BASE = API_ORIGIN;
     const token = await getIdToken();
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;

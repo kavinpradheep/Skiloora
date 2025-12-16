@@ -40,14 +40,54 @@ app.use('/api/issues', issuesRoutes);
 // Health
 app.get('/health', (req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
 
-// Start server with port fallback
+// Create default admin if none exists
+async function ensureDefaultAdmin() {
+  const admin = require('./config/firebaseAdmin');
+  const db = admin.firestore();
+  const email = 'admin@gmail.com';
+  const password = 'Admin@123';
+  const name = 'Default Admin';
+  try {
+    const snap = await db.collection('admins').limit(1).get();
+    if (snap.empty) {
+      let uid;
+      try {
+        // Try to create the user in Firebase Auth
+        const user = await admin.auth().createUser({ email, password, displayName: name });
+        uid = user.uid;
+      } catch (err) {
+        if (err.code === 'auth/email-already-exists') {
+          // If user already exists, get their UID
+          const user = await admin.auth().getUserByEmail(email);
+          uid = user.uid;
+        } else {
+          throw err;
+        }
+      }
+      // Add to admins collection
+      await db.collection('admins').doc(uid).set({
+        name,
+        email,
+        isDefault: true,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      // Set custom claim
+      try { await admin.auth().setCustomUserClaims(uid, { admin: true }); } catch (_) {}
+      console.log('Default admin created:', email);
+    }
+  } catch (err) {
+    console.error('Error ensuring default admin:', err);
+  }
+}
+
 const DEFAULT_PORT = Number(process.env.PORT) || 5000;
-function start(port){
+async function start(port) {
+  await ensureDefaultAdmin();
   const srv = app.listen(port, () => {
     console.log(`Skiloora backend running on port ${port}`);
   });
   srv.on('error', (err) => {
-    if (err && err.code === 'EADDRINUSE'){
+    if (err && err.code === 'EADDRINUSE') {
       const next = port + 1;
       console.warn(`Port ${port} in use. Trying ${next}...`);
       start(next);

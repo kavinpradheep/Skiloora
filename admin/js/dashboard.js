@@ -3,13 +3,12 @@
   if (localStorage.getItem('skiloora_admin_session') !== '1'){ window.location.href = loginUrl; return; }
   document.getElementById('adminLogout')?.addEventListener('click', ()=>{ localStorage.removeItem('skiloora_admin_session'); window.location.href = loginUrl; });
 
-  const line = (id,label,data)=> new Chart(document.getElementById(id), { type:'line', data:{ labels:['Jan','Feb','Mar','Apr','May','Jun'], datasets:[{ label, data, borderColor:'#111827', backgroundColor:'transparent', tension:.3 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } } });
+  const line = (id,label,data)=> new Chart(document.getElementById(id), { type:'line', data:{ labels:['Jan','Feb','Mar','Apr','May','Jun'], datasets:[{ label, data, borderColor:'#111827', backgroundColor:'transparent', tension:.3 }] }, options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ display:false } } } });
 
   async function loadRealData(){
     try {
-      const base = location.origin.replace(/\/$/, '');
-      const backend = base.includes(':5500') ? base.replace(':5500', ':5000') : base;
-      const res = await fetch(`${backend}/api/admin/metrics`, { cache:'no-store' });
+      const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+      const res = await fetch(`${API_ORIGIN}/api/admin/metrics`, { cache:'no-store' });
       const json = await res.json();
       if (!json || !json.ok) throw new Error('metrics_failed');
       const totals = json.totals || { users: 0, activeFreelancers: 0, totalRevenue: 0 };

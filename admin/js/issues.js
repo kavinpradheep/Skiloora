@@ -19,7 +19,8 @@
     });
   }
 
-  const API_BASE = 'http://localhost:5000/api/admin';
+  const API_ORIGIN = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : 'https://skiloora.onrender.com';
+  const API_BASE = API_ORIGIN + '/api/admin';
 
   async function fetchJSON(url, opts){
     try{

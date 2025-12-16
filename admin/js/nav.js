@@ -129,6 +129,8 @@
       wrap.style.position = 'relative';
       const parent = avatar.parentElement;
       if (parent){ parent.insertBefore(wrap, avatar); wrap.appendChild(avatar); }
+      // Only show avatar menu on desktop, not mobile
+      function isDesktop(){ return window.matchMedia('(min-width: 1025px)').matches; }
       const menu = document.createElement('div');
       menu.className = 'avatar-menu';
       menu.style.position = 'absolute'; menu.style.top='110%'; menu.style.right='0';
@@ -141,18 +143,35 @@
       btn.addEventListener('mouseover', ()=>{ btn.style.background='#f3f4f6'; });
       btn.addEventListener('mouseout', ()=>{ btn.style.background='transparent'; });
       btn.addEventListener('click', ()=>{
-        // Reuse sidebar logout behavior
         localStorage.removeItem('skiloora_admin_session');
         const loginUrl = `${location.origin.replace(/\/$/, '')}/freelancer/html/login.html`;
         window.location.href = loginUrl;
       });
       menu.appendChild(btn);
       wrap.appendChild(menu);
-      function toggle(){ menu.style.display = (menu.style.display==='none' || !menu.style.display) ? 'block' : 'none'; }
+      function toggle(){
+        if (!isDesktop()) return; // Prevent menu on mobile
+        menu.style.display = (menu.style.display==='none' || !menu.style.display) ? 'block' : 'none';
+      }
       avatar.addEventListener('click', (e)=>{ e.stopPropagation(); toggle(); });
       document.addEventListener('click', (e)=>{ if (!wrap.contains(e.target)) menu.style.display='none'; });
       document.addEventListener('keydown', (e)=>{ if (e.key==='Escape') menu.style.display='none'; });
     }
+
+    // Bind explicit Logout buttons (sidebar + mobile topbar)
+    function doLogout(){
+      try { localStorage.removeItem('skiloora_admin_session'); } catch(_){ }
+      const loginUrl = `${location.origin.replace(/\/$/, '')}/freelancer/html/login.html`;
+      window.location.href = loginUrl;
+    }
+    const sLogout = document.getElementById('adminLogout');
+    if (sLogout) sLogout.addEventListener('click', doLogout);
+    const mLogout = document.getElementById('mobileLogout');
+    if (mLogout) mLogout.addEventListener('click', doLogout);
+    document.getElementById('topbarLogout')?.addEventListener('click', function(){
+      localStorage.removeItem('skiloora_admin_session');
+      window.location.href = `${location.origin.replace(/\/$/, '')}/freelancer/html/login.html`;
+    });
   }
 
   if (document.readyState === 'loading') {
