@@ -807,9 +807,120 @@ html {
   font-family: inherit;
 }
 
-/* ============================================ */
-/* RESPONSIVE BREAKPOINTS */
-/* ============================================ */
+/* --- Report an Issue section (Support page) --- */
+.issue-report {
+  background: #fafbfc;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 18px 16px 14px 16px;
+  margin-top: 24px;
+  box-shadow: none;
+  max-width: 420px;
+}
+
+.issue-report h3 {
+  margin: 0 0 12px 0 !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.issue-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.issue-form label {
+  display: block;
+  font-size: 0.97rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.issue-form input,
+.issue-form select,
+.issue-form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: 1px solid #e5e7eb;
+  font-size: 1rem;
+  background: #fff;
+  color: #111827;
+  margin-bottom: 2px;
+  transition: border 0.18s;
+}
+
+.issue-form input:focus,
+.issue-form select:focus,
+.issue-form textarea:focus {
+  border-color: #6366f1;
+  outline: none;
+}
+
+.issue-form textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.issue-form .actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.issue-form .btn,
+.issue-form .btn-primary {
+  background: #111827;
+  color: #fff;
+  border-radius: 7px;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  transition: background 0.16s;
+}
+
+.issue-form .btn:hover,
+.issue-form .btn:focus,
+.issue-form .btn-primary:hover,
+.issue-form .btn-primary:focus {
+  background: #374151;
+}
+
+.issue-form .muted,
+#fdIssueMsg {
+  font-size: 0.97rem;
+  color: #6b7280;
+  margin-top: 3px;
+  min-height: 16px;
+  transition: color 0.2s;
+}
+.issue-form .muted.error,
+#fdIssueMsg.error {
+  color: #dc2626;
+}
+.issue-form .muted.success,
+#fdIssueMsg.success {
+  color: #059669;
+}
+
+/* Responsive: stack and adjust paddings on small screens */
+@media (max-width: 900px) {
+  .issue-report {
+    max-width: 100%;
+    padding: 14px 4vw 10px 4vw;
+    margin-top: 18px;
+  }
+}
+@media (max-width: 600px) {
+  .issue-report {
+    padding: 10px 2vw 8px 2vw;
+  }
+}
 
 /* Tablet - 900px and below */
 @media (max-width: 900px) {
