@@ -1,5 +1,12 @@
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+
+// Initialize Firebase and expose to window for legacy code compatibility
+const app = initializeApp(firebaseConfig);
+window.firebaseAuth = getAuth(app);
+window.firebaseDB = getFirestore(app);
 
 // letterAvatar(name): Produce a 64x64 letter-based SVG avatar fallback.
 function letterAvatar(name){

@@ -9,20 +9,12 @@
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-storage-compat.js"></script>
-  <script>
+  <script src="../js/firebase-config.js"></script>
+<script>
   (function(){
-    const firebaseConfig = {
-      apiKey: "AIzaSyCDJkJi4qI6c9s77bveiRQVwrnProKfmdQ",
-      authDomain: "skillora-b6dc6.firebaseapp.com",
-      projectId: "skillora-b6dc6",
-      storageBucket: "skillora-b6dc6.firebasestorage.app",
-      messagingSenderId: "745370584456",
-      appId: "1:745370584456:web:b9861181bb99813cf1263d",
-      measurementId: "G-7V7JT8V3CH"
-    };
     try { 
       if(!window.firebaseApp) { 
-        window.firebaseApp = firebase.initializeApp(firebaseConfig); // Changed from cfg to firebaseConfig
+        window.firebaseApp = firebase.initializeApp(window.firebaseConfig);
       }
     } catch(e) {
       console.error('Firebase initialization error', e);
