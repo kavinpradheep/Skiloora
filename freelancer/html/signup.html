@@ -8,33 +8,24 @@
   <script src="../js/signup.js" defer></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <!-- Firebase App (add existing SDK code you already have) -->
-<script type="module">
-  // Example modular v9+ usage - replace config with your firebaseConfig
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCDJkJi4qI6c9s77bveiRQVwrnProKfmdQ",
-    authDomain: "skillora-b6dc6.firebaseapp.com",
-    projectId: "skillora-b6dc6",
-    storageBucket: "skillora-b6dc6.firebasestorage.app",
-    messagingSenderId: "745370584456",
-    appId: "1:745370584456:web:b9861181bb99813cf1263d",
-    measurementId: "G-7V7JT8V3CH"
-  };
+  <script type="module">
+    import { firebaseConfig } from "../js/firebase-config.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  window.firebaseAuth = getAuth(app);
-  window.firebaseDB = getFirestore(app);
-  window.__createBuyerAccount = async function({name,email,password}){
-    // Create Firebase auth user then Firestore document with role 'buyer'
-    const cred = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
-    const uid = cred.user.uid;
-    await setDoc(doc(window.firebaseDB, 'users', uid), { name, email, role: 'buyer', createdAt: serverTimestamp() }, { merge: true });
-    await signOut(window.firebaseAuth); // force login via unified login page
-  };
-</script>
+    const app = initializeApp(firebaseConfig);
+    window.firebaseAuth = getAuth(app);
+    window.firebaseDB = getFirestore(app);
+    window.__createBuyerAccount = async function({name,email,password}){
+      // Create Firebase auth user then Firestore document with role 'buyer'
+      const cred = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+      const uid = cred.user.uid;
+      await setDoc(doc(window.firebaseDB, 'users', uid), { name, email, role: 'buyer', createdAt: serverTimestamp() }, { merge: true });
+      await signOut(window.firebaseAuth); // force login via unified login page
+    };
+  </script>
 
 </head>
 <body>

@@ -1,5 +1,12 @@
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { doc, getDoc, collection, getDocs, query as fsQuery, limit } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, getDocs, query as fsQuery, limit } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+
+// Initialize Firebase and expose to window for legacy code compatibility
+const app = initializeApp(firebaseConfig);
+window.firebaseAuth = getAuth(app);
+window.firebaseDB = getFirestore(app);
 
 // letterAvatar(name): Generate small neutral background letter avatar (unused fallback for user cards).
 function letterAvatar(name){

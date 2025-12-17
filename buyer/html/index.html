@@ -5,23 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Skiloora — Freelancers</title>
   <link rel="stylesheet" href="../css/style.css" />
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-    const firebaseConfig = {
-      apiKey: "AIzaSyCDJkJi4qI6c9s77bveiRQVwrnProKfmdQ",
-      authDomain: "skillora-b6dc6.firebaseapp.com",
-      projectId: "skillora-b6dc6",
-      storageBucket: "skillora-b6dc6.firebasestorage.app",
-      messagingSenderId: "745370584456",
-      appId: "1:745370584456:web:b9861181bb99813cf1263d",
-      measurementId: "G-7V7JT8V3CH"
-    };
-    const app = initializeApp(firebaseConfig);
-    window.firebaseAuth = getAuth(app);
-    window.firebaseDB = getFirestore(app);
-  </script>
+  <!-- Firebase initialization is now handled in js/index.js -->
   <script type="module" src="../js/index.js" defer></script>
 </head>
 <body>
